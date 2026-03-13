@@ -1,0 +1,475 @@
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation, Link } from 'react-router-dom';
+import { Download, Play, ShoppingBag, CheckCircle, Smartphone, CreditCard, X, Loader2 } from 'lucide-react';
+import { supabase, isSupabaseReady } from '../lib/supabaseClient';
+import { productsData } from '../data/productsData';
+import { formatPrice } from '../utils/currencyUtils';
+import '../styles/StudioStyles.css'; // Shared studio styles
+import './ResourcesPage.css';
+
+/* ── Product Card ───────────────────────────────────── */
+const ProductCard = ({ product, isFree, onClick }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        whileHover={{ y: -8 }}
+        className="resource-card glass"
+        style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: isFree ? '#00f2fe' : 'var(--brand-accent)', borderRadius: '32px 32px 0 0' }} />
+
+        <span style={{
+            alignSelf: 'flex-start',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            fontSize: '0.7rem',
+            color: isFree ? '#00f2fe' : 'var(--brand-accent)',
+            background: isFree ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255,255,255,0.05)',
+            padding: '0.3rem 0.8rem',
+            borderRadius: '100px',
+            fontWeight: 700,
+            marginBottom: '1.5rem'
+        }}>
+            {product.type}
+        </span>
+
+        <h3 style={{ margin: '0 0 1rem 0' }}>{product.title}</h3>
+        <p style={{ color: 'var(--muted-color)', flex: 1, marginBottom: '2rem' }}>{product.description}</p>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <span style={{ fontWeight: 800, fontSize: '1.25rem', color: '#fff' }}>
+                {formatPrice(product.priceTZS)}
+            </span>
+            <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>
+                {isFree ? `${product.downloads} downloads` : product.salesCount}
+            </span>
+        </div>
+
+        <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => onClick(product, isFree)}
+            className={isFree ? 'studio-btn studio-btn-outline' : 'studio-btn studio-btn-primary'}
+            style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }}
+        >
+            {isFree ? <><Download size={16} /> Download Free</> : <><ShoppingBag size={16} /> Buy Now</>}
+        </motion.button>
+    </motion.div>
+);
+
+/* ── Payment Modal ──────────────────────────────────── */
+const PaymentModal = ({ product, isOpen, onClose }) => {
+    const [step, setStep] = useState(1);
+    const [settings, setSettings] = useState({ bankName: 'NBC', bankAcc: '', lipa: '' });
+    const [selectedMethod, setSelectedMethod] = useState('');
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            if (!supabase) return;
+            const { data } = await supabase.from('site_settings').select('payment_bank_name, payment_bank_account, payment_lipa_number').eq('id', 1).single();
+            if (data) {
+                setSettings({
+                    bankName: data.payment_bank_name || 'NBC',
+                    bankAcc: data.payment_bank_account || '',
+                    lipa: data.payment_lipa_number || ''
+                });
+            }
+        };
+        if (isOpen) {
+            setStep(1);
+            fetchSettings();
+        }
+    }, [isOpen]);
+
+    if (!isOpen || !product) return null;
+
+    return (
+        <AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'grid', placeItems: 'center', padding: '1rem' }}
+            >
+                <div style={{ position: 'absolute', inset: 0 }} onClick={onClose} />
+
+                <motion.div
+                    initial={{ y: 50, scale: 0.95 }}
+                    animate={{ y: 0, scale: 1 }}
+                    exit={{ y: 20, scale: 0.95 }}
+                    onClick={e => e.stopPropagation()}
+                    style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '500px', padding: '2.5rem', position: 'relative' }}
+                >
+                    <button onClick={onClose} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
+                        <X size={24} />
+                    </button>
+
+                    {step === 1 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Step 1: Choose Payment Method</span>
+                            <h2 style={{ margin: 0 }}>{product.title}</h2>
+                            <div style={{ fontWeight: 800, paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{formatPrice(product.priceTZS)}</div>
+
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                <button
+                                    onClick={() => { setSelectedMethod('Bank'); setStep(2); }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
+                                >
+                                    <CreditCard size={20} color="var(--brand-accent)" />
+                                    <span style={{ flex: 1, fontWeight: 600 }}>Bank Payment ({settings.bankName})</span>
+                                </button>
+                                <button
+                                    onClick={() => { setSelectedMethod('Lipa'); setStep(2); }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease' }}
+                                >
+                                    <Smartphone size={20} color="var(--brand-accent)" />
+                                    <span style={{ flex: 1, fontWeight: 600 }}>Lipa Number / Mobile Money</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {step === 2 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem' }}>Step 2: Confirm & Receive</span>
+                            <h2 style={{ margin: 0 }}>Payment Instructions</h2>
+                            
+                             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.15)', padding: '1.5rem', borderRadius: '12px' }}>
+                                <p style={{ margin: '0 0 1rem 0' }}>Please send <strong>{formatPrice(product.priceTZS)}</strong> using <strong>{selectedMethod === 'Bank' ? 'Bank Transfer' : 'Mobile Payment'}</strong> to:</p>
+                                <div style={{ fontWeight: 800, textAlign: 'center', letterSpacing: '2px', color: 'var(--brand-accent)', fontSize: '1.2rem' }}>
+                                    {selectedMethod === 'Bank' ? settings.bankAcc : settings.lipa}
+                                </div>
+                                {selectedMethod === 'Bank' && <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--muted-color)', marginTop: '0.5rem' }}>Bank: {settings.bankName} | Name: JOHNSON SAIMON</div>}
+                            </div>
+
+                            <p style={{ color: 'var(--muted-color)', fontSize: '0.9rem' }}>{productsData.payment.microcopy.postPayment}</p>
+                            
+                            <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} onSubmit={async (e) => {
+                                e.preventDefault();
+
+                                const form = e.target;
+                                const name = form.name.value;
+                                const email = form.email.value;
+                                const sender_name = form.sender_name.value;
+
+                                if (!isSupabaseReady) {
+                                    alert("Database not connected yet.");
+                                    return;
+                                }
+
+                                try {
+                                    const { error } = await supabase.from('purchase_orders').insert([{
+                                        product_id: product.id,
+                                        product_title: product.title,
+                                        product_type: 'digital',
+                                        customer_name: name,
+                                        customer_email: email,
+                                        transaction_id: sender_name, // Mapping Sender's Name to transaction_id for now
+                                        payment_method: selectedMethod === 'Bank' ? "NBC Bank" : "Lipa Number",
+                                        amount_tzs: product.priceTZS,
+                                        status: 'pending'
+                                    }]);
+                                    if (error) throw error;
+
+                                    setStep(3);
+                                } catch (err) {
+                                    console.error("Order error", err);
+                                    alert("Failed to submit order.");
+                                }
+                            }}>
+                                <input name="name" type="text" placeholder="Your Full Name" required style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontFamily: 'inherit' }} />
+                                <input name="email" type="email" placeholder="Your Email (for product delivery)" required style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontFamily: 'inherit' }} />
+                                <input name="sender_name" type="text" placeholder="Sender's Name (as it appears in payment)" required style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontFamily: 'inherit' }} />
+                                <button type="submit" className="studio-btn studio-btn-primary" style={{ width: '100%' }}>Confirm Payment</button>
+                            </form>
+                        </div>
+                    )}
+
+                    {step === 3 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1.5rem', padding: '2rem 0' }}>
+                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
+                                <CheckCircle size={64} color="var(--brand-accent)" />
+                            </motion.div>
+                            <h2 style={{ margin: 0 }}>Payment Verifying</h2>
+                            <p style={{ color: 'var(--muted-color)' }}>
+                                We've received your details. Once verified, your digital resource will be sent immediately to your email.
+                            </p>
+                            <button onClick={onClose} className="studio-btn studio-btn-outline" style={{ marginTop: '1rem' }}>Close</button>
+                        </div>
+                    )}
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
+    );
+};
+
+const FreeDownloadModal = ({ product, isOpen, onClose }) => {
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+
+    React.useEffect(() => {
+        if (isOpen) {
+            setLoading(false);
+            setSuccess(false);
+        }
+    }, [isOpen]);
+
+    if (!isOpen || !product) return null;
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const name = form.name.value;
+        const email = form.email.value;
+
+        if (!isSupabaseReady) {
+            alert("Database not connected yet.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await supabase.from('newsletter_subscribers').upsert({
+                email,
+                name,
+                source: 'free_download'
+            }, { onConflict: 'email' });
+
+            await supabase.from('purchase_orders').insert([{
+                product_id: product.id,
+                product_title: product.title,
+                product_type: 'free',
+                customer_name: name,
+                customer_email: email,
+                amount_tzs: 0,
+                status: 'confirmed',
+                file_url: product.file_url || ''
+            }]);
+
+            // Automatically send the email for free downloads
+            await supabase.functions.invoke('send-email', {
+                body: {
+                    type: 'free_download',
+                    email: email,
+                    name: name,
+                    product_title: product.title,
+                    file_url: product.file_url || ''
+                }
+            });
+
+            setSuccess(true);
+        } catch (err) {
+            console.error("Free download error:", err);
+            alert("Failed to process download.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'grid', placeItems: 'center', padding: '1rem' }}
+            >
+                <div style={{ position: 'absolute', inset: 0 }} onClick={onClose} />
+                <motion.div
+                    initial={{ y: 50, scale: 0.95 }}
+                    animate={{ y: 0, scale: 1 }}
+                    exit={{ y: 20, scale: 0.95 }}
+                    onClick={e => e.stopPropagation()}
+                    style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '400px', padding: '2.5rem', position: 'relative' }}
+                >
+                    <button onClick={onClose} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
+                        <X size={24} />
+                    </button>
+
+                    {!success ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <span style={{ color: '#00f2fe', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Free Download</span>
+                            <h2 style={{ margin: 0 }}>{product.title}</h2>
+                            <p style={{ color: 'var(--muted-color)' }}>Where should we send your download link?</p>
+
+                            <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} onSubmit={handleSubmit}>
+                                <input name="name" type="text" placeholder="Your Name" required style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontFamily: 'inherit' }} />
+                                <input name="email" type="email" placeholder="Your Best Email" required style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontFamily: 'inherit' }} />
+                                <button type="submit" disabled={loading} className="studio-btn studio-btn-outline" style={{ marginTop: '0.5rem', width: '100%', justifyContent: 'center' }}>
+                                    {loading ? <><Loader2 size={18} className="spin" style={{ marginRight: '0.5rem' }} /> Sending...</> : 'Get Free Resource'}
+                                </button>
+                                <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center', margin: 0 }}>
+                                    You'll be added to my weekly newsletter. No spam.
+                                </p>
+                            </form>
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1.5rem', padding: '1rem 0' }}>
+                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
+                                <CheckCircle size={64} color="#00f2fe" />
+                            </motion.div>
+                            <h2 style={{ margin: 0 }}>On its way!</h2>
+                            <p style={{ color: 'var(--muted-color)' }}>
+                                Check your email inbox (and spam folder) for the download link.
+                            </p>
+                            <button onClick={onClose} className="studio-btn studio-btn-outline" style={{ marginTop: '1rem' }}>Awesome, thanks!</button>
+                        </div>
+                    )}
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
+    );
+};
+
+/* ── Resources Page ─────────────────────────────────── */
+const ResourcesPage = () => {
+    const { pathname } = useLocation();
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedFreeProduct, setSelectedFreeProduct] = useState(null);
+    const [paidProducts, setPaidProducts] = useState([]);
+    const [freeProducts, setFreeProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            if (!isSupabaseReady) return;
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('display_order', { ascending: true });
+
+                if (error) throw error;
+
+                const paid = [];
+                const free = [];
+
+                data.forEach(p => {
+                    const formattedProduct = {
+                        ...p,
+                        priceTZS: p.price_tzs,
+                        downloads: '120+',
+                        salesCount: '15-30 per month'
+                    };
+
+                    if (p.price_tzs > 0) {
+                        paid.push(formattedProduct);
+                    } else {
+                        free.push(formattedProduct);
+                    }
+                });
+
+                setPaidProducts(paid);
+                setFreeProducts(free);
+            } catch (err) {
+                console.error("Error fetching products:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    const handleClick = (product, isFree) => {
+        if (!isFree) setSelectedProduct(product);
+        else setSelectedFreeProduct(product);
+    };
+
+    if (loading) {
+        return <div className="resources-page" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}><Loader2 className="spin" size={32} color="#00f2fe" /></div>;
+    }
+
+    return (
+        <div className="resources-page">
+            <div className="studio-noise" />
+
+            {/* Hero */}
+            <section className="section resources-hero">
+                <div className="container">
+                    <div className="distributed-grid">
+                        <div className="col-left">
+                            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+                                <span className="badge">Digital Marketplace</span>
+                                <h1 style={{ fontSize: 'var(--fs-h1)', margin: '2rem 0' }}>Premium Tools <br /> & Free Creative Assets.</h1>
+                            </motion.div>
+                        </div>
+                        <div className="col-right stagger-bottom">
+                            <motion.p className="lead" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
+                                Curated resources designed to help you build, design, and convert faster.
+                                From high-end templates to essential design guides.
+                            </motion.p>
+                        </div>
+                    </div>
+                </div>
+                <div className="hero-video-bg">
+                    <div className="video-overlay" />
+                    <div className="dummy-video-content">
+                        <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 15, repeat: Infinity }} className="abstract-blob" />
+                    </div>
+                </div>
+            </section>
+
+            {/* Paid Products */}
+            <section className="section studio-section">
+                <div className="container">
+                    <h2 className="group-title">Premium Assets</h2>
+                    <div className="products-grid">
+                        {paidProducts.map(product => (
+                            <ProductCard key={product.id} product={product} isFree={false} onClick={handleClick} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Free Products */}
+            <section className="section studio-section">
+                <div className="container">
+                    <h2 className="group-title">Free Resources</h2>
+                    <div className="products-grid">
+                        {freeProducts.map(product => (
+                            <ProductCard key={product.id} product={product} isFree={true} onClick={handleClick} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Behind The Scenes */}
+            <section className="section studio-section">
+                <div className="container">
+                    <div className="bts-section">
+                        <div className="distributed-grid" style={{ alignItems: 'center' }}>
+                            <div className="col-left">
+                                <span className="badge">Behind The Scenes</span>
+                                <h2>How we build it.</h2>
+                                <p>Get exclusive access to our process videos, high-fidelity mockups, and early looks at upcoming products.</p>
+                                <button className="studio-btn studio-btn-primary">
+                                    Watch BTS Video <Play size={16} style={{ marginLeft: '0.5rem' }} />
+                                </button>
+                            </div>
+                            <div className="col-right stagger-bottom">
+                                <div style={{ width: '100%', aspectRatio: '16/9', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', display: 'grid', placeItems: 'center' }}>
+                                    <Play size={48} opacity={0.3} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div style={{ padding: '8rem 0', textAlign: 'center' }}>
+                <Link to="/" className="btn-outline">← Back Home</Link>
+            </div>
+
+            <PaymentModal product={selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} />
+            <FreeDownloadModal product={selectedFreeProduct} isOpen={!!selectedFreeProduct} onClose={() => setSelectedFreeProduct(null)} />
+        </div>
+    );
+};
+
+export default ResourcesPage;

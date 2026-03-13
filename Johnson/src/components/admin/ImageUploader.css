@@ -1,0 +1,118 @@
+.image-uploader-wrapper {
+    width: 100%;
+}
+
+.drop-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    background: #fdfdfd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-active {
+    border-color: #111;
+    background: #f9fafb;
+}
+
+.drop-zone.has-error {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.upload-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.upload-text {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.upload-hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.text-secondary {
+    color: #6b7280;
+}
+
+.text-accent {
+    color: #111;
+}
+
+.upload-error {
+    margin-top: 0.75rem;
+    color: #ef4444;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.image-preview-container {
+    position: relative;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #eaeaea;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
+
+.image-preview {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    max-height: 300px;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.remove-image-btn:hover {
+    background: #ffffff;
+    color: #ef4444;
+    border-color: #fca5a5;
+    transform: scale(1.05);
+}

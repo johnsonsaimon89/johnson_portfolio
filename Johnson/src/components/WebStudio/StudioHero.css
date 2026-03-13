@@ -1,0 +1,86 @@
+.web-studio-hero {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    padding-top: 15vh;
+    display: flex;
+    align-items: center;
+}
+
+.web-studio-hero .hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 6rem;
+    align-items: center;
+}
+
+.web-studio-hero h1 {
+    font-size: var(--fs-h1);
+    margin-top: 2rem;
+    line-height: 1.1;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.web-studio-hero .lead {
+    color: var(--muted-color);
+    max-width: 540px;
+    margin-top: 2.5rem;
+    font-size: var(--fs-p1);
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.web-studio-hero .browser-mockup-wrapper {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    overflow: hidden;
+    padding: 1.5rem;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 1024px) {
+    .web-studio-hero {
+        padding-top: 12vh;
+        min-height: auto;
+        padding-bottom: 5rem;
+    }
+
+    .web-studio-hero .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .web-studio-hero .col-right {
+        display: block; /* Show on tablet */
+    }
+
+    .web-studio-hero h1 {
+        font-size: clamp(2.25rem, 6vw, 3rem); /* Smaller base and max for tablet */
+    }
+
+    .web-studio-hero .lead {
+        font-size: 1.1rem;
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .web-studio-hero .col-right {
+        display: none; /* Hide on mobile/small tablets */
+    }
+
+    .web-studio-hero h1 {
+        font-size: clamp(1.85rem, 9vw, 2.5rem); /* even smaller for mobile */
+        margin-top: 1.5rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .web-studio-hero .lead {
+        font-size: 1rem;
+    }
+}
+

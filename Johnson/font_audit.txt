@@ -1,0 +1,9 @@
+components\About.jsx: clamp(1.8rem, 4vw, 3rem)
+components\About.jsx: 1.3rem
+components\About.jsx: 1rem
+components\About.jsx: 2rem
+components\About.jsx: 0.9rem
+components\Hero.jsx: clamp(2.5rem, 6vw, 4.5rem)
+components\Hero.jsx: 1.1rem
+components\studio\StudioHero.jsx: clamp(2.2rem, 5vw, 3.8rem)
+components\studio\StudioHero.jsx: 1.1rem

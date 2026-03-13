@@ -1,0 +1,516 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+:root {
+  --bg-color: #030303;
+  --text-color: #f1f1f1;
+  --brand-accent: #BDFF00;
+  /* Signature Lime */
+  --brand-accent-rgb: 189, 255, 0;
+  --brand-accent-deep: #96cc00;
+
+  --secondary-color: #121212;
+  --surface-color: #0A0A0A;
+  --muted-color: #888888;
+
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover: rgba(255, 255, 255, 0.07);
+
+  --font-main: 'Outfit', sans-serif;
+  --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Typography Scale */
+  --fs-h1: clamp(2.25rem, 6vw, 3.5rem);
+  --fs-h2: clamp(1.85rem, 5vw, 2.5rem);
+  --fs-h3: clamp(1.6rem, 4vw, 2rem);
+  --fs-p1: 1.25rem;
+  --fs-p2: 1.1rem;
+  --fs-p3: 0.95rem;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  /* Studio Theme Variables (Standardized) */
+  --studio-bg: var(--bg-color);
+  --studio-text: var(--text-color);
+  --studio-accent: var(--brand-accent);
+  --studio-subtext: var(--muted-color);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow-x: hidden;
+  line-height: 1.6;
+  font-size: var(--fs-p2);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 4px;
+  box-shadow: 0 0 15px rgba(var(--brand-accent-rgb), 0.4);
+}
+
+button:active,
+a:active {
+  transform: scale(0.98);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 5vw, 4rem);
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.02rem;
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: var(--fs-h1);
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  font-size: var(--fs-h2);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+}
+
+p {
+  font-size: var(--fs-p2);
+  line-height: 1.8;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-color);
+  opacity: 0.85;
+}
+
+.lead {
+  font-size: var(--fs-p1);
+  opacity: 1;
+}
+
+.caption {
+  font-size: var(--fs-p3);
+  color: var(--muted-color);
+}
+
+.section {
+  padding: 10rem 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: clip;
+  /* Prevent bleed across sections */
+}
+
+/* ── Visibility Utilities ─────────────────────── */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: flex;
+}
+
+@media (max-width: 1024px) {
+  .mobile-only {
+    display: flex;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* ── Responsive Section Padding ───────────────── */
+@media (max-width: 1024px) {
+  .section {
+    padding: 6rem 0;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 4rem 0;
+  }
+}
+
+/* Distribution Utilities */
+.distributed-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.col-left {
+  grid-column: 1 / span 12;
+}
+
+.col-right {
+  grid-column: 1 / span 12;
+}
+
+@media (min-width: 1024px) {
+  .col-left {
+    grid-column: 1 / span 7;
+  }
+
+  .col-right {
+    grid-column: 8 / span 5;
+  }
+
+  .col-center {
+    grid-column: 4 / span 6;
+  }
+}
+
+.text-max-width {
+  max-width: 65ch;
+}
+
+.stagger-top {
+  margin-top: -4rem;
+}
+
+.stagger-bottom {
+  margin-top: 4rem;
+}
+
+/* Glassmorphism & Cards */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  transition: var(--transition);
+}
+
+.glass:hover {
+  background: var(--glass-hover);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Bento Grid System */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minMax(150px, auto);
+  gap: 1.5rem;
+}
+
+.bento-item {
+  background: var(--surface-color);
+  border-radius: 6px;
+  /* Updated for crisp frames */
+  padding: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Crisper border */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
+  /* Lifted off background */
+}
+
+.bento-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Photo Frame Variants */
+.frame-taped {
+  clip-path: polygon(0 0, 95% 0, 100% 10%, 100% 100%, 0 100%);
+}
+
+.frame-angled {
+  clip-path: polygon(5% 0, 100% 0, 100% 100%, 0 100%, 0 10%);
+}
+
+/* Floating Navigation */
+.floating-nav {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem;
+  border-radius: 100px;
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.nav-pill {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  border-radius: 100px;
+  color: var(--muted-color);
+  font-weight: 600;
+  font-size: var(--fs-p3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.nav-pill.active {
+  color: var(--bg-color);
+}
+
+.nav-pill:not(.active):hover {
+  color: white;
+}
+
+/* ── Responsive Button Helpers ────────────────── */
+@media (max-width: 480px) {
+
+  .btn-primary,
+  .btn-outline {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* ── Bento Grid — Responsive ──────────────────── */
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bento-item {
+    padding: 1.5rem;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-color);
+}
+
+/* Utility Classes */
+.text-gradient {
+  color: inherit;
+}
+
+.btn-primary {
+  padding: 1rem 2.5rem;
+  background: var(--brand-accent);
+  color: var(--bg-color);
+  border-radius: 100px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-4px) scale(1.02);
+  color: var(--bg-color);
+  box-shadow: 0 10px 30px rgba(var(--brand-accent-rgb), 0.4);
+  background: var(--text-color);
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
+}
+
+.btn-outline {
+  padding: 1rem 2.5rem;
+  border: 1px solid var(--glass-border);
+  color: var(--text-color);
+  border-radius: 50px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-outline:hover {
+  background: rgba(var(--brand-accent-rgb), 0.05);
+  border-color: var(--brand-accent);
+  color: var(--brand-accent);
+}
+
+/* Background Elements & Overlays */
+.bg-blob {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none !important;
+  z-index: -1;
+}
+
+.cursor-spotlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  pointer-events: none !important;
+  z-index: 9999;
+  background: radial-gradient(circle, rgba(var(--brand-accent-rgb), 0.15) 0%, transparent 70%);
+  border: 1px solid rgba(var(--brand-accent-rgb), 0.3);
+  mix-blend-mode: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+}
+
+.cursor-spotlight.hovering {
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(var(--brand-accent-rgb), 0.25) 0%, transparent 70%);
+  border-color: rgba(var(--brand-accent-rgb), 0.5);
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--brand-accent);
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none !important;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+}
+
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Studio & Global Buttons */
+.studio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 2.5rem;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: var(--fs-p2);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.studio-btn-primary {
+  background: var(--brand-accent);
+  color: #030303;
+  border: none;
+}
+
+.studio-btn-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(189, 255, 0, 0.15);
+  background: #ffffff;
+  color: #030303;
+}
+
+.studio-btn-outline {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.studio-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+}

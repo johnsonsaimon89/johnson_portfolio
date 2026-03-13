@@ -1,0 +1,142 @@
+.admin-dashboard {
+    display: flex;
+    min-height: 100vh;
+    /* Clean white background for the whole dashboard */
+    background-color: #ffffff;
+    color: #1a1a1a;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.admin-sidebar {
+    width: 260px;
+    background: #fcfcfc;
+    border-right: 1px solid #eaeaea;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.admin-brand {
+    padding: 2rem 1.5rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.admin-brand h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #111;
+}
+
+.admin-nav {
+    flex: 1;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    /* Tighter gap for cleaner look */
+}
+
+/* Nav Group Headers */
+.admin-nav-group-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin: 1.5rem 0 0.5rem 0.5rem;
+}
+
+.admin-nav-group-title:first-child {
+    margin-top: 0;
+}
+
+.admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #555;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.admin-nav-item:hover {
+    background: #f3f4f6;
+    color: #111;
+}
+
+.admin-nav-item.active {
+    background: #e5e7eb;
+    color: #111;
+    font-weight: 600;
+}
+
+.nav-badge {
+    background: var(--brand-accent);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 800;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    margin-left: auto;
+}
+
+.admin-sidebar-footer {
+    padding: 1.5rem 1rem;
+    border-top: 1px solid #eaeaea;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.admin-nav-item.logout {
+    color: #ef4444;
+}
+
+.admin-nav-item.logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.admin-header {
+    padding: 2rem 3rem;
+    border-bottom: 1px solid #eaeaea;
+    background: #ffffff;
+}
+
+.admin-header h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 3rem;
+    overflow-y: auto;
+    background: #fafafa;
+    /* Slight contrast for the work area */
+}
