@@ -63,14 +63,21 @@ const EditableBlock = ({ block, onUpdate, onDelete, onDuplicate, onEditSettings,
                     </div>
                 );
             case 'image':
+                const isVideo = block.data.url?.match(/\.(mp4|webm|ogg|mov)$/i);
                 return (
-                    <div className="rendered-image" style={{ textAlign: 'center', position: 'relative' }}>
-                        <img src={block.data.url} alt={block.data.alt} style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }} />
-                        <div className="image-placeholder-overlay" onClick={onEditSettings} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', color: 'white', opacity: 0, transition: 'opacity 0.2s', cursor: 'pointer' }}
+                    <div className="rendered-image" style={{ textAlign: 'center', position: 'relative', borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
+                        {isVideo ? (
+                            <video src={block.data.url} className="video-preview" muted loop playsInline autoPlay style={{ width: '100%', maxHeight: '500px', display: 'block' }} />
+                        ) : (
+                            <img src={block.data.url} alt={block.data.alt} style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto' }} />
+                        )}
+                        <div className="image-placeholder-overlay" onClick={onEditSettings} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', color: 'white', opacity: 0, transition: 'all 0.3s ease', cursor: 'pointer', backdropFilter: 'blur(4px)' }}
                             onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
                         >
-                            Click to change image
+                            <div style={{ background: 'white', color: 'black', padding: '8px 20px', borderRadius: '50px', fontWeight: '600', fontSize: '0.9rem' }}>
+                                Change Media
+                            </div>
                         </div>
                     </div>
                 );

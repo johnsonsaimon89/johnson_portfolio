@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2, Maximize2, PlayCircle } from 'lucide-react';
 import ImageUploader from './ImageUploader';
 
 const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => {
@@ -17,6 +17,7 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
             tool_stack: '',
             website_url: '',
             preview_image_url: '',
+            media_items: initialData?.media_items || [],
             colors: ['#6366f1', '#1e293b', '#f8fafc'],
             before_after: {
                 engagement: { before: '', after: '' },
@@ -48,6 +49,13 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
         setFormData(prev => {
             const newContent = { ...prev.content };
             if (isBeforeAfter) {
+                if (!newContent.before_after) newContent.before_after = {
+                    engagement: { before: '', after: '' },
+                    reach: { before: '', after: '' },
+                    followers: { before: '', after: '' },
+                    buyers: { before: '', after: '' }
+                };
+                if (!newContent.before_after[metric]) newContent.before_after[metric] = { before: '', after: '' };
                 newContent.before_after[metric][typeBA] = value;
             } else {
                 if (!newContent.metrics) newContent.metrics = {};
@@ -55,6 +63,26 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
             }
             return { ...prev, content: newContent };
         });
+    };
+
+    const addMediaItem = (url) => {
+        setFormData(prev => ({
+            ...prev,
+            content: {
+                ...prev.content,
+                media_items: [...(prev.content.media_items || []), url]
+            }
+        }));
+    };
+
+    const removeMediaItem = (index) => {
+        setFormData(prev => ({
+            ...prev,
+            content: {
+                ...prev.content,
+                media_items: prev.content.media_items.filter((_, i) => i !== index)
+            }
+        }));
     };
 
     const addCustomMetric = () => {
@@ -90,7 +118,14 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ ...formData, type });
+        // Flatten media_items into the root for database compatibility if needed, 
+        // but here we keep it in content or update the root.
+        // The migration adds it to the root, so let's sync.
+        onSave({ 
+            ...formData, 
+            type,
+            media_items: formData.content.media_items 
+        });
     };
 
     return (
@@ -160,7 +195,8 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                             placeholder="e.g. /projects/screenshot1.png" 
                         />
                         <ImageUploader 
-                            onUploadComplete={(url) => handleContentChange('preview_image_url', url)}
+                            onUploadSuccess={(url) => handleContentChange('preview_image_url', url)}
+                            currentImageUrl={formData.content.preview_image_url}
                         />
                     </div>
                     <small style={{ color: '#666', marginTop: '4px', display: 'block' }}>
@@ -289,6 +325,94 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                                 />
                             </div>
                         ))}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Media Items (Carousel Content)</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                            {formData.content.media_items?.map((item, idx) => (
+                                <div key={idx} className="image-preview-container">
+                                    {item.match(/\.(mp4|webm|ogg|mov)$/i) ? (
+                                        <>
+                                            <video src={item} className="video-preview" muted loop playsInline onMouseOver={e => e.target.play()} onMouseOut={e => e.target.pause()} />
+                                            <div className="video-indicator">
+                                                <PlayCircle size={10} /> VIDEO
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <img src={item} alt="" className="image-preview" />
+                                    )}
+                                    
+                                    <div className="preview-actions-overlay">
+                                        <button type="button" className="preview-action-btn" onClick={() => window.open(item, '_blank')} title="View Full">
+                                            <Maximize2 size={16} />
+                                        </button>
+                                        <button type="button" className="preview-action-btn remove" onClick={() => removeMediaItem(idx)} title="Remove">
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="image-uploader-wrapper">
+                                <ImageUploader
+                                    bucketName="portfolio_images"
+                                    onUploadSuccess={addMediaItem}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="form-section-header mt-2">
+                        <h4>Content Deliverables (e.g. Reels, Polls)</h4>
+                    </div>
+                    <div className="form-group">
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem', background: '#f9fafb', padding: '1rem', borderRadius: '12px', border: '1px solid #eee' }}>
+                            {(formData.content.content_types || []).map((type, idx) => (
+                                <span key={idx} style={{ background: '#000', color: '#fff', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    {type}
+                                    <X size={14} style={{ cursor: 'pointer' }} onClick={() => {
+                                        const newTypes = formData.content.content_types.filter((_, i) => i !== idx);
+                                        handleContentChange('content_types', newTypes);
+                                    }} />
+                                </span>
+                            ))}
+                            {(!formData.content.content_types || formData.content.content_types.length === 0) && (
+                                <span style={{ color: '#999', fontSize: '0.8rem' }}>No deliverables added yet.</span>
+                            )}
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <input 
+                                type="text" 
+                                id="new-tag-input"
+                                placeholder="Add new deliverable (e.g. Quizzes)" 
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        const val = e.target.value.trim();
+                                        if (val) {
+                                            const current = formData.content.content_types || [];
+                                            handleContentChange('content_types', [...current, val]);
+                                            e.target.value = '';
+                                        }
+                                    }
+                                }}
+                            />
+                            <button 
+                                type="button" 
+                                className="studio-btn studio-btn-outline"
+                                onClick={() => {
+                                    const input = document.getElementById('new-tag-input');
+                                    const val = input.value.trim();
+                                    if (val) {
+                                        const current = formData.content.content_types || [];
+                                        handleContentChange('content_types', [...current, val]);
+                                        input.value = '';
+                                    }
+                                }}
+                            >
+                                Add
+                            </button>
+                        </div>
                     </div>
 
                     <div className="form-section-header mt-2">

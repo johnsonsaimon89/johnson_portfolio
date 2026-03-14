@@ -1,6 +1,7 @@
 import { toast } from '../../utils/toast';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import ImageUploader from './ImageUploader';
 import './AdminComponents.css';
 
 const SettingsEditor = () => {
@@ -166,14 +167,14 @@ const SettingsEditor = () => {
 
                     <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem' }}>Global Theme & Branding</h4>
                     <div className="form-group mb-2">
-                        <label>Website Logo URL (Optional)</label>
-                        <input
-                            type="text"
-                            name="logo_url"
-                            value={settings.logo_url}
-                            onChange={handleInputChange}
-                            placeholder="https://your-storage-url.com/logo.png"
-                        />
+                        <label>Website Logo</label>
+                        <div style={{ marginTop: '0.5rem', maxWidth: '400px' }}>
+                            <ImageUploader 
+                                bucketName="site-assets"
+                                currentImageUrl={settings.logo_url}
+                                onUploadSuccess={(url) => setSettings(prev => ({ ...prev, logo_url: url }))}
+                            />
+                        </div>
                     </div>
                     <div className="form-row">
                         <div className="form-group half">

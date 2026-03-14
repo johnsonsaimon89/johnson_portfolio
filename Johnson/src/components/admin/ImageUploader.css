@@ -1,25 +1,39 @@
 .image-uploader-wrapper {
     width: 100%;
+    height: 100%;
 }
 
 .drop-zone {
-    border: 2px dashed #d1d5db;
-    border-radius: 8px;
-    padding: 2.5rem 1.5rem;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem; /* Reduced default padding for better grid fit */
     text-align: center;
-    background: #fdfdfd;
+    background: #fbfcfd;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+    height: 100%; /* Fill container height */
+    min-height: inherit;
+    z-index: 1;
 }
 
-.drop-zone:hover,
+.drop-zone:hover {
+    border-color: #000;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: scale(1.04);
+    z-index: 10;
+}
+
 .drop-zone.drag-active {
-    border-color: #111;
-    background: #f9fafb;
+    border-color: #000;
+    background: rgba(0, 0, 0, 0.02);
+    transform: scale(1.02);
 }
 
 .drop-zone.has-error {
@@ -32,33 +46,104 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    width: 100%;
 }
 
 .upload-text {
     margin: 0;
-    font-size: 0.95rem;
-    color: #374151;
+    font-size: 0.9rem; /* Slightly smaller for grid items */
+    color: #111;
+    font-weight: 600;
 }
 
 .upload-hint {
     margin: 0;
-    font-size: 0.8rem;
-    color: #6b7280;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.2;
 }
 
-.text-secondary {
-    color: #6b7280;
+.r2-badge-refined {
+    pointer-events: none;
+    font-size: 0.6rem;
+    background: rgba(246, 130, 31, 0.1);
+    color: #f6821f;
+    padding: 3px 8px;
+    border-radius: 100px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    border: 1px solid rgba(246, 130, 31, 0.2);
+    letter-spacing: 0.02em;
 }
 
-.text-accent {
-    color: #111;
+.mega-badge-refined {
+    pointer-events: none;
+    font-size: 0.6rem;
+    background: rgba(234, 67, 53, 0.1);
+    color: #ea4335;
+    padding: 3px 8px;
+    border-radius: 100px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    border: 1px solid rgba(234, 67, 53, 0.2);
+    letter-spacing: 0.02em;
+}
+
+.supabase-badge-refined {
+    pointer-events: none;
+    font-size: 0.6rem;
+    background: rgba(62, 207, 142, 0.1);
+    color: #3ecf8e;
+    padding: 3px 8px;
+    border-radius: 100px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    border: 1px solid rgba(62, 207, 142, 0.2);
+    letter-spacing: 0.02em;
+}
+
+/* Generalized premium upload/preview box that can be used anywhere */
+.premium-upload-box {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1;
+    overflow: hidden;
+}
+
+.premium-upload-box:hover {
+    transform: scale(1.04);
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.premium-upload-box:hover .preview-actions-overlay {
+    opacity: 1;
 }
 
 .upload-error {
-    margin-top: 0.75rem;
+    margin-top: 1rem;
     color: #ef4444;
     font-size: 0.85rem;
-    font-weight: 500;
+    background: #fef2f2;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #fee2e2;
 }
 
 .spin {
@@ -74,45 +159,93 @@
 .image-preview-container {
     position: relative;
     width: 100%;
-    border-radius: 8px;
+    height: 100%;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #eaeaea;
-    background: #f3f4f6;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 120px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1;
 }
 
-.image-preview {
+.image-preview-container:hover {
+    transform: scale(1.04);
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.image-preview-container:hover .preview-actions-overlay {
+    opacity: 1;
+}
+
+.image-preview, .video-preview {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    object-fit: cover;
-    max-height: 300px;
+    object-fit: cover; /* Changed to cover for perfect grid tiles */
 }
 
-.remove-image-btn {
+/* Specific for non-grid previews (like site logo) */
+.image-preview-container.contain .image-preview {
+    object-fit: contain;
+    background: #f8fafc;
+}
+
+.preview-actions-overlay {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #e5e7eb;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    gap: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
 }
 
-.remove-image-btn:hover {
-    background: #ffffff;
-    color: #ef4444;
-    border-color: #fca5a5;
-    transform: scale(1.05);
+.preview-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
+.preview-action-btn:hover {
+    transform: scale(1.15);
+    background: #fff;
+}
+
+.preview-action-btn.remove:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+.video-indicator {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+}

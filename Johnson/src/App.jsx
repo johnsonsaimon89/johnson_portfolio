@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import CustomCursor from './components/common/CustomCursor';
 import Navbar from './components/Navbar';
+
 import HomeSplash from './components/HomeSplash';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
@@ -25,14 +27,7 @@ function App() {
   const location = useLocation();
   const { pathname, hash } = location;
 
-  // Optimized mouse tracking using Framer Motion
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
 
-  // Outer ring (spring physics)
-  const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
-  const smoothCursorX = useSpring(cursorX, springConfig);
-  const smoothCursorY = useSpring(cursorY, springConfig);
 
   useEffect(() => {
     // Fetch global theme settings and inject them as CSS variables
@@ -67,37 +62,7 @@ function App() {
     }
   }, [pathname, hash]);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
-    };
 
-    const handleMouseEnter = () => {
-      document.querySelector('.cursor-spotlight')?.classList.add('hovering');
-    };
-
-    const handleMouseLeave = () => {
-      document.querySelector('.cursor-spotlight')?.classList.remove('hovering');
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // Add hover listeners to all interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, [role="button"]');
-    interactiveElements.forEach(el => {
-      el.addEventListener('mouseenter', handleMouseEnter);
-      el.addEventListener('mouseleave', handleMouseLeave);
-    });
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      interactiveElements.forEach(el => {
-        el.removeEventListener('mouseenter', handleMouseEnter);
-        el.removeEventListener('mouseleave', handleMouseLeave);
-      });
-    };
-  }, [pathname]); // Re-run when page changes to catch new elements
 
   return (
     <div className="app">
@@ -123,21 +88,8 @@ function App() {
         }}
       />
 
-      {/* Dual Ring + Dot Cursor Effect */}
-      <motion.div
-        className="cursor-spotlight"
-        style={{
-          x: smoothCursorX,
-          y: smoothCursorY,
-        }}
-      />
-      <motion.div
-        className="cursor-dot"
-        style={{
-          x: cursorX,
-          y: cursorY,
-        }}
-      />
+      <CustomCursor />
+
 
       {!pathname.startsWith('/admin') && <Navbar />}
 

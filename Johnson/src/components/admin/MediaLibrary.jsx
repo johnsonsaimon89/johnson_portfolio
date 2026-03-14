@@ -2,14 +2,14 @@ import { toast } from '../../utils/toast';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { r2Service } from '../../utils/r2Service';
-import { Upload, Image as ImageIcon, Video, File, Trash2, Copy, Cloud } from 'lucide-react';
+import { Upload, Image as ImageIcon, Video, File, Trash2, Copy, Cloud, Maximize2, PlayCircle, Loader2 } from 'lucide-react';
+import ImageUploader from './ImageUploader';
 
 const MediaLibrary = () => {
     const [files, setFiles] = useState([]);
-    const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [showUploader, setShowUploader] = useState(false);
 
-    // Using a placeholder bucket named 'media-library'
     const BUCKET_NAME = 'media-library';
 
     useEffect(() => {
@@ -20,60 +20,19 @@ const MediaLibrary = () => {
         setLoading(true);
         try {
             const r2Files = await r2Service.listFiles(BUCKET_NAME);
-            setFiles(r2Files);
+            setFiles(r2Files || []);
         } catch (err) {
             console.error("Error fetching from R2:", err);
             toast.error("Failed to load R2 media files");
-            
-            // Fallback to Supabase if R2 fails
-            try {
-                const { data } = await supabase.storage.from(BUCKET_NAME).list('', {
-                    limit: 100,
-                    offset: 0,
-                    sortBy: { column: 'created_at', order: 'desc' },
-                });
-
-                if (data) {
-                    const filesWithUrls = data.map(file => {
-                        const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(file.name);
-                        return { ...file, publicUrl: urlData.publicUrl };
-                    });
-                    setFiles(filesWithUrls.filter(f => f.name !== '.emptyFolderPlaceholder'));
-                }
-            } catch (supaErr) {
-                console.warn("Could not fetch from Supabase storage either");
-            }
         }
         setLoading(false);
     };
 
-    const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        setUploading(true);
-        try {
-            const publicUrl = await r2Service.uploadFile(file, BUCKET_NAME);
-            toast.success('File uploaded to Cloudflare R2!');
-            
-            // Optimistically add to list
-            const newFile = {
-                id: Math.random().toString(),
-                name: file.name,
-                publicUrl,
-                metadata: { mimetype: file.type }
-            };
-            setFiles(prev => [newFile, ...prev]);
-        } catch (error) {
-            toast.error('Upload failed: ' + error.message);
-            console.error(error);
+    const handleUploadSuccess = (url) => {
+        if (url) {
+            fetchFiles(); // Refresh list
+            setShowUploader(false);
         }
-        setUploading(false);
-    };
-
-    const deleteFile = async (fileName) => {
-        // R2 Deletion usually requires a server-side route
-        toast.info('Direct deletion from R2 requires additional backend setup.');
     };
 
     const copyUrl = (url) => {
@@ -81,64 +40,134 @@ const MediaLibrary = () => {
         toast.success('URL copied to clipboard!');
     };
 
+    const viewFull = (url) => {
+        window.open(url, '_blank');
+    };
+
+    const isVideo = (name, mime) => {
+        return mime?.startsWith('video') || name.match(/\.(mp4|webm|ogg|mov)$/i);
+    };
+
+    const isImage = (name, mime) => {
+        return mime?.startsWith('image') || name.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i);
+    };
+
     return (
         <div className="media-library-manager">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <h3 style={{ margin: 0 }}>Media Library</h3>
-                    <span style={{ fontSize: '0.65rem', background: '#f6821f', color: 'white', padding: '2px 8px', borderRadius: '4px', fontWeight: '600' }}>
-                        POWERED BY R2
-                    </span>
-                </div>
-                <div>
-                    <input
-                        type="file"
-                        id="media-upload"
-                        style={{ display: 'none' }}
-                        onChange={handleFileUpload}
-                        accept="image/*,video/*"
-                    />
-                    <label
-                        htmlFor="media-upload"
-                        style={{ background: '#f6821f', color: 'white', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: uploading ? 0.7 : 1 }}
-                    >
-                        <Upload size={16} /> {uploading ? 'Uploading...' : 'Upload File'}
-                    </label>
-                </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-                {files.map(file => (
-                    <div key={file.id} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', background: 'white' }}>
-                        <div style={{ height: '140px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                            <div style={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
-                                {file.publicUrl?.includes('r2') && <Cloud size={14} color="#f6821f" />}
-                            </div>
-                            {file.metadata?.mimetype?.startsWith('image') || file.name.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                                <img src={file.publicUrl} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : file.metadata?.mimetype?.startsWith('video') || file.name.match(/\.(mp4|webm|ogg)$/i) ? (
-                                <Video size={48} color="#94a3b8" />
-                            ) : (
-                                <File size={48} color="#94a3b8" />
-                            )}
-                        </div>
-                        <div style={{ padding: '12px', fontSize: '12px' }}>
-                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '8px', fontWeight: 500 }}>{file.name}</div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <button onClick={() => copyUrl(file.publicUrl)} title="Copy URL" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><Copy size={16} /></button>
-                                <button onClick={() => deleteFile(file.name)} title="Delete" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={16} /></button>
-                            </div>
-                        </div>
+            <div className="panel-header-refined" style={{ marginBottom: '2rem' }}>
+                <div className="header-text">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <h3 style={{ margin: 0 }}>Media Assets</h3>
+                        <span style={{ fontSize: '0.65rem', background: '#f6821f', color: 'white', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                            POWERED BY R2
+                        </span>
                     </div>
-                ))}
+                    <p style={{ marginTop: '0.5rem' }}>View and manage all uploaded imagery and video content.</p>
+                </div>
+                {!showUploader ? (
+                    <button className="premium-add-btn" onClick={() => setShowUploader(true)}>
+                        <Upload size={18} /> Upload New Media
+                    </button>
+                ) : (
+                    <button className="premium-add-btn secondary-outline" onClick={() => setShowUploader(false)}>
+                        Close Uploader
+                    </button>
+                )}
             </div>
 
-            {!loading && files.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '48px', color: '#64748b', background: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                    <ImageIcon size={48} style={{ opacity: 0.5, marginBottom: '16px' }} />
-                    <p>Your media library is empty. Upload images or videos to use them on your site.</p>
+            {showUploader && (
+                <div style={{ marginBottom: '3rem', maxWidth: '600px' }}>
+                    <ImageUploader 
+                        bucketName={BUCKET_NAME}
+                        onUploadSuccess={handleUploadSuccess}
+                        currentImageUrl=""
+                    />
                 </div>
             )}
+
+            {loading ? (
+                <div className="admin-loading-shimmer">
+                    <div className="shimmer-item" style={{ height: '200px' }}></div>
+                    <div className="shimmer-item" style={{ height: '200px' }}></div>
+                    <div className="shimmer-item" style={{ height: '200px' }}></div>
+                </div>
+            ) : files.length === 0 ? (
+                <div className="admin-empty-state">
+                    <div className="empty-icon">📂</div>
+                    <h4>Your library is clear</h4>
+                    <p>Start by uploading your first project assets.</p>
+                    {!showUploader && (
+                        <button className="premium-add-btn" style={{ margin: '0 auto' }} onClick={() => setShowUploader(true)}>
+                            <Upload size={18} /> Upload File
+                        </button>
+                    )}
+                </div>
+            ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+                    {files.map(file => (
+                        <div key={file.id} className="admin-panel" style={{ padding: 0, overflow: 'hidden', border: '1px solid var(--glass-border)' }}>
+                            <div className="image-preview-container" style={{ border: 'none', borderRadius: 0, minHeight: '180px' }}>
+                                {isImage(file.name, file.metadata?.mimetype) ? (
+                                    <img src={file.publicUrl} alt={file.name} className="image-preview" />
+                                ) : isVideo(file.name, file.metadata?.mimetype) ? (
+                                    <>
+                                        <video src={file.publicUrl} className="video-preview" muted loop playsInline onMouseOver={e => e.target.play()} onMouseOut={e => e.target.pause()} />
+                                        <div className="video-indicator">
+                                            <PlayCircle size={12} /> VIDEO
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="upload-state">
+                                        <File size={48} color="#94a3b8" />
+                                        <p style={{ fontSize: '0.8rem', color: '#64748b' }}>Document</p>
+                                    </div>
+                                )}
+                                
+                                <div className="preview-actions-overlay">
+                                    <button className="preview-action-btn" onClick={() => viewFull(file.publicUrl)} title="Verify full size">
+                                        <Maximize2 size={18} />
+                                    </button>
+                                    <button className="preview-action-btn" onClick={() => copyUrl(file.publicUrl)} title="Copy Public URL">
+                                        <Copy size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)' }}>
+                                <div style={{ 
+                                    whiteSpace: 'nowrap', 
+                                    overflow: 'hidden', 
+                                    textOverflow: 'ellipsis', 
+                                    fontSize: '0.85rem', 
+                                    fontWeight: 600,
+                                    color: 'var(--text-color)',
+                                    marginBottom: '0.5rem'
+                                }}>
+                                    {file.name}
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: 'var(--muted-color)' }}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <Cloud size={10} color="#f6821f" /> R2 STORAGE
+                                    </span>
+                                    <span>{file.metadata?.size ? `${(file.metadata.size / 1024 / 1024).toFixed(2)} MB` : ''}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            <style jsx>{`
+                .premium-add-btn.secondary-outline {
+                    background: transparent;
+                    border: 1px solid var(--glass-border);
+                    color: var(--muted-color);
+                }
+                .premium-add-btn.secondary-outline:hover {
+                    border-color: var(--text-color);
+                    color: var(--text-color);
+                }
+            `}</style>
         </div>
     );
 };

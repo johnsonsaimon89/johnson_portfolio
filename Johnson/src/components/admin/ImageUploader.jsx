@@ -2,7 +2,7 @@ import { toast } from '../../utils/toast';
 import React, { useState, useRef } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { r2Service } from '../../utils/r2Service';
-import { Upload, X, Loader2, Image as ImageIcon, Cloud } from 'lucide-react';
+import { Upload, X, Loader2, Image as ImageIcon, Cloud, Maximize2, PlayCircle } from 'lucide-react';
 import './ImageUploader.css';
 
 const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, currentImageUrl }) => {
@@ -10,6 +10,11 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
     const [dragActive, setDragActive] = useState(false);
     const [error, setError] = useState('');
     const fileInputRef = useRef(null);
+
+    const isVideo = (url) => {
+        if (!url) return false;
+        return url.match(/\.(mp4|webm|ogg|mov)$/i) || url.includes('/videos/');
+    };
 
     const handleDrag = (e) => {
         e.preventDefault();
@@ -39,10 +44,10 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
 
     const handleUpload = async (file) => {
         setError('');
-        const isImage = file.type.startsWith('image/');
-        const isVideo = file.type.startsWith('video/');
+        const isImg = file.type.startsWith('image/');
+        const isVid = file.type.startsWith('video/');
 
-        if (!isImage && !isVideo) {
+        if (!isImg && !isVid) {
             const errMsg = 'Please upload a valid media file (Image or Video).';
             setError(errMsg);
             toast.error(errMsg);
@@ -61,8 +66,8 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
         try {
             let fileToUpload = file;
 
-            // Convert to WebP if not SVG or already WebP
-            if (file.type !== 'image/svg+xml' && file.type !== 'image/webp') {
+            // Convert images to WebP if not SVG or already WebP
+            if (isImg && file.type !== 'image/svg+xml' && file.type !== 'image/webp') {
                 try {
                     if (typeof createImageBitmap !== 'undefined') {
                         const bitmap = await createImageBitmap(file);
@@ -87,11 +92,11 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
 
             if (onUploadSuccess) {
                 onUploadSuccess(publicUrl);
-                toast.success('Image uploaded to Cloudflare R2');
+                toast.success('Media uploaded to Cloudflare R2');
             }
         } catch (error) {
-            console.error('Error uploading image:', error);
-            const errMsg = error.message || 'Error uploading image.';
+            console.error('Error uploading media:', error);
+            const errMsg = error.message || 'Error uploading media.';
             setError(errMsg);
             toast.error(errMsg);
         } finally {
@@ -105,22 +110,44 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
         }
     };
 
-    const handleRemoveImage = (e) => {
+    const handleRemoveMedia = (e) => {
         e.stopPropagation();
         if (onUploadSuccess) {
             onUploadSuccess('');
-            toast.info('Image removed');
+            toast.info('Media removed');
+        }
+    };
+
+    const viewFullSize = (e) => {
+        e.stopPropagation();
+        if (currentImageUrl) {
+            window.open(currentImageUrl, '_blank');
         }
     };
 
     return (
-        <div className="image-uploader-wrapper">
+        <div className={`image-uploader-wrapper ${bucketName === 'site-assets' ? 'contain' : ''}`}>
             {currentImageUrl ? (
-                <div className="image-preview-container">
-                    <img src={currentImageUrl} alt="Preview" className="image-preview" />
-                    <button type="button" className="remove-image-btn" onClick={handleRemoveImage} title="Remove image">
-                        <X size={16} />
-                    </button>
+                <div className={`image-preview-container ${bucketName === 'site-assets' ? 'contain' : ''}`}>
+                    {isVideo(currentImageUrl) ? (
+                        <>
+                            <video src={currentImageUrl} className="video-preview" muted loop playsInline onMouseOver={e => e.target.play()} onMouseOut={e => e.target.pause()} />
+                            <div className="video-indicator">
+                                <PlayCircle size={10} /> VIDEO
+                            </div>
+                        </>
+                    ) : (
+                        <img src={currentImageUrl} alt="Preview" className="image-preview" />
+                    )}
+                    
+                    <div className="preview-actions-overlay">
+                        <button type="button" className="preview-action-btn" onClick={viewFullSize} title="View full size">
+                            <Maximize2 size={16} />
+                        </button>
+                        <button type="button" className="preview-action-btn remove" onClick={handleRemoveMedia} title="Remove media">
+                            <X size={16} />
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div
@@ -134,7 +161,7 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
                     <input
                         ref={fileInputRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/*,video/*"
                         onChange={handleChange}
                         style={{ display: 'none' }}
                     />
@@ -142,16 +169,16 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
                     {uploading ? (
                         <div className="upload-state">
                             <Loader2 size={24} className="spin text-accent" />
-                            <p>Uploading to R2...</p>
+                            <p className="upload-text" style={{ fontSize: '0.8rem' }}>Uploading...</p>
                         </div>
                     ) : (
                         <div className="upload-state">
-                            <div className="r2-badge" style={{ fontSize: '0.65rem', background: '#f6821f', color: 'white', padding: '2px 6px', borderRadius: '4px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <div className="r2-badge-refined">
                                 <Cloud size={10} /> CLOUDFLARE R2
                             </div>
-                            <Upload size={24} className="text-secondary mb-2" />
-                            <p className="upload-text"><strong>Click to upload</strong> or drag and drop</p>
-                            <p className="upload-hint">Images or Videos (Cloudflare R2)</p>
+                            <Upload size={24} style={{ color: '#000', marginBottom: '4px', opacity: 0.8 }} />
+                            <p className="upload-text">Add Media</p>
+                            <p className="upload-hint">Image or Video</p>
                         </div>
                     )}
                 </div>

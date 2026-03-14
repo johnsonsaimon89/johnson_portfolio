@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Home, LayoutList, BarChart3, Mail, MessageSquareQuote, Settings, ShoppingBag, ShoppingCart, LineChart, Shield, Users, Play } from 'lucide-react';
-import ProjectForm from '../components/admin/ProjectForm';
-import StatsManager from '../components/admin/StatsManager';
+
+
 import InboxManager from '../components/admin/InboxManager';
 import TestimonialsManager from '../components/admin/TestimonialsManager';
 import SettingsEditor from '../components/admin/SettingsEditor';
@@ -22,7 +22,7 @@ import './AdminDashboard.css';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('projects');
+    const [activeTab, setActiveTab] = useState('blog_manager');
     const [counts, setCounts] = useState({
         inbox: 0,
         orders: 0
@@ -84,8 +84,22 @@ const AdminDashboard = () => {
             <Toast />
             <div className="admin-sidebar">
                 <div className="admin-brand">
-                    <h2>Admin Control</h2>
+                    <div className="brand-logo" style={{ width: '32px', height: '32px', background: '#fff', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#000' }}>J</div>
+                    <h2>Admin Panel</h2>
                 </div>
+
+                <div className="admin-user-profile" style={{ padding: '0 1.5rem 1.5rem', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #333, #000)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                            <Users size={20} />
+                        </div>
+                        <div style={{ overflow: 'hidden' }}>
+                            <div style={{ fontSize: '0.9rem', fontWeight: '600', color: '#fff' }}>Johnson</div>
+                            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', textTransform: 'capitalize' }}>Administrator</div>
+                        </div>
+                    </div>
+                </div>
+
                 <nav className="admin-nav">
                     <div className="admin-nav-group-title">Content</div>
                     <button
@@ -102,26 +116,13 @@ const AdminDashboard = () => {
                         <LayoutList size={18} />
                         <span>Media Library</span>
                     </button>
-                    <button
-                        className={`admin-nav-item ${activeTab === 'projects' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('projects')}
-                    >
-                        <LayoutList size={18} />
-                        <span>Projects</span>
-                    </button>
+
                     <button
                         className={`admin-nav-item ${activeTab === 'case_studies' ? 'active' : ''}`}
                         onClick={() => setActiveTab('case_studies')}
                     >
                         <LayoutList size={18} />
                         <span>Case Studies</span>
-                    </button>
-                    <button
-                        className={`admin-nav-item ${activeTab === 'stats' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('stats')}
-                    >
-                        <BarChart3 size={18} />
-                        <span>Performances</span>
                     </button>
                     <button
                         className={`admin-nav-item ${activeTab === 'testimonials' ? 'active' : ''}`}
@@ -219,31 +220,43 @@ const AdminDashboard = () => {
 
             <main className="admin-main">
                 <header className="admin-header">
-                    <h1>
-                        {activeTab === 'blog_manager' && 'Blog CMS Manager'}
-                        {activeTab === 'media' && 'Media Library'}
-                        {activeTab === 'projects' && 'Manage Projects'}
-                        {activeTab === 'case_studies' && 'Manage Case Studies'}
-                        {activeTab === 'stats' && 'Manage Statistics'}
-                        {activeTab === 'testimonials' && 'Client Testimonials'}
-                        {activeTab === 'products' && 'Digital Products'}
-                        {activeTab === 'orders' && 'Purchase Orders'}
-                        {activeTab === 'inbox' && 'Message Inbox'}
-                        {activeTab === 'newsletter' && 'Newsletter Audience'}
-                        {activeTab === 'financials' && 'Financial Analytics'}
-                        {activeTab === 'settings' && 'Global Site Settings'}
-                        {activeTab === 'roles' && 'Team Access Roles'}
-                        {activeTab === 'community' && 'Community Building Content'}
-                        {activeTab === 'short_form' && 'The Era of Short-Form'}
-                    </h1>
+                    <div className="header-title">
+                        <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#64748b', mb: '0.25rem', display: 'block' }}>Dashboard Overview</span>
+                        <h1>
+                            {activeTab === 'blog_manager' && 'Blog CMS Manager'}
+                            {activeTab === 'media' && 'Media Library'}
+
+                            {activeTab === 'case_studies' && 'Manage Case Studies'}
+
+                            {activeTab === 'testimonials' && 'Client Testimonials'}
+                            {activeTab === 'products' && 'Digital Products'}
+                            {activeTab === 'orders' && 'Purchase Orders'}
+                            {activeTab === 'inbox' && 'Message Inbox'}
+                            {activeTab === 'newsletter' && 'Newsletter Audience'}
+                            {activeTab === 'financials' && 'Financial Analytics'}
+                            {activeTab === 'settings' && 'Global Site Settings'}
+                            {activeTab === 'roles' && 'Team Access Roles'}
+                            {activeTab === 'community' && 'Community Building Content'}
+                            {activeTab === 'short_form' && 'The Era of Short-Form'}
+                        </h1>
+                    </div>
+                    <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ textAlign: 'right', display: 'none', md: 'block' }}>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>System Status</div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></div>
+                                Operational
+                            </div>
+                        </div>
+                    </div>
                 </header>
 
                 <div className="admin-content">
                     {activeTab === 'blog_manager' && <BlogManager />}
                     {activeTab === 'media' && <MediaLibrary />}
-                    {activeTab === 'projects' && <ProjectForm />}
+
                     {activeTab === 'case_studies' && <CaseStudiesManager />}
-                    {activeTab === 'stats' && <StatsManager />}
+
                     {activeTab === 'testimonials' && <TestimonialsManager />}
                     {activeTab === 'products' && <ProductsManager />}
                     {activeTab === 'orders' && <OrdersManager />}

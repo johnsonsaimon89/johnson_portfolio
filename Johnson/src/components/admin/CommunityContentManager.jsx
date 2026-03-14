@@ -1,7 +1,8 @@
 import { toast } from '../../utils/toast';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Trash2, Edit2, Plus, X, GripVertical, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Edit2, Plus, X, GripVertical, Image as ImageIcon, Maximize2 } from 'lucide-react';
+import ImageUploader from './ImageUploader';
 import {
     DndContext,
     closestCenter,
@@ -92,6 +93,7 @@ const CommunityContentManager = () => {
         hook: '',
         metrics: { likes: '', comments: '', saves: '' },
         image_url: '',
+        media_items: [],
         display_order: 0
     });
 
@@ -153,6 +155,28 @@ const CommunityContentManager = () => {
         }
     };
 
+    const addMediaItem = (url) => {
+        setFormData(prev => {
+            const newItems = [...(prev.media_items || []), url];
+            return {
+                ...prev,
+                media_items: newItems,
+                image_url: prev.image_url || url // Sync first item to image_url for compatibility
+            };
+        });
+    };
+
+    const removeMediaItem = (index) => {
+        setFormData(prev => {
+            const newItems = prev.media_items.filter((_, i) => i !== index);
+            return {
+                ...prev,
+                media_items: newItems,
+                image_url: newItems.length > 0 ? newItems[0] : ''
+            };
+        });
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name.startsWith('metric_')) {
@@ -174,6 +198,7 @@ const CommunityContentManager = () => {
             hook: '',
             metrics: { likes: '', comments: '', saves: '' },
             image_url: '',
+            media_items: [],
             display_order: 0
         });
         setIsEditing(false);
@@ -188,6 +213,7 @@ const CommunityContentManager = () => {
             hook: item.hook || '',
             metrics: item.metrics || { likes: '', comments: '', saves: '' },
             image_url: item.image_url || '',
+            media_items: item.media_items || [],
             display_order: item.display_order || 0
         });
         setCurrentId(item.id);
@@ -285,11 +311,51 @@ const CommunityContentManager = () => {
                         />
                     </div>
 
-                    <div className="form-row">
-                        <div className="form-group half">
-                            <label>Image URL</label>
-                            <input type="text" name="image_url" value={formData.image_url} onChange={handleInputChange} placeholder="https://..." />
+                    <div className="form-group">
+                        <label>Media Items (Carousel Content)</label>
+                        <div className="media-items-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                            {formData.media_items?.map((item, idx) => {
+                                const isVideo = item.match(/\.(mp4|webm|ogg|mov)$/i);
+                                return (
+                                    <div key={idx} className="media-preview-container refined" style={{ position: 'relative', aspectRatio: '1', borderRadius: '12px', overflow: 'hidden', background: '#000', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                        {isVideo ? (
+                                            <video src={item} muted loop playsInline onMouseEnter={e => e.target.play()} onMouseLeave={e => { e.target.pause(); e.target.currentTime = 0; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            <img src={item} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        )}
+                                        
+                                        <div className="preview-actions-overlay">
+                                            <button 
+                                                type="button" 
+                                                className="preview-action-btn zoom"
+                                                onClick={() => window.open(item, '_blank')}
+                                                title="View Full Size"
+                                            >
+                                                <Maximize2 size={14} />
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                className="preview-action-btn delete"
+                                                onClick={() => removeMediaItem(idx)}
+                                                title="Remove"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                        {isVideo && <div className="media-type-badge">VIDEO</div>}
+                                    </div>
+                                );
+                            })}
+                            <div className="media-add-box" style={{ aspectRatio: '1' }}>
+                                <ImageUploader
+                                    bucketName="community_content"
+                                    onUploadSuccess={addMediaItem}
+                                />
+                            </div>
                         </div>
+                    </div>
+
+                    <div className="form-row">
                         <div className="form-group half">
                             <label>Display Order</label>
                             <input type="number" name="display_order" value={formData.display_order} onChange={handleInputChange} />

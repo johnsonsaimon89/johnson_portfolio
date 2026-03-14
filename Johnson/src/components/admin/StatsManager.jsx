@@ -188,17 +188,17 @@ const StatsManager = () => {
                         {Object.entries(groupedStats).map(([category, items]) => (
                             <div key={category} className="admin-group">
                                 <h4 className="admin-group-title">Category: {category}</h4>
-                                <div className="admin-list">
+                                 <div className="admin-grid-3">
                                     {items.map((stat) => (
-                                        <div key={stat.id} className="admin-list-item">
+                                        <div key={stat.id} className="admin-list-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
                                             <div className="item-content">
-                                                <div className="item-title">{stat.metric_value} {stat.metric_name}</div>
-                                                <div className="item-meta">
-                                                    {stat.trend && <span className="trend-badge">{stat.trend}</span>}
-                                                    Order: {stat.display_order}
+                                                <div className="item-title" style={{ fontSize: '1.25rem', fontWeight: '800' }}>{stat.metric_value}</div>
+                                                <div className="item-subtitle" style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>{stat.metric_name}</div>
+                                                <div className="item-meta mt-1">
+                                                    {stat.trend && <span className="indicator indicator-success">{stat.trend}</span>}
                                                 </div>
                                             </div>
-                                            <div className="item-actions">
+                                            <div className="item-actions" style={{ width: '100%', justifyContent: 'flex-end', borderTop: '1px solid var(--admin-border)', paddingTop: '0.75rem' }}>
                                                 <button className="action-btn edit" onClick={() => handleEdit(stat)} title="Edit">
                                                     <Edit2 size={16} />
                                                 </button>

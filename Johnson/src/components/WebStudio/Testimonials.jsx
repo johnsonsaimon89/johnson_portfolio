@@ -29,18 +29,18 @@ const Testimonials = () => {
         fetchTestimonials();
     }, []);
 
-    // prioritize database testimonials, fallback to static if empty
-    const [displayTestimonials, setDisplayTestimonials] = useState(webData.testimonials);
+    const [displayTestimonials, setDisplayTestimonials] = useState([]);
+    const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
     useEffect(() => {
         if (!loading) {
-            // Filter for web_design or general, or just show all if that's the design
             const filtered = testimonials.filter(t => t.category === 'web_design' || t.category === 'general');
-            if (filtered.length > 0) {
-                setDisplayTestimonials(filtered);
-            }
+            setDisplayTestimonials(filtered);
+            setHasAttemptedFetch(true);
         }
     }, [testimonials, loading]);
+
+    if (hasAttemptedFetch && displayTestimonials.length === 0) return null;
 
     if (loading && testimonials.length === 0) return null;
     return (

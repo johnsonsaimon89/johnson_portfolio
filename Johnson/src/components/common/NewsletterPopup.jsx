@@ -132,9 +132,9 @@ const NewsletterPopup = () => {
                                 <Mail size={32} color="var(--brand-accent, #BDFF00)" />
                             </motion.div>
 
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>Join the Inner Circle</h3>
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>Let’s keep in touch</h3>
                             <p style={{ color: 'var(--muted-color, #888)', fontSize: '0.875rem', marginBottom: '2rem', lineHeight: 1.6 }}>
-                                Get exclusive insights on digital creation, web development, and social branding straight to your inbox.
+                                I share periodic updates on my latest projects, digital strategy tips, and behind-the-scenes thoughts on creation.
                             </p>
 
                             <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(12px)' }}>
@@ -156,7 +156,7 @@ const NewsletterPopup = () => {
                                 onMouseEnter={e => e.currentTarget.style.color = 'white'}
                                 onMouseLeave={e => e.currentTarget.style.color = 'var(--muted-color, #888)'}
                             >
-                                No thanks, I'll explore first
+                                Maybe later
                             </button>
                         </div>
                     </motion.div>

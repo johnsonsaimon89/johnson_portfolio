@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
-const EmbeddableSignup = ({ source = "website_embed", showLabels = false, buttonText = "Subscribe" }) => {
+const EmbeddableSignup = ({ source = "website_embed", showLabels = false, buttonText = "Count me in" }) => {
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [status, setStatus] = useState('idle'); // idle, loading, success, error
@@ -35,7 +35,7 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
             }
 
             setStatus('success');
-            setMessage("Thanks for subscribing! Check your inbox.");
+            setMessage("Thanks for joining! I’ll see you in your inbox.");
             setEmail('');
             setName('');
 
@@ -61,7 +61,7 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Your Name"
+                    placeholder="What's your name?"
                     style={{
                         padding: '0.75rem 1rem',
                         borderRadius: '100px',
@@ -80,7 +80,7 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
+                    placeholder="Your best email"
                     required
                     style={{
                         padding: '0.75rem 1rem',

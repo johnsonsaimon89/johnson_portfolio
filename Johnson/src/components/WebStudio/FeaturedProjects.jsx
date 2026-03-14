@@ -104,6 +104,24 @@ const FeaturedProjects = () => {
                                                     clientName={project.client}
                                                     colors={project.colors}
                                                 />
+                                                {/* Mobile Color Palette */}
+                                                <div style={{ 
+                                                    position: 'absolute', 
+                                                    bottom: '20px', 
+                                                    right: '20px',
+                                                    background: 'rgba(10,10,10,0.8)',
+                                                    backdropFilter: 'blur(10px)',
+                                                    padding: '8px 12px',
+                                                    borderRadius: '10px',
+                                                    border: '1px solid rgba(255,255,255,0.1)',
+                                                    display: 'flex',
+                                                    gap: '6px',
+                                                    zIndex: 100
+                                                }}>
+                                                    {project.colors.map((color, cIdx) => (
+                                                        <div key={cIdx} style={{ background: color, width: '16px', height: '16px', borderRadius: '3px' }} />
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -148,19 +166,21 @@ const FeaturedProjects = () => {
                                             
                                             <div style={{ 
                                                 position: 'absolute', 
-                                                bottom: '-20px', 
-                                                right: isEven ? '-20px' : 'auto',
-                                                left: isEven ? 'auto' : '-20px',
-                                                background: '#0a0a0a',
-                                                padding: '10px 15px',
+                                                bottom: '30px', 
+                                                right: isEven ? '30px' : 'auto',
+                                                left: isEven ? 'auto' : '30px',
+                                                background: 'rgba(10,10,10,0.8)',
+                                                backdropFilter: 'blur(10px)',
+                                                padding: '12px 18px',
                                                 borderRadius: '12px',
                                                 border: '1px solid rgba(255,255,255,0.1)',
                                                 display: 'flex',
-                                                gap: '8px',
-                                                zIndex: 20
+                                                gap: '10px',
+                                                zIndex: 100,
+                                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
                                             }}>
                                                 {project.colors.map((color, cIdx) => (
-                                                    <div key={cIdx} style={{ background: color, width: '20px', height: '20px', borderRadius: '4px' }} />
+                                                    <div key={cIdx} style={{ background: color, width: '24px', height: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }} />
                                                 ))}
                                             </div>
                                         </div>

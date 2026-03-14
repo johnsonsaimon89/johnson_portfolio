@@ -241,7 +241,7 @@ const AnalyticsDash = () => {
                     <span className="badge">Growth</span>
                     <h2 style={{ fontSize: 'var(--fs-h2)' }}>{smData.analytics.title}</h2>
                 </div>
-                <div className="results-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+                <div className="results-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
                     {metrics.map((metric, idx) => (
                         <motion.div key={idx} className="result-stat" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }}>
                             <span className="result-val"><AnimatedCounter value={metric.value} target={metric.target} suffix={metric.suffix} /></span>
@@ -283,12 +283,49 @@ const OurStrategy = () => (
 /* ── Campaign Spotlight (Project-Card Style) ──────── */
 const CampaignSpotlight = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const [campaigns, setCampaigns] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 1024);
         window.addEventListener('resize', handleResize);
+
+        const fetchCampaigns = async () => {
+            if (!supabase) return;
+            const { data, error } = await supabase
+                .from('case_studies')
+                .select('*')
+                .eq('type', 'social')
+                .order('display_order', { ascending: true });
+
+            if (!error && data && data.length > 0) {
+                setCampaigns(data);
+            } else {
+                // Fallback to static data if no DB data exists yet
+                setCampaigns(smData.campaigns.map((c, i) => ({
+                    id: `static-${i}`,
+                    organization_name: c.goal.split(':')[0],
+                    organization_type: c.industry,
+                    content: {
+                        challenges: c.struggles,
+                        paragraphs: [c.challenge, c.strategy],
+                        tool_stack: c.tools.join(', '),
+                        website_url: c.socialLink,
+                        media_items: [], // static data doesn't have carousels yet
+                        before_after: c.beforeAfter
+                    },
+                    industry_mapped: c.industry,
+                    content_types_mapped: c.contentTypes
+                })));
+            }
+            setLoading(false);
+        };
+        fetchCampaigns();
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    if (loading) return null;
 
     return (
     <section className="studio-section">
@@ -304,11 +341,16 @@ const CampaignSpotlight = () => {
             </div>
 
             <div className="project-card-grid" style={{ display: 'flex', flexDirection: 'column', gap: '8rem' }}>
-                {smData.campaigns.map((campaign, idx) => {
+                {campaigns.map((campaign, idx) => {
                     const isEven = idx % 2 === 0;
+                    const content = campaign.content || {};
+                    const metrics = content.before_after?.after || {};
+                    const struggles = content.challenges || [];
+                    const tools = content.tool_stack ? content.tool_stack.split(',') : [];
+
                     return (
                         <motion.div 
-                            key={idx} 
+                            key={campaign.id || idx} 
                             className="web-project-card sm-campaign-card" 
                             initial={{ opacity: 0, y: 50 }} 
                             whileInView={{ opacity: 1, y: 0 }} 
@@ -323,19 +365,38 @@ const CampaignSpotlight = () => {
                         >
                             {/* Content Side */}
                             <div className="campaign-content" style={{ direction: 'ltr', textAlign: 'left' }}>
-                                <span className="project-tag">{campaign.industry}</span>
-                                <h3 className="project-title" style={{ fontSize: 'var(--fs-h3)', marginBottom: '1.5rem' }}>{campaign.goal.split(':')[0]}</h3>
+                                <span style={{ 
+                                    color: 'var(--brand-accent)', 
+                                    fontWeight: 900, 
+                                    fontSize: '0.75rem', 
+                                    textTransform: 'uppercase', 
+                                    letterSpacing: '0.15em',
+                                    display: 'block',
+                                    marginBottom: '0.5rem'
+                                }}>
+                                    {campaign.organization_type}
+                                </span>
+                                <h3 style={{ 
+                                    fontSize: 'var(--fs-h3)', 
+                                    fontWeight: 900, 
+                                    textTransform: 'uppercase',
+                                    lineHeight: 1.1,
+                                    margin: '0.5rem 0 2rem 0',
+                                    letterSpacing: '-0.02em'
+                                }}>
+                                    {campaign.organization_name}
+                                </h3>
                                 
                                 <div className="project-description">
-                                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)' }}>{campaign.challenge}</p>
-                                    <div style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                        {campaign.struggles.map((s, i) => (
-                                            <span key={i} style={{ color: '#ff5f56', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <span style={{ fontWeight: 800 }}>×</span> {s}
+                                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6 }}>{content.paragraphs?.[0]}</p>
+                                    <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                        {struggles.map((s, i) => s && (
+                                            <span key={i} style={{ color: '#ff5f56', fontSize: 'var(--fs-p3)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
+                                                <span style={{ fontWeight: 900, fontSize: '1.1rem' }}>×</span> {s}
                                             </span>
                                         ))}
                                     </div>
-                                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)' }}>{campaign.strategy}</p>
+                                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6 }}>{content.paragraphs?.[1]}</p>
                                 </div>
                             </div>
 
@@ -344,13 +405,24 @@ const CampaignSpotlight = () => {
                                 <div className="mockup-container">
                                     <MiniBrowser 
                                         type="mobile"
-                                        clientName={campaign.goal.split(':')[0]}
-                                        url={campaign.socialLink || '#'}
-                                        colors={[`hsl(${(idx * 60 + 180) % 360}, 45%, 25%)`]}
+                                        clientName={campaign.organization_name}
+                                        url={content.website_url || '#'}
+                                        mediaItems={content.media_items || []}
+                                        colors={campaign.colors || [`hsl(${(idx * 60 + 180) % 360}, 45%, 25%)`]}
+                                        scrollable={true}
                                     />
-                                    <div className="content-pills" style={{ marginTop: '2rem' }}>
-                                        {campaign.contentTypes.map(type => (
-                                            <span key={type} className="palette-swatch" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', width: 'auto', height: 'auto', padding: '0.3rem 0.8rem', fontSize: '0.7rem', fontWeight: 600 }}>
+                                    <div className="content-pills" style={{ marginTop: '2.5rem' }}>
+                                        {(content.content_types || campaign.content_types_mapped || []).map(type => (
+                                            <span key={type} style={{ 
+                                                background: '#1a1a1a', 
+                                                border: '1px solid rgba(255,255,255,0.1)', 
+                                                borderRadius: '8px', 
+                                                padding: '0.4rem 1rem', 
+                                                fontSize: '0.7rem', 
+                                                fontWeight: 700,
+                                                color: '#fff',
+                                                textTransform: 'capitalize'
+                                            }}>
                                                 {type}
                                             </span>
                                         ))}
@@ -359,21 +431,29 @@ const CampaignSpotlight = () => {
                             </div>
 
                             {/* Results Wrapper (Metrics) */}
-                            <div className="project-results-wrapper" style={{ direction: 'ltr', textAlign: 'left' }}>
+                            <div className="project-results-wrapper" style={{ direction: 'ltr', textAlign: 'left', marginTop: '2rem' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                                    {Object.entries(campaign.beforeAfter.after).map(([key, val]) => (
-                                        <div key={`a-${key}`} className="result-stat" style={{ padding: '0.75rem', background: 'var(--brand-accent)', border: '1px solid var(--brand-accent)' }}>
-                                            <span className="result-val" style={{ fontSize: '1.2rem', color: '#000' }}>{val}</span>
-                                            <span className="result-label" style={{ fontSize: '0.65rem', opacity: 0.8, color: '#000', fontWeight: 700 }}>{key}</span>
+                                    {Object.entries(metrics).map(([key, val]) => (
+                                        <div key={`a-${key}`} style={{ 
+                                            padding: '1.2rem', 
+                                            background: '#BDFF00', 
+                                            borderRadius: '12px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            minHeight: '80px'
+                                        }}>
+                                            <span style={{ fontSize: '1.4rem', color: '#000', fontWeight: 900, lineHeight: 1 }}>{val}</span>
+                                            <span style={{ fontSize: '0.6rem', color: '#000', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem', opacity: 0.8 }}>{key}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                             
                             {/* Toolstack */}
-                            <div className="project-toolstack" style={{ direction: 'ltr', textAlign: 'left' }}>
-                                <div style={{ fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                    TOOLSTACK: <span style={{ color: '#fff' }}>{campaign.tools.join(' + ')}</span>
+                            <div className="project-toolstack" style={{ direction: 'ltr', textAlign: 'left', marginTop: '2rem' }}>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--muted-color)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                    TOOLSTACK: {tools.map(t => t.trim()).join(' + ')}
                                 </div>
                             </div>
                         </motion.div>
@@ -388,6 +468,7 @@ const CampaignSpotlight = () => {
 /* ── Feed Grid ────────────────────────────────────── */
 const FeedGrid = () => {
     const [selectedPost, setSelectedPost] = useState(null);
+    const [currentSlide, setCurrentSlide] = useState(0);
     const [feedItems, setFeedItems] = useState(smData.feed);
 
     useEffect(() => {
@@ -414,19 +495,40 @@ const FeedGrid = () => {
                 </div>
 
                 <div className="sm-feed-grid">
-                    {feedItems.map((post, i) => (
-                        <motion.div key={post.id || i} className="feed-item" initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} onClick={() => setSelectedPost(post)}>
-                            {post.image_url ? (
-                                <img src={post.image_url} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                                <div style={{ width: '100%', height: '100%', background: `hsl(${(i * 40) % 360}, 30%, 20%)` }} />
-                            )}
-                            <div className="feed-overlay">
-                                <span style={{ fontWeight: 600 }}>♥ {post.metrics?.likes || '0'}</span>
-                                <span style={{ fontWeight: 600 }}>💬 {post.metrics?.comments || '0'}</span>
-                            </div>
-                        </motion.div>
-                    ))}
+                    {feedItems.map((post, i) => {
+                        const mediaSrc = post.media_items && post.media_items.length > 0 
+                            ? post.media_items[0] 
+                            : post.image_url;
+                        
+                        return (
+                            <motion.div 
+                                key={post.id || i} 
+                                className="feed-item" 
+                                initial={{ opacity: 0, scale: 0.9 }} 
+                                whileInView={{ opacity: 1, scale: 1 }} 
+                                viewport={{ once: true }} 
+                                transition={{ delay: i * 0.05 }} 
+                                onClick={() => {
+                                    setCurrentSlide(0);
+                                    setSelectedPost(post);
+                                }}
+                            >
+                                {mediaSrc ? (
+                                    mediaSrc.match(/\.(mp4|webm|ogg)$/i) ? (
+                                        <video src={mediaSrc} muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : (
+                                        <img src={mediaSrc} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    )
+                                ) : (
+                                    <div style={{ width: '100%', height: '100%', background: `hsl(${(i * 40) % 360}, 30%, 20%)` }} />
+                                )}
+                                <div className="feed-overlay">
+                                    <span style={{ fontWeight: 600 }}>♥ {post.metrics?.likes || '0'}</span>
+                                    <span style={{ fontWeight: 600 }}>💬 {post.metrics?.comments || '0'}</span>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -434,7 +536,47 @@ const FeedGrid = () => {
                 {selectedPost && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedPost(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 100, display: 'grid', placeItems: 'center', padding: '2rem' }}>
                         <motion.div initial={{ y: 50, scale: 0.9 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: 0.95 }} onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '800px', display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) 1fr', gap: '2rem', overflow: 'hidden' }}>
-                            <div style={{ background: `hsl(${(selectedPost.id * 40) % 360}, 30%, 20%)`, minHeight: '400px' }} />
+                            <div style={{ position: 'relative', overflow: 'hidden', minHeight: '400px' }}>
+                                {selectedPost.media_items && selectedPost.media_items.length > 0 ? (
+                                    <div className="modal-carousel" style={{ height: '100%', display: 'flex', transition: 'transform 0.3s ease', transform: `translateX(-${currentSlide * 100}%)` }}>
+                                        {selectedPost.media_items.map((item, idx) => (
+                                            <div key={idx} style={{ minWidth: '100%', height: '100%' }}>
+                                                {item.match(/\.(mp4|webm|ogg)$/i) ? (
+                                                    <video src={item} controls autoPlay muted loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                ) : (
+                                                    <img src={item} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : selectedPost.image_url ? (
+                                    <img src={selectedPost.image_url} alt={selectedPost.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    <div style={{ width: '100%', height: '100%', background: `hsl(${(selectedPost.id * 40) % 360}, 30%, 20%)` }} />
+                                )}
+                                
+                                {selectedPost.media_items?.length > 1 && (
+                                    <>
+                                        <button 
+                                            onClick={() => setCurrentSlide(prev => Math.max(0, prev - 1))}
+                                            style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', zIndex: 10, visibility: currentSlide === 0 ? 'hidden' : 'visible' }}
+                                        >
+                                            ←
+                                        </button>
+                                        <button 
+                                            onClick={() => setCurrentSlide(prev => Math.min(selectedPost.media_items.length - 1, prev + 1))}
+                                            style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', zIndex: 10, visibility: currentSlide === selectedPost.media_items.length - 1 ? 'hidden' : 'visible' }}
+                                        >
+                                            →
+                                        </button>
+                                        <div style={{ position: 'absolute', bottom: '1rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '0.5rem', zIndex: 10 }}>
+                                            {selectedPost.media_items.map((_, i) => (
+                                                <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i === currentSlide ? 'var(--brand-accent)' : 'rgba(255,255,255,0.5)' }} />
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                             <div style={{ padding: '2rem 2rem 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ color: 'var(--brand-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}>{selectedPost.type}</span>
@@ -465,6 +607,12 @@ const ReelMockup = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [reels, setReels] = useState(smData.reels);
     const [eraTitle, setEraTitle] = useState("The Era of Short-Form");
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isManualScrolling, setIsManualScrolling] = useState(false);
+
+    const containerRef = React.useRef(null);
+    const observerRef = React.useRef(null);
+    const timeoutRef = React.useRef(null);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 1024);
@@ -483,8 +631,75 @@ const ReelMockup = () => {
         };
         fetchReels();
 
-        return () => window.removeEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            if (observerRef.current) observerRef.current.disconnect();
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
     }, []);
+
+    // Setup Intersection Observer for Scroll Sync
+    useEffect(() => {
+        if (!reels || reels.length === 0 || !containerRef.current) return;
+
+        if (observerRef.current) observerRef.current.disconnect();
+
+        const options = {
+            root: containerRef.current,
+            rootMargin: '0px',
+            threshold: 0.7 // Increased threshold for more precise activation
+        };
+
+        observerRef.current = new IntersectionObserver((entries) => {
+            if (isManualScrolling) return;
+
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const indexStr = entry.target.getAttribute('data-index');
+                    const index = parseInt(indexStr);
+                    if (!isNaN(index) && index >= 0 && index < reels.length) {
+                        setActiveIndex(index);
+                    }
+                }
+            });
+        }, options);
+
+        const items = containerRef.current.querySelectorAll('.reel-item');
+        items.forEach((item) => observerRef.current.observe(item));
+
+        return () => {
+            if (observerRef.current) observerRef.current.disconnect();
+        };
+    }, [reels, isManualScrolling]);
+
+    // Sync activeIndex to eraTitle
+    useEffect(() => {
+        if (reels[activeIndex]?.era) {
+            setEraTitle(reels[activeIndex].era);
+        }
+    }, [activeIndex, reels]);
+
+    const handleTabClick = (index) => {
+        if (!reels || reels.length === 0) return;
+        if (index < 0 || index >= reels.length) return;
+        if (activeIndex === index) return;
+        
+        setIsManualScrolling(true);
+        setActiveIndex(index);
+
+        if (containerRef.current) {
+            const items = containerRef.current.querySelectorAll('.reel-item');
+            if (items && items[index]) {
+                items[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Resume intersection observer after smooth scroll completes
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+            setIsManualScrolling(false);
+        }, 1000); // Slightly longer delay to ensure scroll stability
+    };
 
     return (
     <section className="studio-section">
@@ -497,15 +712,32 @@ const ReelMockup = () => {
             }}>
                 <div style={{ direction: 'ltr' }}>
                     <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="phone-mockup" style={{ margin: '0 auto', maxWidth: '240px' }}>
-                        <div className="reel-container">
+                        <div ref={containerRef} className="reel-container" style={{ scrollSnapType: 'y mandatory', overflowY: 'auto', height: '100%', borderRadius: '32px' }}>
                             {reels.map((reel, i) => (
-                                <div key={reel.id || i} className="reel-item" style={{ background: `hsl(${(200 + i * 40) % 360}, 20%, 15%)`, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '2rem 1.5rem' }}>
-                                    <div style={{ position: 'absolute', right: '1rem', bottom: '20%', display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
-                                        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
-                                        <div style={{ width: 35, height: 35, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+                                <div 
+                                    key={reel.id || i} 
+                                    data-index={i}
+                                    className="reel-item" 
+                                    style={{ position: 'relative', height: '100%', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: `hsl(${(200 + i * 40) % 360}, 20%, 15%)`, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '2rem 1.5rem', overflow: 'hidden' }}
+                                >
+                                    {(reel.media_items?.[0] || reel.video_url) && (
+                                        <video 
+                                            src={reel.media_items?.[0] || reel.video_url} 
+                                            autoPlay 
+                                            muted 
+                                            loop 
+                                            playsInline
+                                            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} 
+                                        />
+                                    )}
+                                    <div style={{ position: 'relative', zIndex: 1 }}>
+                                        <div style={{ position: 'absolute', right: '1rem', bottom: '20%', display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
+                                            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Heart size={20} fill="#fff" /></div>
+                                            <div style={{ width: 35, height: 35, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+                                        </div>
+                                        <h4 style={{ margin: '0 0 0.5rem 0', maxWidth: '80%', fontSize: '1.1rem', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{reel.title}</h4>
+                                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>▶ {reel.views} views</p>
                                     </div>
-                                    <h4 style={{ margin: '0 0 0.5rem 0', maxWidth: '80%', fontSize: '1.1rem' }}>{reel.title}</h4>
-                                    <p style={{ margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem' }}>▶ {reel.views} views</p>
                                 </div>
                             ))}
                         </div>
@@ -513,23 +745,37 @@ const ReelMockup = () => {
                 </div>
                 <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
                     <span style={{ color: 'var(--brand-accent)', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Reels + TikTok Specialist</span>
-                    <h3 style={{ fontSize: 'var(--fs-h2)', margin: '1rem 0' }}>{eraTitle}</h3>
+                    <h3 style={{ fontSize: 'var(--fs-h2)', margin: '1rem 0' }}>{reels[activeIndex]?.era || eraTitle}</h3>
                     <p style={{ color: 'var(--muted-color)', fontSize: 'var(--fs-p2)' }}>
-                        Attention spans are shrinking. I script, shoot, and edit vertical video designed entirely around the all-important first 3-second hook.
+                        {reels[activeIndex]?.description || "Attention spans are shrinking. I script, shoot, and edit vertical video designed entirely around the all-important first 3-second hook."}
                     </p>
-                    <div className="results-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', marginTop: '2rem', gap: '1rem' }}>
-                        <div className="result-stat" style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <span className="result-val" style={{ fontSize: '1.1rem' }}>Trending Audio Strategy</span>
-                            <span className="result-label">Technique</span>
-                        </div>
-                        <div className="result-stat" style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <span className="result-val" style={{ fontSize: '1.1rem' }}>High-Retention Editing</span>
-                            <span className="result-label">Technique</span>
-                        </div>
-                        <div className="result-stat" style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <span className="result-val" style={{ fontSize: '1.1rem' }}>Cross-Platform Syndication</span>
-                            <span className="result-label">Distribution</span>
-                        </div>
+                    <div className="results-grid" style={{ 
+                        display: 'grid',
+                        gridTemplateColumns: '1fr', 
+                        marginTop: '2rem', 
+                        gap: '1.5rem'
+                    }}>
+                        {reels.map((reel, idx) => (
+                            <motion.div 
+                                key={reel.id || idx} 
+                                className={`result-stat ${activeIndex === idx ? 'active' : ''}`}
+                                initial={{ opacity: 0, x: 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1 }}
+                                onClick={() => handleTabClick(idx)}
+                                style={{ 
+                                    padding: '1.5rem', 
+                                    background: activeIndex === idx ? 'rgba(var(--brand-accent-rgb), 0.1)' : 'rgba(255,255,255,0.03)', 
+                                    border: `1px solid ${activeIndex === idx ? 'var(--brand-accent)' : 'rgba(255,255,255,0.05)'}`,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <span className="result-val" style={{ fontSize: '1.1rem', color: activeIndex === idx ? 'var(--brand-accent)' : '#fff' }}>{reel.title}</span>
+                                <span className="result-label">{reel.category || 'Technique'}</span>
+                            </motion.div>
+                        ))}
                     </div>
                 </motion.div>
             </div>
@@ -541,6 +787,7 @@ const ReelMockup = () => {
 /* ── Testimonials ─────────────────────────────────── */
 const SocialTestimonials = () => {
     const [testimonials, setTestimonials] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchT = async () => {
@@ -554,21 +801,25 @@ const SocialTestimonials = () => {
             if (!error && data) {
                 setTestimonials(data);
             }
+            setLoading(false);
         };
         fetchT();
     }, []);
 
-    // Fallback to static if db fails or is empty, to preserve design
-    const [displayTestimonials, setDisplayTestimonials] = useState(smData.testimonials);
+    const [displayTestimonials, setDisplayTestimonials] = useState([]);
+    const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
     useEffect(() => {
         if (testimonials.length > 0) {
             const filtered = testimonials.filter(t => t.category === 'social_media' || t.category === 'general');
-            if (filtered.length > 0) {
-                setDisplayTestimonials(filtered);
-            }
+            setDisplayTestimonials(filtered);
+        } else if (testimonials.length === 0 && !loading) {
+            setDisplayTestimonials([]);
         }
-    }, [testimonials]);
+        if (!loading) setHasAttemptedFetch(true);
+    }, [testimonials, loading]);
+
+    if (hasAttemptedFetch && displayTestimonials.length === 0) return null;
 
     return (
         <section className="studio-section" style={{ paddingBottom: '12rem' }}>

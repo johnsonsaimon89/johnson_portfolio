@@ -10,13 +10,16 @@ import { ExternalLink, Globe, AlertCircle, RefreshCcw } from 'lucide-react';
 const MiniBrowser = ({ 
     url, 
     previewImage, 
+    mediaItems = [],
     type = 'desktop', 
     clientName = 'Project',
-    colors = ['#6366f1', '#1e293b']
+    colors = ['#6366f1', '#1e293b'],
+    scrollable = false
 }) => {
     const [iframeLoaded, setIframeLoaded] = useState(false);
     const [iframeStatus, setIframeStatus] = useState('loading'); // loading, success, blocked
     const [useScreenshot, setUseScreenshot] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0);
     
     // Safely parse hostname
     const getHostName = (urlStr) => {
@@ -81,6 +84,88 @@ const MiniBrowser = ({
     }, [url, iframeLoaded, previewImage]);
 
     const renderContent = () => {
+        // 0. Prioritize multi-media carousel/list
+        if (mediaItems && mediaItems.length > 0) {
+            if (scrollable) {
+                return (
+                    <div style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        overflowY: 'auto', 
+                        overflowX: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none'
+                    }} className="scrollable-media-list">
+                        {mediaItems.map((item, idx) => (
+                            <div key={idx} style={{ width: '100%', flexShrink: 0, background: '#000', marginBottom: '4px' }}>
+                                {item.match(/\.(mp4|webm|ogg)$/i) ? (
+                                    <video src={item} autoPlay muted loop playsInline style={{ width: '100%', height: 'auto', display: 'block' }} />
+                                ) : (
+                                    <img src={item} alt="" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                                )}
+                            </div>
+                        ))}
+                        <style>{`
+                            .scrollable-media-list::-webkit-scrollbar { display: none; }
+                        `}</style>
+                    </div>
+                );
+            }
+            return (
+                <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ 
+                        display: 'flex', 
+                        height: '100%', 
+                        transition: 'transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)', 
+                        transform: `translateX(-${currentSlide * 100}%)` 
+                    }}>
+                        {mediaItems.map((item, idx) => (
+                            <div key={idx} style={{ minWidth: '100%', height: '100%', background: '#000' }}>
+                                {item.match(/\.(mp4|webm|ogg)$/i) ? (
+                                    <video src={item} autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    <img src={item} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Navigation Dots */}
+                    {mediaItems.length > 1 && (
+                        <div style={{ 
+                            position: 'absolute', 
+                            bottom: '12px', 
+                            left: '50%', 
+                            transform: 'translateX(-50%)', 
+                            display: 'flex', 
+                            gap: '6px',
+                            zIndex: 10,
+                            padding: '6px 10px',
+                            background: 'rgba(0,0,0,0.3)',
+                            backdropFilter: 'blur(10px)',
+                            borderRadius: '100px'
+                        }}>
+                            {mediaItems.map((_, i) => (
+                                <div 
+                                    key={i} 
+                                    onClick={(e) => { e.stopPropagation(); setCurrentSlide(i); }}
+                                    style={{ 
+                                        width: i === currentSlide ? '12px' : '6px', 
+                                        height: '6px', 
+                                        borderRadius: '3px', 
+                                        background: i === currentSlide ? 'var(--brand-accent, #fff)' : 'rgba(255,255,255,0.3)',
+                                        transition: 'all 0.3s'
+                                    }} 
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
         // 1. Prioritize user-provided preview image
         if (previewImage) {
             return (
@@ -327,7 +412,7 @@ const MiniBrowser = ({
                 {/* Content */}
                 <div style={{ position: 'relative', width: '100%', height: 'calc(100% - 80px)', background: '#050505' }}>
                     {renderContent()}
-                    <HoverLabel />
+                    {!scrollable && <HoverLabel />}
                 </div>
 
                 {/* Home Indicator */}
@@ -434,7 +519,7 @@ const MiniBrowser = ({
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
             }}>
                 {renderContent()}
-                <HoverLabel />
+                {!scrollable && <HoverLabel />}
             </div>
 
             {/* Subtle Gradient Glow */}

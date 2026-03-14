@@ -123,21 +123,18 @@ const OrdersManager = () => {
                         {orders.map((order) => {
                             const isConfirmed = order.status === 'confirmed';
                             return (
-                                <div key={order.id} className="admin-list-item" style={{ borderLeft: `4px solid ${isConfirmed ? '#10b981' : '#f59e0b'}` }}>
+                                 <div key={order.id} className="admin-list-item">
                                     <div className="item-content">
                                         <div className="item-title">
-                                            {order.customer_email || order.customer_name || 'Unknown Customer'} - {order.amount_tzs > 0 ? `${order.amount_tzs.toLocaleString()} TZS` : 'Free'}
+                                            {order.customer_email || order.customer_name || 'Unknown Customer'}
                                         </div>
                                         <div className="item-meta">
-                                            Product: {order.product_title || order.product_id} • Sender: {order.transaction_id || 'N/A'} • Date: {new Date(order.created_at).toLocaleDateString()}
-                                            <span
-                                                className="trend-badge ml-2"
-                                                style={{
-                                                    marginLeft: '0.5rem',
-                                                    background: isConfirmed ? '#d1fae5' : '#fef3c7',
-                                                    color: isConfirmed ? '#047857' : '#b45309'
-                                                }}
-                                            >
+                                            <span style={{ fontWeight: '700', color: '#0f172a' }}>{order.amount_tzs > 0 ? `${order.amount_tzs.toLocaleString()} TZS` : 'Free'}</span>
+                                            <span style={{ color: '#cbd5e1' }}>•</span>
+                                            {order.product_title || order.product_id}
+                                            <span style={{ color: '#cbd5e1' }}>•</span>
+                                            {new Date(order.created_at).toLocaleDateString()}
+                                            <span className={`indicator ${isConfirmed ? 'indicator-success' : 'indicator-warning'} ml-2`}>
                                                 {isConfirmed ? 'Confirmed' : 'Pending'}
                                             </span>
                                         </div>

@@ -1,7 +1,8 @@
 import { toast } from '../../utils/toast';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Trash2, Edit2, Plus, X, GripVertical, Video } from 'lucide-react';
+import { Trash2, Edit2, Plus, X, GripVertical, Video, Maximize2 } from 'lucide-react';
+import ImageUploader from './ImageUploader';
 import {
     DndContext,
     closestCenter,
@@ -86,7 +87,9 @@ const ShortFormManager = () => {
         title: '',
         views: '',
         era: 'The Era of Short-Form',
+        category: 'Technique',
         video_url: '',
+        media_items: [],
         display_order: 0
     });
 
@@ -148,6 +151,28 @@ const ShortFormManager = () => {
         }
     };
 
+    const addMediaItem = (url) => {
+        setFormData(prev => {
+            const newItems = [...(prev.media_items || []), url];
+            return {
+                ...prev,
+                media_items: newItems,
+                video_url: prev.video_url || url // Sync first item to video_url
+            };
+        });
+    };
+
+    const removeMediaItem = (index) => {
+        setFormData(prev => {
+            const newItems = prev.media_items.filter((_, i) => i !== index);
+            return {
+                ...prev,
+                media_items: newItems,
+                video_url: newItems.length > 0 ? newItems[0] : ''
+            };
+        });
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -158,7 +183,9 @@ const ShortFormManager = () => {
             title: '',
             views: '',
             era: 'The Era of Short-Form',
+            category: 'Technique',
             video_url: '',
+            media_items: [],
             display_order: 0
         });
         setIsEditing(false);
@@ -170,7 +197,9 @@ const ShortFormManager = () => {
             title: item.title,
             views: item.views || '',
             era: item.era || 'The Era of Short-Form',
+            category: item.category || 'Technique',
             video_url: item.video_url || '',
+            media_items: item.media_items || [],
             display_order: item.display_order || 0
         });
         setCurrentId(item.id);
@@ -252,11 +281,49 @@ const ShortFormManager = () => {
                         </div>
                     </div>
 
-                    <div className="form-row">
-                        <div className="form-group half">
-                            <label>Thumbnail / Video URL</label>
-                            <input type="text" name="video_url" value={formData.video_url} onChange={handleInputChange} placeholder="https://..." />
+                    <div className="form-group">
+                        <label>Category / Label (e.g. Technique, Distribution)</label>
+                        <input type="text" name="category" value={formData.category} onChange={handleInputChange} placeholder="Technique" />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Media Items (Vertical Videos/Reels)</label>
+                        <div className="media-items-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                            {formData.media_items?.map((item, idx) => (
+                                <div key={idx} className="media-preview-container refined vertical" style={{ position: 'relative', aspectRatio: '9/16', borderRadius: '12px', overflow: 'hidden', background: '#000', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <video src={item} muted loop playsInline onMouseEnter={e => e.target.play()} onMouseLeave={e => { e.target.pause(); e.target.currentTime = 0; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    
+                                    <div className="preview-actions-overlay">
+                                        <button 
+                                            type="button" 
+                                            className="preview-action-btn zoom"
+                                            onClick={() => window.open(item, '_blank')}
+                                            title="View Full Size"
+                                        >
+                                            <Maximize2 size={14} />
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            className="preview-action-btn delete"
+                                            onClick={() => removeMediaItem(idx)}
+                                            title="Remove"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    </div>
+                                    <div className="media-type-badge">VIDEO</div>
+                                </div>
+                            ))}
+                            <div className="media-add-box" style={{ aspectRatio: '9/16' }}>
+                                <ImageUploader
+                                    bucketName="social_media"
+                                    onUploadSuccess={addMediaItem}
+                                />
+                            </div>
                         </div>
+                    </div>
+
+                    <div className="form-row">
                         <div className="form-group half">
                             <label>Display Order</label>
                             <input type="number" name="display_order" value={formData.display_order} onChange={handleInputChange} />

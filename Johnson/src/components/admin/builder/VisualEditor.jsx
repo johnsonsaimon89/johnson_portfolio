@@ -14,8 +14,9 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { GripVertical, Plus, Trash2, Edit3, Image, Type, Layout, Settings, Code, Copy, Link as LinkIcon } from 'lucide-react';
+import { GripVertical, Plus, Trash2, Edit3, Image, Type, Layout, Settings, Code, Copy, Link as LinkIcon, PlayCircle } from 'lucide-react';
 import EditableBlock from './EditableBlock';
+import ImageUploader from '../ImageUploader';
 import './VisualEditor.css';
 
 const VisualEditor = ({ pageData, onSave }) => {
@@ -117,32 +118,51 @@ const VisualEditor = ({ pageData, onSave }) => {
                 <div className="element-palette">
                     <button onClick={() => addBlock('hero')}><Layout size={18} /> Hero Section</button>
                     <button onClick={() => addBlock('text')}><Type size={18} /> Text Block</button>
-                    <button onClick={() => addBlock('image')}><Image size={18} /> Image</button>
+                    <button onClick={() => addBlock('image')}><PlayCircle size={18} /> Media Block</button>
                     <button onClick={() => addBlock('form')}><Layout size={18} /> Custom Form</button>
                     <button onClick={() => addBlock('custom_code')}><Code size={18} /> Custom HTML</button>
                 </div>
 
                 {editingBlock && (
-                    <div className="block-settings">
-                        <h3>Block Settings</h3>
-                        {/* Render simple style controls based on editingBlock */}
+                    <div className="editor-settings">
+                        <h4>Block Settings</h4>
+                        
+                        {blocks.find(b => b.id === editingBlock)?.type === 'image' && (
+                            <div className="setting-group" style={{ marginBottom: '1.5rem' }}>
+                                <label>Upload Media (Image or Video)</label>
+                                <div style={{ marginTop: '0.5rem' }}>
+                                    <ImageUploader 
+                                        bucketName="site-assets"
+                                        currentImageUrl={blocks.find(b => b.id === editingBlock)?.data?.url}
+                                        onUploadSuccess={(url) => updateBlockData(editingBlock, { url })}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         <div className="setting-group">
                             <label>Background Color</label>
                             <input
                                 type="color"
+                                value={blocks.find(b => b.id === editingBlock)?.style?.backgroundColor || '#ffffff'}
                                 onChange={(e) => updateBlockStyle(editingBlock, { backgroundColor: e.target.value })}
                             />
                         </div>
+                        {/* ... other settings ... */}
                         <div className="setting-group">
                             <label>Text Color</label>
                             <input
                                 type="color"
+                                value={blocks.find(b => b.id === editingBlock)?.style?.color || '#000000'}
                                 onChange={(e) => updateBlockStyle(editingBlock, { color: e.target.value })}
                             />
                         </div>
                         <div className="setting-group">
                             <label>Text Align</label>
-                            <select onChange={(e) => updateBlockStyle(editingBlock, { textAlign: e.target.value })}>
+                            <select 
+                                value={blocks.find(b => b.id === editingBlock)?.style?.textAlign || 'left'}
+                                onChange={(e) => updateBlockStyle(editingBlock, { textAlign: e.target.value })}
+                            >
                                 <option value="left">Left</option>
                                 <option value="center">Center</option>
                                 <option value="right">Right</option>
