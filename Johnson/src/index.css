@@ -47,8 +47,8 @@
   box-sizing: border-box;
 }
 
-/* Default cursor for desktop, hidden for mobile/tablet */
-@media (max-width: 1024px) {
+/* Hide cursor only on touch devices (phones/tablets) */
+@media (hover: none) and (pointer: coarse) {
   * {
     cursor: none !important;
   }

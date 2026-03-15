@@ -8,7 +8,7 @@ const StudioHero = () => {
 
     return (
         <section className="studio-section web-studio-hero">
-            <div className="container" style={{ position: 'relative', zIndex: 10, width: '100%' }}>
+            <div className="container" style={{ position: 'relative', zIndex: 10 }}>
                 <div className="hero-grid">
                     <div className="col-left">
                         <motion.div

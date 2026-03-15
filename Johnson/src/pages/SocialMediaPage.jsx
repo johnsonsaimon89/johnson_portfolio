@@ -441,8 +441,11 @@ const FeedGrid = () => {
     const [selectedPost, setSelectedPost] = useState(null);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [feedItems, setFeedItems] = useState(smData.feed);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
         const fetchFeed = async () => {
             if (!supabase) return;
             const { data, error } = await supabase
@@ -454,6 +457,7 @@ const FeedGrid = () => {
             }
         };
         fetchFeed();
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     return (
@@ -505,9 +509,9 @@ const FeedGrid = () => {
 
             <AnimatePresence>
                 {selectedPost && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedPost(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 100, display: 'grid', placeItems: 'center', padding: '2rem' }}>
-                        <motion.div initial={{ y: 50, scale: 0.9 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: 0.95 }} onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '800px', display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) 1fr', gap: '2rem', overflow: 'hidden' }}>
-                            <div style={{ position: 'relative', overflow: 'hidden', minHeight: '400px' }}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedPost(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 100, display: 'grid', placeItems: 'center', padding: isMobile ? '1rem' : '2rem' }}>
+                        <motion.div initial={{ y: 50, scale: 0.9 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: 0.95 }} onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '800px', maxHeight: '90vh', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'minmax(250px, 1fr) 1fr', gap: isMobile ? '1rem' : '2rem', overflow: 'hidden', overflowY: 'auto' }}>
+                            <div style={{ position: 'relative', overflow: 'hidden', minHeight: isMobile ? '300px' : '400px' }}>
                                 {selectedPost.media_items && selectedPost.media_items.length > 0 ? (
                                     <div className="modal-carousel" style={{ height: '100%', display: 'flex', transition: 'transform 0.3s ease', transform: `translateX(-${currentSlide * 100}%)` }}>
                                         {selectedPost.media_items.map((item, idx) => (
@@ -548,15 +552,15 @@ const FeedGrid = () => {
                                     </>
                                 )}
                             </div>
-                            <div style={{ padding: '2rem 2rem 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div style={{ padding: isMobile ? '1.5rem' : '2rem 2rem 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ color: 'var(--brand-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}>{selectedPost.type}</span>
-                                    <button onClick={() => setSelectedPost(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1.5rem' }}>×</button>
+                                    {!isMobile && <button onClick={() => setSelectedPost(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1.5rem' }}>×</button>}
                                 </div>
                                 <h3 style={{ margin: 0 }}>{selectedPost.title}</h3>
                                 <p style={{ color: '#fff', fontWeight: 600, margin: 0 }}>{selectedPost.hook}</p>
                                 <p style={{ color: 'var(--muted-color)' }}>{selectedPost.description}</p>
-                                <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '1.5rem' }}>
+                                <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
                                     {selectedPost.metrics && Object.entries(selectedPost.metrics).map(([key, val]) => (
                                         <div key={key}>
                                             <span style={{ display: 'block', fontWeight: 800, color: 'var(--brand-accent)' }}>{val}</span>
@@ -564,6 +568,23 @@ const FeedGrid = () => {
                                         </div>
                                     ))}
                                 </div>
+                                {isMobile && (
+                                    <button 
+                                        onClick={() => setSelectedPost(null)} 
+                                        style={{ 
+                                            marginTop: '1.5rem',
+                                            padding: '1rem',
+                                            background: 'rgba(255,255,255,0.05)',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '12px',
+                                            color: '#fff',
+                                            fontWeight: 700,
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Close
+                                    </button>
+                                )}
                             </div>
                         </motion.div>
                     </motion.div>

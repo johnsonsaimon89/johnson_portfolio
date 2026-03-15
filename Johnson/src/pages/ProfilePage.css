@@ -139,7 +139,7 @@
     .profile-hero-grid {
         grid-template-columns: 1fr !important;
         gap: 3rem;
-        text-align: center;
+        /* text-align: center removed for brand alignment */
     }
 
     .hero-text-content {
@@ -152,7 +152,7 @@
     }
 
     .hero-text-content .lead {
-        margin: 0 auto;
+        margin: 0; /* Align to left */
     }
 }
 .profile-service-title {

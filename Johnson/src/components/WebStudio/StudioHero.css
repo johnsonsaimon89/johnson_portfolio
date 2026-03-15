@@ -68,19 +68,34 @@
 }
 
 @media (max-width: 768px) {
+    .web-studio-hero {
+        padding-top: 80px; /* Bring content up */
+        min-height: auto;
+        padding-bottom: 3rem;
+        display: block; /* Stack layout */
+    }
+
+    .web-studio-hero .hero-grid {
+        gap: 1.5rem;
+    }
+
     .web-studio-hero .col-right {
-        display: none; /* Hide on mobile/small tablets */
+        display: none; /* Hide on mobile */
     }
 
     .web-studio-hero h1 {
-        font-size: clamp(1.85rem, 9vw, 2.5rem); /* even smaller for mobile */
-        margin-top: 1.5rem;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        font-size: clamp(1.75rem, 8vw, 2.25rem); /* Scaled down for mobile */
+        margin-top: 1rem;
+        width: 100%;
+        max-width: 100%;
+        hyphens: auto;
+        word-break: break-word;
     }
 
     .web-studio-hero .lead {
         font-size: 1rem;
+        margin-top: 1.25rem;
+        max-width: 100%;
     }
 }
 
