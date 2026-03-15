@@ -29,7 +29,12 @@ const ProductsManager = () => {
         image_url: '',
         file_url: '',
         is_active: true,
-        display_order: 0
+        display_order: 0,
+        is_on_sale: false,
+        sale_price_tzs: 0,
+        sale_label: '',
+        sale_event: '',
+        sales_count: ''
     });
 
     useEffect(() => {
@@ -110,7 +115,12 @@ const ProductsManager = () => {
             image_url: '',
             file_url: '',
             is_active: true,
-            display_order: 0
+            display_order: 0,
+            is_on_sale: false,
+            sale_price_tzs: 0,
+            sale_label: '',
+            sale_event: '',
+            sales_count: ''
         });
         setIsEditing(false);
         setCurrentProduct(null);
@@ -125,7 +135,12 @@ const ProductsManager = () => {
             image_url: product.image_url || '',
             file_url: product.file_url || '',
             is_active: product.is_active || false,
-            display_order: product.display_order || 0
+            display_order: product.display_order || 0,
+            is_on_sale: product.is_on_sale || false,
+            sale_price_tzs: product.sale_price_tzs || 0,
+            sale_label: product.sale_label || '',
+            sale_event: product.sale_event || '',
+            sales_count: product.sales_count || ''
         });
 
         // Determine upload mode based on existing URL
@@ -165,7 +180,12 @@ const ProductsManager = () => {
             image_url: formData.image_url,
             file_url: formData.file_url,
             is_active: formData.is_active,
-            display_order: parseInt(formData.display_order) || 0
+            display_order: parseInt(formData.display_order) || 0,
+            is_on_sale: formData.is_on_sale,
+            sale_price_tzs: parseInt(formData.sale_price_tzs) || 0,
+            sale_label: formData.sale_label,
+            sale_event: formData.sale_event,
+            sales_count: formData.sales_count
         };
 
         if (isEditing && currentProduct) {
@@ -198,6 +218,34 @@ const ProductsManager = () => {
 
     return (
         <div className="admin-component-container">
+            {/* Vibrant Multi-Metrics Row */}
+            <div className="admin-grid-3" style={{ marginBottom: '1.5rem' }}>
+                <div className="stat-card themed-vibrant">
+                    <div className="stat-header">
+                        <span className="stat-label">Inventory Size</span>
+                        <div className="stat-icon"><Plus size={18} /></div>
+                    </div>
+                    <div className="stat-value">{products.length}</div>
+                    <div className="stat-footer">Total digital products</div>
+                </div>
+                <div className="stat-card themed-vibrant">
+                    <div className="stat-header">
+                        <span className="stat-label">Active Presence</span>
+                        <div className="stat-icon"><Edit2 size={18} /></div>
+                    </div>
+                    <div className="stat-value">{products.filter(p => p.is_active).length}</div>
+                    <div className="stat-footer">Live in the storefront</div>
+                </div>
+                <div className="stat-card themed-vibrant">
+                    <div className="stat-header">
+                        <span className="stat-label">Promotion Pulse</span>
+                        <div className="stat-icon"><Trash2 size={18} /></div>
+                    </div>
+                    <div className="stat-value">{products.filter(p => p.is_on_sale).length}</div>
+                    <div className="stat-footer">Items currently on sale</div>
+                </div>
+            </div>
+
             {/* Global Payment Settings Section */}
             <div className="admin-panel mb-3">
                 <div className="panel-header">
@@ -273,6 +321,13 @@ const ProductsManager = () => {
                         <div className="form-group half">
                             <label>Display Order</label>
                             <input type="number" name="display_order" value={formData.display_order} onChange={handleInputChange} />
+                        </div>
+                    </div>
+
+                    <div className="form-row mt-1">
+                        <div className="form-group">
+                            <label>Social Proof / Stats (e.g. 15-30 per month or 120+ downloads)</label>
+                            <input type="text" name="sales_count" value={formData.sales_count} onChange={handleInputChange} placeholder="Appears below the price" />
                         </div>
                     </div>
 
@@ -377,12 +432,33 @@ const ProductsManager = () => {
                         </div>
                     </div>
 
-                    <div className="form-row align-center mt-2">
+                    <div className="form-row align-center mt-2" style={{ gap: '2rem' }}>
                         <div className="form-group checkbox-group">
                             <input type="checkbox" id="is_active" name="is_active" checked={formData.is_active} onChange={handleInputChange} />
                             <label htmlFor="is_active">Product is Active (Available for sale)</label>
                         </div>
+                        <div className="form-group checkbox-group">
+                            <input type="checkbox" id="is_on_sale" name="is_on_sale" checked={formData.is_on_sale} onChange={handleInputChange} />
+                            <label htmlFor="is_on_sale">Enable Discount / Sale</label>
+                        </div>
                     </div>
+
+                    {formData.is_on_sale && (
+                        <div className="form-row mt-1 animate-fade-in" style={{ padding: '1rem', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                            <div className="form-group third">
+                                <label>Sale Price (TZS)</label>
+                                <input type="number" name="sale_price_tzs" value={formData.sale_price_tzs} onChange={handleInputChange} placeholder="Reduced price" />
+                            </div>
+                            <div className="form-group third">
+                                <label>Sale Label (e.g. 50% OFF)</label>
+                                <input type="text" name="sale_label" value={formData.sale_label} onChange={handleInputChange} placeholder="Badge text" />
+                            </div>
+                            <div className="form-group third">
+                                <label>Event Name (e.g. Easter Week)</label>
+                                <input type="text" name="sale_event" value={formData.sale_event} onChange={handleInputChange} placeholder="For emails & UI" />
+                            </div>
+                        </div>
+                    )}
 
                     <button type="submit" className="admin-submit-btn mt-2">
                         {isEditing ? 'Update Product' : 'Add Product'}
@@ -407,7 +483,15 @@ const ProductsManager = () => {
                                     <div className="item-content">
                                         <div className="item-title">{product.title}</div>
                                         <div className="item-meta">
-                                            {product.price_tzs.toLocaleString()} TZS
+                                            {product.is_on_sale ? (
+                                                <>
+                                                    <span style={{ fontWeight: '800', color: '#10b981' }}>{product.sale_price_tzs.toLocaleString()} TZS</span>
+                                                    <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{product.price_tzs.toLocaleString()}</span>
+                                                    <span className="trend-badge ml-2" style={{ marginLeft: '0.5rem', background: '#dcfce7', color: '#166534' }}>{product.sale_label || 'SALE'}</span>
+                                                </>
+                                            ) : (
+                                                <>{product.price_tzs.toLocaleString()} TZS</>
+                                            )}
                                             {!product.is_active && <span className="trend-badge ml-2" style={{ marginLeft: '0.5rem', background: '#fee2e2', color: '#b91c1c' }}>Inactive</span>}
                                         </div>
                                     </div>

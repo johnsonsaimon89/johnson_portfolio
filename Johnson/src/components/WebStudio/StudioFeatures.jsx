@@ -1,4 +1,4 @@
-import React from 'react';
+/***/
 import { motion } from 'framer-motion';
 import { Zap, LayoutTemplate, Layers, Search, Smartphone, ShieldCheck } from 'lucide-react';
 

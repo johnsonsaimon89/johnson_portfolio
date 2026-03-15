@@ -515,11 +515,11 @@ const CaseStudiesManager = () => {
                 }
                 .tool-tag-sm {
                     font-size: 0.7rem;
-                    background: #f8fafc;
-                    border: 1px solid #e2e8f0;
+                    background: #f1f5f9;
+                    border: 1px solid #cbd5e1;
                     padding: 0.1rem 0.5rem;
                     border-radius: 4px;
-                    color: #64748b;
+                    color: #475569;
                 }
                 .tool-more {
                     font-size: 0.7rem;

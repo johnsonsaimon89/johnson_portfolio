@@ -72,7 +72,7 @@ const FileUploader = ({
 
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-                const filePath = `${fileName}`;
+                const filePath = folderPath ? `${folderPath}/${fileName}` : fileName;
 
                 const { error: uploadError } = await supabase.storage
                     .from(bucketName)

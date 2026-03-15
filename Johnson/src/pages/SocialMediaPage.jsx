@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronDown, Play, Layout, Smartphone, Heart } from 'lucide-react';
-import { smData } from '../data/socialMediaData';
+import { smData as staticSmData } from '../data/socialMediaData';
 import { supabase } from '../lib/supabaseClient';
 import './SocialMediaPage.css';
 import MiniBrowser from '../components/common/MiniBrowser';
@@ -35,36 +35,7 @@ const AnimatedCounter = ({ value, target, suffix }) => {
 
 /* ── Hero ──────────────────────────────────────────── */
 const SMHero = () => {
-    const [metrics, setMetrics] = useState(smData.analytics.metrics);
-
-    useEffect(() => {
-        const fetchAnalytics = async () => {
-            if (!supabase) return;
-            const { data, error } = await supabase
-                .from('performances')
-                .select('*')
-                .order('display_order', { ascending: true });
-
-            if (!error && data && data.length > 0) {
-                const socialStats = data.filter(s => s.category?.toLowerCase() === 'social' || s.category?.toLowerCase() === 'social_media');
-                const displayStats = socialStats.length > 0 ? socialStats : data.slice(0, 5);
-                const mappedMetrics = displayStats.map(s => {
-                    const valStr = s.metric_value;
-                    const numMatch = valStr.match(/(\d+(?:\.\d+)?)/);
-                    const parsedNum = numMatch ? parseFloat(numMatch[1]) : 0;
-                    const suffixMatch = valStr.substring(valStr.indexOf(numMatch ? numMatch[1] : '') + (numMatch ? numMatch[1].length : 0));
-                    return {
-                        label: s.metric_name,
-                        value: s.metric_value,
-                        target: parsedNum,
-                        suffix: suffixMatch.trim()
-                    };
-                });
-                setMetrics(mappedMetrics);
-            }
-        };
-        fetchAnalytics();
-    }, []);
+    const { hero } = staticSmData;
 
     return (
         <section className="studio-section sm-hero-section" style={{
@@ -98,7 +69,7 @@ const SMHero = () => {
                             fontWeight: 900,
                             letterSpacing: '-0.04em'
                         }}>
-                            {smData.hero.title}
+                            {hero.title}
                         </h1>
                         <p className="lead" style={{
                             color: 'var(--muted-color)',
@@ -108,7 +79,7 @@ const SMHero = () => {
                             maxWidth: '540px',
                             whiteSpace: 'pre-wrap'
                         }}>
-                            {smData.hero.content}
+                            {hero.content}
                         </p>
 
                         <motion.div

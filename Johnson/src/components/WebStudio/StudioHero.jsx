@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDownRight, Layout, Monitor, Code } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 import './StudioHero.css';
 
 const StudioHero = () => {
+
     return (
         <section className="studio-section web-studio-hero">
             <div className="container" style={{ position: 'relative', zIndex: 10, width: '100%' }}>
@@ -19,11 +21,10 @@ const StudioHero = () => {
                             </span>
 
                             <h1>
-                                The Studio is where <br />
-                                ideas become <span className="text-gradient">digital platforms.</span>
+                                The Studio is where ideas become <span className="text-gradient">digital platforms.</span>
                             </h1>
 
-                            <p className="lead">
+                            <p className="lead" style={{ whiteSpace: 'pre-line' }}>
                                 I design modern websites using platforms like Squarespace and Webflow, creating clean and responsive sites that help brands present their work clearly online.{"\n\n"}
                                 I also explore AI-assisted workflows to help speed up website creation and improve digital publishing.
                             </p>

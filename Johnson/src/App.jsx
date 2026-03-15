@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import CustomCursor from './components/common/CustomCursor';
 import Navbar from './components/Navbar';
+
 
 import HomeSplash from './components/HomeSplash';
 import Footer from './components/Footer';
@@ -88,7 +88,7 @@ function App() {
         }}
       />
 
-      <CustomCursor />
+
 
 
       {!pathname.startsWith('/admin') && <Navbar />}

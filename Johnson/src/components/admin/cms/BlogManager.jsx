@@ -115,7 +115,35 @@ const BlogManager = () => {
     }
 
     return (
-        <div className="blog-manager">
+        <div className="admin-component-container">
+            {/* Vibrant Multi-Metrics Row */}
+            <div className="admin-grid-3" style={{ marginBottom: '1.5rem' }}>
+                <div className="stat-card themed-vibrant">
+                    <div className="stat-header">
+                        <span className="stat-label">Total Articles</span>
+                        <div className="stat-icon"><FileText size={18} /></div>
+                    </div>
+                    <div className="stat-value">{posts.length}</div>
+                    <div className="stat-footer">Organic content assets</div>
+                </div>
+                <div className="stat-card themed-vibrant">
+                    <div className="stat-header">
+                        <span className="stat-label">Live Content</span>
+                        <div className="stat-icon"><Edit size={18} /></div>
+                    </div>
+                    <div className="stat-value">{posts.filter(p => p.is_published).length}</div>
+                    <div className="stat-footer">Currently visible to public</div>
+                </div>
+                <div className="stat-card themed-vibrant">
+                    <div className="stat-header">
+                        <span className="stat-label">Draft Archive</span>
+                        <div className="stat-icon"><Trash2 size={18} /></div>
+                    </div>
+                    <div className="stat-value">{posts.filter(p => !p.is_published).length}</div>
+                    <div className="stat-footer">Pending final review</div>
+                </div>
+            </div>
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h3 style={{ margin: 0 }}>Blog Posts</h3>
                 <button

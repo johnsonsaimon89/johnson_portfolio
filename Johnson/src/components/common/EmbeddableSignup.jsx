@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import emailService from '../../lib/emailService';
 
 const EmbeddableSignup = ({ source = "website_embed", showLabels = false, buttonText = "Count me in" }) => {
     const [email, setEmail] = useState('');
@@ -33,6 +34,9 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
                 }
                 throw error;
             }
+
+            // Welcome email is now handled automatically by database trigger notify_send_email()
+            // on the newsletter_subscribers table. This ensures only one email is sent.
 
             setStatus('success');
             setMessage("Thanks for joining! I’ll see you in your inbox.");

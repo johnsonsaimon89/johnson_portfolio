@@ -1,5 +1,5 @@
 -- Create Pages Table
-CREATE TABLE pages (
+CREATE TABLE IF NOT EXISTS pages (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE pages (
 );
 
 -- Create Blog Posts Table
-CREATE TABLE blog_posts (
+CREATE TABLE IF NOT EXISTS blog_posts (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
@@ -27,14 +27,14 @@ CREATE TABLE blog_posts (
 );
 
 -- Create User Roles Table
-CREATE TABLE user_roles (
+CREATE TABLE IF NOT EXISTS user_roles (
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
     role TEXT NOT NULL CHECK (role IN ('admin', 'editor')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
 -- Create Forms Table
-CREATE TABLE custom_forms (
+CREATE TABLE IF NOT EXISTS custom_forms (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     name TEXT NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE custom_forms (
 );
 
 -- Create Form Submissions
-CREATE TABLE form_submissions (
+CREATE TABLE IF NOT EXISTS form_submissions (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     form_id UUID REFERENCES custom_forms(id) ON DELETE CASCADE,
@@ -68,7 +68,10 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_pages_updated_at ON pages;
 CREATE TRIGGER update_pages_updated_at BEFORE UPDATE ON pages FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_blog_posts_updated_at ON blog_posts;
 CREATE TRIGGER update_blog_posts_updated_at BEFORE UPDATE ON blog_posts FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 
 -- Enable RLS
@@ -87,36 +90,41 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Provide initial admin access to whoever creates the first user, or handle manually.
--- For now, allow authenticated users to view roles (to determine permissions contextually)
-CREATE POLICY "Users can view their own role" ON user_roles FOR SELECT USING (auth.uid() = user_id);
--- Only superuser/service_role can insert/update roles for security, or we could let the first user be admin via trigger but let's keep it simple.
--- During development, we can just allow authenticated users to act like admins.
--- Let's make a generic accessible policy for auth users during this rapid prototype, and refine later if needed.
-
--- Pages Policies (Public can read published, Auth can full access)
+-- Policies for Pages
+DROP POLICY IF EXISTS "Public can view published pages" ON pages;
 CREATE POLICY "Public can view published pages" ON pages FOR SELECT USING (is_published = true);
+DROP POLICY IF EXISTS "Auth users can view all pages" ON pages;
 CREATE POLICY "Auth users can view all pages" ON pages FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Auth users can insert pages" ON pages;
 CREATE POLICY "Auth users can insert pages" ON pages FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Auth users can update pages" ON pages;
 CREATE POLICY "Auth users can update pages" ON pages FOR UPDATE TO authenticated USING (true);
+DROP POLICY IF EXISTS "Auth users can delete pages" ON pages;
 CREATE POLICY "Auth users can delete pages" ON pages FOR DELETE TO authenticated USING (true);
 
 -- Blog Posts Policies
+DROP POLICY IF EXISTS "Public can view published blog posts" ON blog_posts;
 CREATE POLICY "Public can view published blog posts" ON blog_posts FOR SELECT USING (is_published = true);
+DROP POLICY IF EXISTS "Auth users can view all blog posts" ON blog_posts;
 CREATE POLICY "Auth users can view all blog posts" ON blog_posts FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Auth users can insert blog posts" ON blog_posts;
 CREATE POLICY "Auth users can insert blog posts" ON blog_posts FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Auth users can update blog posts" ON blog_posts;
 CREATE POLICY "Auth users can update blog posts" ON blog_posts FOR UPDATE TO authenticated USING (true);
+DROP POLICY IF EXISTS "Auth users can delete blog posts" ON blog_posts;
 CREATE POLICY "Auth users can delete blog posts" ON blog_posts FOR DELETE TO authenticated USING (true);
 
--- Custom Forms Policies (Public can read active forms, submit data)
+-- Custom Forms Policies
+DROP POLICY IF EXISTS "Public can view active forms" ON custom_forms;
 CREATE POLICY "Public can view active forms" ON custom_forms FOR SELECT USING (is_active = true);
+DROP POLICY IF EXISTS "Auth users can manage forms" ON custom_forms;
 CREATE POLICY "Auth users can manage forms" ON custom_forms FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
--- Submissions (Public can submit, Auth can manage)
+-- Submissions
+DROP POLICY IF EXISTS "Public can submit forms" ON form_submissions;
 CREATE POLICY "Public can submit forms" ON form_submissions FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Auth users can manage submissions" ON form_submissions;
 CREATE POLICY "Auth users can manage submissions" ON form_submissions FOR ALL TO authenticated USING (true) WITH CHECK (true);
-
--- Storage bucket for media will be managed via Supabase dashboard / API directly, assuming a 'media' bucket exists or we will create it via SDK/client.
 
 -- Insert initial Homepage
 INSERT INTO pages (title, slug, is_published, content_blocks)

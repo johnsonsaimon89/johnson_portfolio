@@ -15,7 +15,20 @@ const SettingsEditor = () => {
         theme_color_primary: '#BDFF00',
         theme_color_secondary: '#030303',
         typography_heading: 'Inter',
-        typography_body: 'Inter'
+        typography_body: 'Inter',
+        // Payment Settings
+        payment_bank_name: '',
+        payment_bank_account: '',
+        payment_lipa_number: '',
+        // Behind the Scenes
+        bts_badge: '',
+        bts_title: '',
+        bts_description: '',
+        bts_button_text: '',
+        bts_video_url: '',
+        // Email/System Config (from app_config)
+        edge_fn_base_url: '',
+        app_service_role_key: ''
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -37,6 +50,13 @@ const SettingsEditor = () => {
             console.error('Error fetching settings:', error);
             toast.error('Failed to load settings');
         } else if (data) {
+            // Fetch app_config values
+            const { data: configData } = await supabase.from('app_config').select('*');
+            const configMap = {};
+            if (configData) {
+                configData.forEach(c => configMap[c.key] = c.value);
+            }
+
             setSettings({
                 hero_title: data.hero_title || '',
                 hero_subtitle: data.hero_subtitle || '',
@@ -47,7 +67,17 @@ const SettingsEditor = () => {
                 theme_color_primary: data.theme_color_primary || '#BDFF00',
                 theme_color_secondary: data.theme_color_secondary || '#030303',
                 typography_heading: data.typography_heading || 'Inter',
-                typography_body: data.typography_body || 'Inter'
+                typography_body: data.typography_body || 'Inter',
+                payment_bank_name: data.payment_bank_name || '',
+                payment_bank_account: data.payment_bank_account || '',
+                payment_lipa_number: data.payment_lipa_number || '',
+                bts_badge: data.bts_badge || 'Behind The Scenes',
+                bts_title: data.bts_title || 'How we build it.',
+                bts_description: data.bts_description || '',
+                bts_button_text: data.bts_button_text || 'Watch BTS Video',
+                bts_video_url: data.bts_video_url || '',
+                edge_fn_base_url: configMap['edge_fn_base_url'] || '',
+                app_service_role_key: configMap['app_service_role_key'] || ''
             });
         }
         setLoading(false);
@@ -80,13 +110,29 @@ const SettingsEditor = () => {
             theme_color_primary: settings.theme_color_primary,
             theme_color_secondary: settings.theme_color_secondary,
             typography_heading: settings.typography_heading,
-            typography_body: settings.typography_body
+            typography_body: settings.typography_body,
+            payment_bank_name: settings.payment_bank_name,
+            payment_bank_account: settings.payment_bank_account,
+            payment_lipa_number: settings.payment_lipa_number,
+            bts_badge: settings.bts_badge,
+            bts_title: settings.bts_title,
+            bts_description: settings.bts_description,
+            bts_button_text: settings.bts_button_text,
+            bts_video_url: settings.bts_video_url
         };
 
         const { error } = await supabase
             .from('site_settings')
             .update(updatedData)
             .eq('id', 1);
+
+        // Update app_config
+        if (settings.edge_fn_base_url) {
+            await supabase.from('app_config').upsert({ key: 'edge_fn_base_url', value: settings.edge_fn_base_url });
+        }
+        if (settings.app_service_role_key) {
+            await supabase.from('app_config').upsert({ key: 'app_service_role_key', value: settings.app_service_role_key });
+        }
 
         if (error) {
             toast.error('Failed to save settings: ' + error.message);
@@ -226,9 +272,128 @@ const SettingsEditor = () => {
                         These details will be displayed to customers during the checkout process for digital products.
                     </p>
 
+                    <div className="form-row">
+                        <div className="form-group half">
+                            <label>Bank Name (e.g., NBC)</label>
+                            <input
+                                type="text"
+                                name="payment_bank_name"
+                                value={settings.payment_bank_name}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="form-group half">
+                            <label>Account Number</label>
+                            <input
+                                type="text"
+                                name="payment_bank_account"
+                                value={settings.payment_bank_account}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label>Lipa Number / Mobile Money</label>
+                        <input
+                            type="text"
+                            name="payment_lipa_number"
+                            value={settings.payment_lipa_number}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    
+                    <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem' }}>Behind The Scenes (Resources Page)</h4>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--muted-color)', marginBottom: '1rem' }}>
+                        Update the content for the "Behind the Scenes" section on the Resources page.
+                    </p>
+
+                    <div className="form-row">
+                        <div className="form-group half">
+                            <label>Badge Text</label>
+                            <input
+                                type="text"
+                                name="bts_badge"
+                                value={settings.bts_badge}
+                                onChange={handleInputChange}
+                                placeholder="Behind The Scenes"
+                            />
+                        </div>
+                        <div className="form-group half">
+                            <label>Section Title</label>
+                            <input
+                                type="text"
+                                name="bts_title"
+                                value={settings.bts_title}
+                                onChange={handleInputChange}
+                                placeholder="How we build it."
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="form-group mb-2">
+                        <label>Description Content</label>
+                        <textarea
+                            name="bts_description"
+                            value={settings.bts_description}
+                            onChange={handleInputChange}
+                            rows="3"
+                        />
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group half">
+                            <label>Button Text</label>
+                            <input
+                                type="text"
+                                name="bts_button_text"
+                                value={settings.bts_button_text}
+                                onChange={handleInputChange}
+                                placeholder="Watch BTS Video"
+                            />
+                        </div>
+                        <div className="form-group half">
+                            <label>Video URL (YouTube/Vimeo/Direct)</label>
+                            <input
+                                type="text"
+                                name="bts_video_url"
+                                value={settings.bts_video_url}
+                                onChange={handleInputChange}
+                                placeholder="https://..."
+                            />
+                        </div>
+                    </div>
+
+                    <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem', color: '#BDFF00' }}>Email & Backend Configuration</h4>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--muted-color)', marginBottom: '1rem' }}>
+                        Critical settings for order notifications and automated emails. <strong>Restarting emails requires these to be set.</strong>
+                    </p>
+                    <div className="form-group">
+                        <label>Edge Function Base URL</label>
+                        <input
+                            type="text"
+                            name="edge_fn_base_url"
+                            value={settings.edge_fn_base_url}
+                            onChange={handleInputChange}
+                            placeholder="https://qkwjerktszhlccrdjmxg.supabase.co"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Supabase Service Role Key (Found in API Settings)</label>
+                        <input
+                            type="password"
+                            name="app_service_role_key"
+                            value={settings.app_service_role_key}
+                            onChange={handleInputChange}
+                            placeholder="Paste your service_role key here"
+                        />
+                        <p style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.4rem' }}>
+                            Go to Supabase Dashboard → Project Settings → API and copy the <code>service_role</code> secret.
+                        </p>
+                    </div>
+
                     <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
                         <button type="submit" className="admin-submit-btn" disabled={saving} style={{ width: 'auto', padding: '0.8rem 2rem' }}>
-                            {saving ? 'Saving...' : 'Save Settings'}
+                            {saving ? 'Saving...' : 'Save All Settings'}
                         </button>
                     </div>
                 </form>

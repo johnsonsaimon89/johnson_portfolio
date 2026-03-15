@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Mail, Phone, ArrowRight, Loader2, CheckCircle, XCircle, MessageCircle } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 import { supabase, isSupabaseReady } from '../lib/supabaseClient';
+import emailService from '../lib/emailService';
 import './Contact.css';
 
 const Toast = ({ type, message, onClose }) => (
@@ -39,6 +40,13 @@ const SERVICES = [
 
 const Contact = () => {
     const { contact } = portfolioData;
+    const [header] = useState({
+        contact_badge: 'Talk',
+        contact_title: "LET'S START SOMETHING GREAT",
+        contact_description: "If you have an idea, project, or collaboration in mind, I’d love to hear about it. Whether you're looking to grow your social media presence or build a new website, feel free to reach out and start a conversation."
+    });
+
+    // Removed dynamic fetching to restore hardcoded text
 
     const [form, setForm] = useState({
         name: '',
@@ -113,6 +121,9 @@ const Contact = () => {
 
             if (error) throw error;
 
+            // Email notifications are now handled by database triggers (auto-reply + admin alert)
+            // to prevent duplicates and improve sender reputation.
+
             setToast({ type: 'success', message: "Message sent! Johnson will be in touch soon." });
             setForm({ name: '', email: '', phone: '', service: '', message: '', honeypot: '' });
             setErrors({});
@@ -142,12 +153,10 @@ const Contact = () => {
                 <div className="contact-grid">
                     {/* Left panel — contact info */}
                     <div className="contact-info-panel">
-                        <span className="contact-label">Talk</span>
-                        <h2 style={{ marginTop: '2rem' }}>
-                            LET'S START SOMETHING <span style={{ color: 'var(--brand-accent)' }}>GREAT</span>
-                        </h2>
+                        <span className="contact-label">{header.contact_badge}</span>
+                        <h2 style={{ marginTop: '2rem' }} dangerouslySetInnerHTML={{ __html: header.contact_title.replace('GREAT', '<span style="color: var(--brand-accent)">GREAT</span>') }} />
                         <p style={{ color: 'var(--muted-color)', marginTop: '1.5rem', lineHeight: 1.7 }}>
-                            If you have an idea, project, or collaboration in mind, I’d love to hear about it. Whether you're looking to grow your social media presence or build a new website, feel free to reach out and start a conversation.
+                            {header.contact_description}
                         </p>
 
                         <div className="contact-details">

@@ -5,7 +5,6 @@ import { ArrowRight, ArrowUpRight, CheckCircle, ChevronDown, Play, Layout, Smart
 import { portfolioData } from '../data/portfolioData';
 import '../styles/StudioStyles.css'; // Shared premium studio styles
 import './ProfilePage.css';
-
 const ProfilePage = () => {
     const { pathname } = useLocation();
     const { about, services } = portfolioData;

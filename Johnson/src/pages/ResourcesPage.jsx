@@ -3,61 +3,120 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, Link } from 'react-router-dom';
 import { Download, Play, ShoppingBag, CheckCircle, Smartphone, CreditCard, X, Loader2 } from 'lucide-react';
 import { supabase, isSupabaseReady } from '../lib/supabaseClient';
+import emailService from '../lib/emailService';
 import { productsData } from '../data/productsData';
 import { formatPrice } from '../utils/currencyUtils';
 import '../styles/StudioStyles.css'; // Shared studio styles
 import './ResourcesPage.css';
 
 /* ── Product Card ───────────────────────────────────── */
-const ProductCard = ({ product, isFree, onClick }) => (
-    <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        whileHover={{ y: -8 }}
-        className="resource-card glass"
-        style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-    >
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: isFree ? '#00f2fe' : 'var(--brand-accent)', borderRadius: '32px 32px 0 0' }} />
+const ProductCard = ({ product, isFree, onClick }) => {
+    const isOnSale = product.is_on_sale && product.sale_price_tzs < product.price_tzs;
+    const displayPrice = isOnSale ? product.sale_price_tzs : product.price_tzs;
 
-        <span style={{
-            alignSelf: 'flex-start',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            fontSize: '0.7rem',
-            color: isFree ? '#00f2fe' : 'var(--brand-accent)',
-            background: isFree ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255,255,255,0.05)',
-            padding: '0.3rem 0.8rem',
-            borderRadius: '100px',
-            fontWeight: 700,
-            marginBottom: '1.5rem'
-        }}>
-            {product.type}
-        </span>
-
-        <h3 style={{ margin: '0 0 1rem 0' }}>{product.title}</h3>
-        <p style={{ color: 'var(--muted-color)', flex: 1, marginBottom: '2rem' }}>{product.description}</p>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ fontWeight: 800, fontSize: '1.25rem', color: '#fff' }}>
-                {formatPrice(product.priceTZS)}
-            </span>
-            <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>
-                {isFree ? `${product.downloads} downloads` : product.salesCount}
-            </span>
-        </div>
-
-        <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => onClick(product, isFree)}
-            className={isFree ? 'studio-btn studio-btn-outline' : 'studio-btn studio-btn-primary'}
-            style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }}
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -8 }}
+            className="resource-card glass"
+            style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}
         >
-            {isFree ? <><Download size={16} /> Download Free</> : <><ShoppingBag size={16} /> Buy Now</>}
-        </motion.button>
-    </motion.div>
-);
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: isFree ? '#00f2fe' : 'var(--brand-accent)', borderRadius: '32px 32px 0 0' }} />
+
+            {(isOnSale || product.sale_event) && (
+                <div style={{
+                    position: 'absolute',
+                    top: '1.5rem',
+                    right: '1.5rem',
+                    display: 'flex',
+                    gap: '0.5rem',
+                    zIndex: 2,
+                    pointerEvents: 'none'
+                }}>
+                    {isOnSale && (
+                        <div style={{
+                            background: '#ff0000', // RED for discount
+                            color: '#fff',
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '100px',
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            boxShadow: '0 4px 12px rgba(255,0,0,0.3)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em'
+                        }}>
+                            {product.sale_label || 'SALE'}
+                        </div>
+                    )}
+                    {product.sale_event && (
+                        <div style={{
+                            background: '#00ff00', // GREEN for event
+                            color: '#000', // BLACK text
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '100px',
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            boxShadow: '0 4px 12px rgba(0,255,0,0.2)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.3rem'
+                        }}>
+                            ✨ {product.sale_event}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            <span style={{
+                alignSelf: 'flex-start',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                fontSize: '0.7rem',
+                color: isFree ? '#00f2fe' : 'var(--brand-accent)',
+                background: isFree ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255,255,255,0.05)',
+                padding: '0.3rem 0.8rem',
+                borderRadius: '100px',
+                fontWeight: 700,
+                marginBottom: '1.5rem'
+            }}>
+                {product.type}
+            </span>
+
+            <h3 style={{ margin: '0 0 1rem 0' }}>{product.title}</h3>
+            <p style={{ color: 'var(--muted-color)', flex: 1, marginBottom: '2rem' }}>{product.description}</p>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontWeight: 800, fontSize: '1.25rem', color: '#fff' }}>
+                        {formatPrice(displayPrice)}
+                    </span>
+                    {isOnSale && (
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem', textDecoration: 'line-through' }}>
+                            {formatPrice(product.price_tzs)}
+                        </span>
+                    )}
+                </div>
+                <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>
+                    {product.sales_count || (isFree ? `${product.downloads} downloads` : product.salesCount)}
+                </span>
+            </div>
+
+            <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => onClick(product, isFree)}
+                className={isFree ? 'studio-btn studio-btn-outline' : 'studio-btn studio-btn-primary'}
+                style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }}
+            >
+                {isFree ? <><Download size={16} /> Download Free</> : <><ShoppingBag size={16} /> Buy Now</>}
+            </motion.button>
+        </motion.div>
+    );
+};
 
 /* ── Payment Modal ──────────────────────────────────── */
 const PaymentModal = ({ product, isOpen, onClose }) => {
@@ -110,7 +169,10 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                             <span style={{ color: 'var(--brand-accent)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Step 1: Choose Payment Method</span>
                             <h2 style={{ margin: 0 }}>{product.title}</h2>
-                            <div style={{ fontWeight: 800, paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{formatPrice(product.priceTZS)}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem' }}>
+                                <div style={{ fontWeight: 800, fontSize: '1.5rem' }}>{formatPrice(product.is_on_sale ? product.sale_price_tzs : product.price_tzs)}</div>
+                                {product.is_on_sale && <div style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.3)', fontSize: '0.9rem' }}>{formatPrice(product.price_tzs)}</div>}
+                            </div>
 
                             <div style={{ display: 'grid', gap: '1rem' }}>
                                 <button
@@ -137,7 +199,7 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
                             <h2 style={{ margin: 0 }}>Payment Instructions</h2>
                             
                              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.15)', padding: '1.5rem', borderRadius: '12px' }}>
-                                <p style={{ margin: '0 0 1rem 0' }}>Please send <strong>{formatPrice(product.priceTZS)}</strong> using <strong>{selectedMethod === 'Bank' ? 'Bank Transfer' : 'Mobile Payment'}</strong> to:</p>
+                                <p style={{ margin: '0 0 1rem 0' }}>Please send <strong>{formatPrice(product.is_on_sale ? product.sale_price_tzs : product.price_tzs)}</strong> using <strong>{selectedMethod === 'Bank' ? 'Bank Transfer' : 'Mobile Payment'}</strong> to:</p>
                                 <div style={{ fontWeight: 800, textAlign: 'center', letterSpacing: '2px', color: 'var(--brand-accent)', fontSize: '1.2rem' }}>
                                     {selectedMethod === 'Bank' ? settings.bankAcc : settings.lipa}
                                 </div>
@@ -160,6 +222,7 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
                                 }
 
                                 try {
+                                    console.log("Submitting order for product:", product);
                                     const { error } = await supabase.from('purchase_orders').insert([{
                                         product_id: product.id,
                                         product_title: product.title,
@@ -168,15 +231,23 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
                                         customer_email: email,
                                         transaction_id: sender_name, // Mapping Sender's Name to transaction_id for now
                                         payment_method: selectedMethod === 'Bank' ? "NBC Bank" : "Lipa Number",
-                                        amount_tzs: product.priceTZS,
-                                        status: 'pending'
+                                        amount_tzs: product.is_on_sale ? product.sale_price_tzs : product.price_tzs,
+                                        status: 'pending',
+                                        is_on_sale: product.is_on_sale || false,
+                                        sale_event: product.sale_event || ''
                                     }]);
-                                    if (error) throw error;
+                                    if (error) {
+                                        console.error("Supabase insert error:", error);
+                                        throw error;
+                                    }
+
+                                    // Email notification is now handled via database trigger notify_send_email()
+                                    // This prevents duplicate emails and improves deliverability reputation.
 
                                     setStep(3);
                                 } catch (err) {
-                                    console.error("Order error", err);
-                                    alert("Failed to submit order.");
+                                    console.error("Order error detail:", err);
+                                    alert(`Failed to submit order: ${err.message || 'Unknown error'}`);
                                 }
                             }}>
                                 <input name="name" type="text" placeholder="Your Full Name" required style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff', fontFamily: 'inherit' }} />
@@ -192,11 +263,18 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
                             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
                                 <CheckCircle size={64} color="var(--brand-accent)" />
                             </motion.div>
-                            <h2 style={{ margin: 0 }}>Payment Verifying</h2>
+                            <h2 style={{ margin: 0 }}>Details Received</h2>
                             <p style={{ color: 'var(--muted-color)' }}>
-                                We've received your details. Once verified, your digital resource will be sent immediately to your email.
+                                We've received your details. Once verified, your resource will be sent immediately to your email.
                             </p>
-                            <button onClick={onClose} className="studio-btn studio-btn-outline" style={{ marginTop: '1rem' }}>Close</button>
+                            
+                            <div style={{ background: 'rgba(189, 255, 0, 0.1)', border: '1px solid rgba(189, 255, 0, 0.2)', padding: '1rem', borderRadius: '12px', textAlign: 'left', width: '100%' }}>
+                                <p style={{ color: 'var(--brand-accent)', fontSize: '0.85rem', margin: 0, display: 'flex', gap: '10px' }}>
+                                    <span>💡</span> <span><strong>Check your Spam folder</strong> if you don't see our email within 10 minutes.</span>
+                                </p>
+                            </div>
+
+                            <button onClick={onClose} className="studio-btn studio-btn-outline" style={{ marginTop: '0.5rem', width: '100%' }}>Close</button>
                         </div>
                     )}
                 </motion.div>
@@ -245,20 +323,15 @@ const FreeDownloadModal = ({ product, isOpen, onClose }) => {
                 customer_email: email,
                 amount_tzs: 0,
                 status: 'confirmed',
-                file_url: product.file_url || ''
+                file_url: product.file_url || '',
+                is_on_sale: product.is_on_sale || false,
+                sale_event: product.sale_event || ''
             }]);
 
-            // Automatically send the email for free downloads
-            await supabase.functions.invoke('send-email', {
-                body: {
-                    type: 'free_download',
-                    email: email,
-                    name: name,
-                    product_title: product.title,
-                    file_url: product.file_url || ''
-                }
-            });
-
+            // Email delivery is now handled via frontend emailService
+            // Email delivery is now handled strictly via database triggers
+            // to ensure reliability and avoid duplicates.
+            
             setSuccess(true);
         } catch (err) {
             console.error("Free download error:", err);
@@ -312,9 +385,16 @@ const FreeDownloadModal = ({ product, isOpen, onClose }) => {
                             </motion.div>
                             <h2 style={{ margin: 0 }}>On its way!</h2>
                             <p style={{ color: 'var(--muted-color)' }}>
-                                Check your email inbox (and spam folder) for the download link.
+                                Check your email inbox for the download link.
                             </p>
-                            <button onClick={onClose} className="studio-btn studio-btn-outline" style={{ marginTop: '1rem' }}>Awesome, thanks!</button>
+                            
+                            <div style={{ background: 'rgba(0, 242, 254, 0.1)', border: '1px solid rgba(0, 242, 254, 0.2)', padding: '1rem', borderRadius: '12px', textAlign: 'left', width: '100%' }}>
+                                <p style={{ color: '#00f2fe', fontSize: '0.85rem', margin: 0, display: 'flex', gap: '10px' }}>
+                                    <span>💡</span> <span><strong>Check your Spam folder</strong> and mark as "Not Spam" to ensure you get future updates.</span>
+                                </p>
+                            </div>
+
+                            <button onClick={onClose} className="studio-btn studio-btn-outline" style={{ marginTop: '0.5rem', width: '100%' }}>Awesome, thanks!</button>
                         </div>
                     )}
                 </motion.div>
@@ -331,6 +411,13 @@ const ResourcesPage = () => {
     const [paidProducts, setPaidProducts] = useState([]);
     const [freeProducts, setFreeProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [btsSettings, setBtsSettings] = useState({
+        badge: 'Behind The Scenes',
+        title: 'How we build it.',
+        description: 'Get exclusive access to our process videos, high-fidelity mockups, and early looks at upcoming products.',
+        buttonText: 'Watch BTS Video',
+        videoUrl: ''
+    });
 
     useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
 
@@ -352,9 +439,8 @@ const ResourcesPage = () => {
                 data.forEach(p => {
                     const formattedProduct = {
                         ...p,
-                        priceTZS: p.price_tzs,
                         downloads: '120+',
-                        salesCount: '15-30 per month'
+                        salesCount: '15-30 per month' // Fallback
                     };
 
                     if (p.price_tzs > 0) {
@@ -373,7 +459,22 @@ const ResourcesPage = () => {
             }
         };
 
+        const fetchBtsSettings = async () => {
+            if (!isSupabaseReady) return;
+            const { data } = await supabase.from('site_settings').select('bts_badge, bts_title, bts_description, bts_button_text, bts_video_url').eq('id', 1).single();
+            if (data) {
+                setBtsSettings({
+                    badge: data.bts_badge || 'Behind The Scenes',
+                    title: data.bts_title || 'How we build it.',
+                    description: data.bts_description || '',
+                    buttonText: data.bts_button_text || 'Watch BTS Video',
+                    videoUrl: data.bts_video_url || ''
+                });
+            }
+        };
+
         fetchProducts();
+        fetchBtsSettings();
     }, []);
 
     const handleClick = (product, isFree) => {
@@ -445,11 +546,11 @@ const ResourcesPage = () => {
                     <div className="bts-section">
                         <div className="distributed-grid" style={{ alignItems: 'center' }}>
                             <div className="col-left">
-                                <span className="badge">Behind The Scenes</span>
-                                <h2>How we build it.</h2>
-                                <p>Get exclusive access to our process videos, high-fidelity mockups, and early looks at upcoming products.</p>
-                                <button className="studio-btn studio-btn-primary">
-                                    Watch BTS Video <Play size={16} style={{ marginLeft: '0.5rem' }} />
+                                <span className="badge">{btsSettings.badge}</span>
+                                <h2>{btsSettings.title}</h2>
+                                <p>{btsSettings.description}</p>
+                                <button className="studio-btn studio-btn-primary" onClick={() => btsSettings.videoUrl && window.open(btsSettings.videoUrl, '_blank')}>
+                                    {btsSettings.buttonText} <Play size={16} style={{ marginLeft: '0.5rem' }} />
                                 </button>
                             </div>
                             <div className="col-right stagger-bottom">

@@ -17,7 +17,9 @@ import {
     Trophy,
     Zap,
     FileSpreadsheet,
-    FileText
+    FileText,
+    RefreshCcw,
+    AlertTriangle
 } from 'lucide-react';
 import { 
     AreaChart, 
@@ -171,6 +173,28 @@ const FinancialAnalytics = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleResetFinances = async () => {
+        toast.confirm("ARE YOU ABSOLUTELY SURE? This will permanently delete ALL order records and reset your financial data to zero. This cannot be undone.", async () => {
+            setLoading(true);
+            try {
+                const { error } = await supabase
+                    .from('purchase_orders')
+                    .delete()
+                    .not('id', 'is', null); // Delete all rows
+
+                if (error) throw error;
+
+                toast.success("All financial data has been reset.");
+                fetchAnalytics();
+            } catch (err) {
+                console.error("Reset error:", err);
+                toast.error("Failed to reset finances: " + err.message);
+            } finally {
+                setLoading(false);
+            }
+        });
     };
 
     const filteredRecentOrders = useMemo(() => {
@@ -488,6 +512,47 @@ const FinancialAnalytics = () => {
                     <div className="mt-1" style={{ fontSize: '0.8rem', color: '#475569', textAlign: 'center', fontWeight: '500' }}>
                         Organic lead velocity in the {dateRange} window.
                     </div>
+                </div>
+            </div>
+
+            {/* Reset Data Danger Zone */}
+            <div className="admin-panel mt-4" style={{ borderRadius: '24px', border: '1px solid #fee2e2', background: '#fffafb' }}>
+                <div className="panel-header" style={{ marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ background: '#fee2e2', color: '#dc2626', padding: '0.5rem', borderRadius: '12px' }}>
+                            <AlertTriangle size={20} />
+                        </div>
+                        <div>
+                            <h3 style={{ color: '#991b1b', fontWeight: '800' }}>Danger Zone</h3>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#b91c1c' }}>System data management and testing overrides</p>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0' }}>
+                    <div style={{ maxWidth: '60%' }}>
+                        <p style={{ margin: 0, fontWeight: '700', color: '#7f1d1d' }}>Reset All Financial Records</p>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#b91c1c', opacity: 0.8 }}>Wipe all order history and revenue data. Useful for clearing test data before going live.</p>
+                    </div>
+                    <button 
+                        onClick={handleResetFinances}
+                        className="btn-danger" 
+                        style={{ 
+                            background: '#dc2626', 
+                            color: '#fff', 
+                            padding: '0.75rem 1.5rem', 
+                            borderRadius: '12px', 
+                            fontSize: '0.9rem', 
+                            fontWeight: '800',
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.6rem',
+                            boxShadow: '0 4px 12px rgba(220, 38, 38, 0.2)'
+                        }}
+                    >
+                        <RefreshCcw size={18} /> Reset All Data
+                    </button>
                 </div>
             </div>
         </div>

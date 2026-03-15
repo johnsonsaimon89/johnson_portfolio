@@ -47,13 +47,14 @@
   box-sizing: border-box;
 }
 
-/* Global cursor hide - MUST be aggressive to prevent system cursor flickers */
-* {
-  cursor: none !important;
+/* Default cursor for desktop, hidden for mobile/tablet */
+@media (max-width: 1024px) {
+  * {
+    cursor: none !important;
+  }
 }
 
 html, body, #root {
-  cursor: none !important;
   scroll-behavior: smooth;
 }
 

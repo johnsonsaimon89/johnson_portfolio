@@ -1,113 +1,155 @@
-// ================================================
-// Supabase Edge Function: send-email
-// ================================================
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
-const FROM_EMAIL = Deno.env.get("FROM_EMAIL") ?? "Johnson <onboarding@resend.dev>";
-const SITE_URL = Deno.env.get("SITE_URL") ?? "https://johnsonsaimon.com";
-
+// Secrets are loaded inside the handler to stay dynamic
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// ── Email Templates ──────────────────────────────
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-function welcomeEmail(name: string): { subject: string; html: string } {
-  return {
-    subject: "Welcome to Johnson's inner circle 🎉",
-    html: `
-      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #fff; border-radius: 16px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #6c63ff, #ff6584); padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: -1px;">JOHNSON<span style="color: rgba(255,255,255,0.6)">.</span></h1>
-          <p style="margin: 8px 0 0; opacity: 0.8;">Freelance Digital Creator</p>
-        </div>
-        <div style="padding: 40px;">
-          <h2 style="color: #fff; margin: 0 0 16px;">Hey ${name} 👋</h2>
-          <p style="color: rgba(255,255,255,0.7); line-height: 1.7;">
-            You're officially on Johnson's list — where creatives, entrepreneurs, and brands get the best tips on 
-            social media strategy, web design, and digital storytelling.
-          </p>
-          <div style="text-align: center; margin-top: 32px;">
-            <a href="${SITE_URL}/resources" style="display: inline-block; background: linear-gradient(135deg, #6c63ff, #ff6584); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 100px; font-weight: 700; letter-spacing: 0.5px;">
-              Browse Free Resources
-            </a>
-          </div>
-        </div>
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+// ── Fetch Configuration Helpers ───────────────────
+async function getConfig(key: string, defaultValue: string): Promise<string> {
+  // Check environment first
+  const envVal = Deno.env.get(key.toUpperCase());
+  if (envVal) return envVal;
+
+  // Fallback to app_config table
+  try {
+    const { data } = await supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', key.toLowerCase())
+      .single();
+    return data?.value ?? defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
+
+// ── Placeholder Replacement Helper ────────────────
+function replacePlaceholders(template: string, data: Record<string, any>): string {
+  let result = template;
+
+  // 1. Handle Handlebars-style #if logic (very basic truthy check)
+  // Usage: {{#if key}} content {{/if}}
+  result = result.replace(/{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g, (match, key, content) => {
+    return data[key] ? content : '';
+  });
+
+  // 2. Handle standard placeholders {{key}} or {{ key }} (flexible spaces)
+  return result.replace(/{{\s*(\w+)\s*}}/g, (match, key) => {
+    const value = data[key];
+    if (value === undefined) return match;
+    
+    // Auto-encode URLs if they look like links
+    const strValue = String(value);
+    if (strValue.startsWith('http') && !template.includes(`href="${match}"`)) {
+       // If it's used in a context that isn't already an href, we might want to be careful
+       // but for simplicity, we provide a clean string.
+    }
+    return strValue;
+  });
+}
+
+// ── Plain Text Helper ──────────────────────────
+function stripHtml(html: string): string {
+  return html
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const EMAIL_LAYOUT = (content: string, title?: string) => `
+  <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0a0a0a; color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+    <div style="background: linear-gradient(135deg, #6c63ff, #ff6584); padding: 40px 20px; text-align: center;">
+      <h1 style="margin: 0; font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -1px;">JOHNSON<span style="opacity:0.6">.</span></h1>
+      <p style="margin: 8px 0 0; color: rgba(255,255,255,0.8); font-size: 14px;">Freelance Digital Creator</p>
+    </div>
+    <div style="padding: 40px; line-height: 1.6;">
+      ${content}
+    </div>
+    <div style="padding: 20px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); background-color: rgba(255,255,255,0.02);">
+      <p style="font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 20px;">
+        Connect with me: 
+        <a href="https://www.instagram.com/johnsonsaimon89/" style="color: #fff; text-decoration: underline; margin: 0 10px;">Instagram</a>
+        <a href="https://tz.linkedin.com/in/johnsonsaimon89/" style="color: #fff; text-decoration: underline; margin: 0 10px;">LinkedIn</a>
+        <a href="https://wa.link/mmk64r" style="color: #fff; text-decoration: underline; margin: 0 10px;">WhatsApp</a>
+      </p>
+      <div style="font-size: 11px; color: rgba(255,255,255,0.2); line-height: 1.5;">
+        <p style="margin: 0 0 10px;">&copy; 2026 JOHNSON SAIMON</p>
+        <p style="margin: 0 0 10px;">123 Creative Street, Dar es Salaam, Tanzania</p>
+        <p style="margin: 0;">
+          You received this because you subscribed to my updates or purchased a product. 
+          <br/>
+          <a href="{{site_url}}/unsubscribe" style="color: rgba(255,255,255,0.4); text-decoration: underline;">Unsubscribe</a>
+        </p>
       </div>
-    `,
+    </div>
+  </div>
+`;
+
+function welcomeEmail(name: string, siteUrl: string): { subject: string; html: string } {
+  return {
+    subject: "Welcome to the inner circle! 🚀",
+    html: EMAIL_LAYOUT(`
+      <h2 style="font-size: 24px; font-weight: 700; margin: 0 0 20px;">Hi ${name} 👋</h2>
+      <p style="font-size: 16px; line-height: 1.8; color: rgba(255,255,255,0.7); margin-bottom: 30px;">
+        You're officially on the list. I share my best insights on 
+        growth strategy and digital design once or twice a month. No fluff, just value.
+      </p>
+      <div style="text-align: center;">
+        <a href="${siteUrl}/resources" style="display: inline-block; background: #22c55e; color: #000; text-decoration: none; padding: 14px 30px; border-radius: 10px; font-weight: 700;">Explore Resources</a>
+      </div>
+    `, "Digital Strategy & Design"),
   };
 }
 
-function purchaseConfirmationEmail(name: string, productTitle: string, amountTzs: number, orderId: string): { subject: string; html: string } {
+function purchaseConfirmationEmail(name: string, productTitle: string, amountTzs: number, orderId: string, saleEvent?: string): { subject: string; html: string } {
+  const saleText = saleEvent ? `<div style="color: #ff6584; font-weight: 700; margin-bottom: 10px;">✨ Special Event: ${saleEvent}</div>` : '';
   return {
-    subject: `Order received: ${productTitle} ✅`,
-    html: `
-      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #fff; border-radius: 16px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #6c63ff, #ff6584); padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 2rem; font-weight: 800;">JOHNSON<span style="opacity:0.6">.</span></h1>
-        </div>
-        <div style="padding: 40px;">
-          <h2 style="color: #fff; margin: 0 0 8px;">Hi ${name}, we got your order! 🙌</h2>
-          <p style="color: rgba(255,255,255,0.7); line-height: 1.7;">
-            Your purchase of <strong style="color: #fff;">${productTitle}</strong> has been received.
-          </p>
-          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; margin: 24px 0;">
-            <p style="margin: 0; font-family: monospace; font-size: 14px; color: #a78bfa;">Reference: ${orderId}</p>
-          </div>
-          <p style="color: rgba(255,255,255,0.7); line-height: 1.7;">
-            ⏳ We're verifying your payment. Once confirmed, you'll receive a second email with your download link.
-          </p>
-        </div>
-      </div>
-    `,
+    subject: `Order Confirmation: ${productTitle}${saleEvent ? ` (${saleEvent}!)` : ''}`,
+    html: EMAIL_LAYOUT(`
+      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Order Received 🙌</h2>
+      ${saleText}
+      <p style="font-size: 16px; color: rgba(255,255,255,0.7);">Hi ${name}, thank you for your purchase of <strong>${productTitle}</strong>.</p>
+      <p style="font-size: 14px; color: rgba(255,255,255,0.5);">⏳ Payment verification usually takes less than 24 hours. Your download link will be delivered once confirmed.</p>
+      <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 20px;">Order ID: ${orderId}</p>
+    `),
   };
 }
 
 function fileDeliveryEmail(name: string, productTitle: string, fileUrl: string, orderId: string): { subject: string; html: string } {
   return {
-    subject: `Your file is ready: ${productTitle} 🎁`,
-    html: `
-      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #fff; border-radius: 16px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #6c63ff, #ff6584); padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 2rem; font-weight: 800;">JOHNSON<span style="opacity:0.6">.</span></h1>
-        </div>
-        <div style="padding: 40px; text-align: center;">
-          <h2 style="color: #fff; margin: 0 0 16px;">Payment confirmed! Here's your file.</h2>
-          <div style="margin: 32px 0;">
-            <a href="${fileUrl}" style="display: inline-block; background: linear-gradient(135deg, #6c63ff, #ff6584); color: #fff; text-decoration: none; padding: 16px 40px; border-radius: 100px; font-weight: 700;">
-              ⬇️ Download Your File
-            </a>
-          </div>
-          <p style="color: rgba(255,255,255,0.4); font-size: 12px; text-align: left;">
-            🔗 Or copy this link: <a href="${fileUrl}" style="color: #a78bfa; word-break: break-all;">${fileUrl}</a>
-          </p>
-        </div>
+    subject: `Download Ready: ${productTitle}`,
+    html: EMAIL_LAYOUT(`
+      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Payment Confirmed ✅</h2>
+      <p style="font-size: 16px; color: rgba(255,255,255,0.7);">Your files for <strong>${productTitle}</strong> are now available.</p>
+      <div style="margin: 35px 0; text-align: center;">
+        <a href="${fileUrl}" style="display: inline-block; background: #3b82f6; color: #fff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700;">Download Now</a>
       </div>
-    `,
+      <p style="font-size: 12px; color: rgba(255,255,255,0.3);">Order ID: ${orderId}</p>
+    `),
   };
 }
 
-function freeDownloadEmail(name: string, productTitle: string, fileUrl: string): { subject: string; html: string } {
+function freeDownloadEmail(name: string, productTitle: string, fileUrl: string, saleEvent?: string): { subject: string; html: string } {
+  const saleText = saleEvent ? `<div style="color: #00f2fe; font-weight: 700; margin-bottom: 10px;">✨ ${saleEvent} Special</div>` : '';
   return {
-    subject: `Your free resource: ${productTitle} 📦`,
-    html: `
-      <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #fff; border-radius: 16px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #00f2fe, #4facfe); padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 2rem; font-weight: 800; color: #0a0a0a;">JOHNSON<span style="opacity:0.5">.</span></h1>
-        </div>
-        <div style="padding: 40px; text-align: center;">
-          <h2 style="color: #fff; margin: 0 0 16px;">Your free resource is ready!</h2>
-          <div style="margin: 32px 0;">
-            <a href="${fileUrl}" style="display: inline-block; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #0a0a0a; text-decoration: none; padding: 16px 40px; border-radius: 100px; font-weight: 700;">
-              ⬇️ Download Now
-            </a>
-          </div>
-        </div>
+    subject: `Your free resource: ${productTitle}`,
+    html: EMAIL_LAYOUT(`
+      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Download Ready! 📦</h2>
+      ${saleText}
+      <p style="font-size: 16px; color: rgba(255,255,255,0.7);">Your free copy of <strong>${productTitle}</strong> is ready for download.</p>
+      <div style="margin: 35px 0; text-align: center;">
+        <a href="${fileUrl}" style="display: inline-block; background: #3b82f6; color: #fff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700;">Download Now</a>
       </div>
-    `,
+    `),
   };
 }
 
@@ -122,60 +164,157 @@ serve(async (req: Request) => {
     const body = await req.json();
     const { type, email, name, product_title, amount_tzs, file_url, order_id, subject, htmlContent } = body;
 
+    // 1. Load Secrets securely on the server
+    const resendKey = await getConfig('resend_api_key', Deno.env.get("RESEND_API_KEY") ?? "");
+    let fromEmail = await getConfig('from_email', Deno.env.get("FROM_EMAIL") ?? "youreached@johnsonsaimon.com");
+    
+    // Add display name if not present, to match successful history
+    if (!fromEmail.includes("<")) {
+      fromEmail = `Johnson <${fromEmail}>`;
+    }
+    const adminEmail = await getConfig('admin_email', Deno.env.get("ADMIN_EMAIL") ?? "johnsonsaimon111@gmail.com");
+    const siteUrl = await getConfig('site_url', Deno.env.get("SITE_URL") ?? "https://johnsonsaimon.com");
+
+    console.info(`Email Request: type=${type}, to=${email || body.customer_email}, from=${fromEmail}`);
+
+    if (!resendKey) {
+      throw new Error("RESEND_API_KEY is missing (checked env and app_config).");
+    }
+
     let emailContent: { subject: string; html: string };
     let toAddresses = email;
 
-    switch (type) {
-      case "welcome":
-        emailContent = welcomeEmail(name ?? "Friend");
-        break;
-      case "purchase_confirmation":
-        emailContent = purchaseConfirmationEmail(name, product_title, amount_tzs, order_id);
-        break;
-      case "file_delivery":
-        emailContent = fileDeliveryEmail(name, product_title, file_url, order_id);
-        break;
-      case "free_download":
-        emailContent = freeDownloadEmail(name ?? "Friend", product_title, file_url);
-        break;
-      case "newsletter_broadcast":
-        if (!subject || !htmlContent || !email) {
-          return new Response(JSON.stringify({ error: "Missing payload" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
-        emailContent = { subject, html: htmlContent };
-        break;
-      default:
-        return new Response(JSON.stringify({ error: `Unknown email type: ${type}` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    // 2. Fetch from Database Template first
+    const { data: templateData } = await supabase
+      .from('email_templates')
+      .select('subject, content')
+      .eq('type', type)
+      .single();
+
+    if (templateData) {
+      // 2.5 Sanitize and Harden Links
+      let sanitizedFileUrl = file_url ?? "";
+      if (sanitizedFileUrl && typeof sanitizedFileUrl === 'string') {
+        // Ensure no spaces (common in filenames) break the URL
+        sanitizedFileUrl = sanitizedFileUrl.trim().replace(/\s/g, '%20');
+      }
+
+      const placeholderData = {
+        name: name ?? "Friend",
+        product_title: product_title ?? "Digital Product",
+        amount_tzs: amount_tzs ?? "0",
+        order_id: order_id ?? "",
+        file_url: sanitizedFileUrl,
+        site_url: siteUrl,
+        customer_email: body.customer_email ?? email ?? "",
+        sender_message: body.sender_message ?? "",
+        subject: subject ?? "",
+        sale_event: body.sale_event ?? "",
+        sale_label: body.sale_label ?? ""
+      };
+
+      emailContent = {
+        subject: replacePlaceholders(templateData.subject, placeholderData),
+        html: replacePlaceholders(templateData.content, placeholderData)
+      };
+    } else {
+      // Fallback to hardcoded templates
+      switch (type) {
+        case "welcome":
+          emailContent = welcomeEmail(name ?? "Friend", siteUrl);
+          break;
+        case "purchase_confirmation":
+          emailContent = purchaseConfirmationEmail(name, product_title, amount_tzs, order_id, body.sale_event);
+          break;
+        case "file_delivery":
+          emailContent = fileDeliveryEmail(name, product_title, file_url, order_id);
+          break;
+        case "free_download":
+          emailContent = freeDownloadEmail(name ?? "Friend", product_title, file_url, body.sale_event);
+          break;
+        case "admin_order_notification":
+          emailContent = {
+            subject: `New Paid Order: ${product_title} from ${name}`,
+            html: EMAIL_LAYOUT(`
+              <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 15px;">New Order Received! 💰</h2>
+              <p style="font-size: 16px; color: rgba(255,255,255,0.7);">You have a new paid order for <strong>${product_title}</strong>.</p>
+              <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin: 25px 0;">
+                <p style="margin: 0 0 10px; font-size: 14px;"><strong>Customer:</strong> ${name}</p>
+                <p style="margin: 0 0 10px; font-size: 14px;"><strong>Email:</strong> ${body.customer_email ?? email}</p>
+                <p style="margin: 0; font-size: 14px;"><strong>Amount:</strong> ${amount_tzs} TZS</p>
+              </div>
+              <p style="font-size: 14px; color: rgba(255,255,255,0.4);">Order ID: ${order_id}</p>
+            `, "Admin Notification")
+          };
+          break;
+        case "contact_received":
+          emailContent = {
+            subject: `Thanks for reaching out, ${name}`,
+            html: `<p>Hey ${name}, thanks for getting in touch regarding <b>${subject}</b>. I'll get back to you soon.</p>`
+          };
+          break;
+        case "admin_contact_notification":
+          emailContent = {
+            subject: `New Message: ${subject} from ${name}`,
+            html: EMAIL_LAYOUT(`
+              <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 15px;">New Contact Message 📥</h2>
+              <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin: 25px 0;">
+                <p style="margin: 0 0 10px; font-size: 14px;"><strong>From:</strong> ${name} (${body.customer_email ?? email})</p>
+                <p style="margin: 0 0 10px; font-size: 14px;"><strong>Subject:</strong> ${subject}</p>
+                <p style="margin: 0; font-size: 14px;"><strong>Message:</strong></p>
+                <p style="margin: 10px 0 0; font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; white-space: pre-wrap;">${body.sender_message || body.message}</p>
+              </div>
+            `, "Inquiry Received")
+          };
+          break;
+        case "newsletter_broadcast":
+          if (!subject || !htmlContent || !email) {
+            return new Response(JSON.stringify({ error: "Missing payload" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          }
+          emailContent = { subject, html: htmlContent };
+          break;
+        default:
+          return new Response(JSON.stringify({ error: `Unknown email type: ${type}` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
     }
 
-    if (!RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is missing from environment.");
-    }
+    // 3. Auto-route admin notifications to the admin email
+    const targetEmail = (type && type.startsWith("admin_")) ? adminEmail : toAddresses;
 
-    const isBatch = Array.isArray(toAddresses);
-    const endpoint = isBatch ? "https://api.resend.com/emails/batch" : "https://api.resend.com/emails";
+    const isBatch = Array.isArray(targetEmail);
+    const endpoint = "https://api.resend.com/emails" + (isBatch ? "/batch" : "");
 
     let bodyPayload;
+    // Improve text fallback: if it's a file delivery/download, ensure the link is prominent in text
+    let textContent = stripHtml(emailContent.html);
+    if (body.file_url) {
+      textContent += `\n\nYour Download Link:\n${body.file_url}\n\n(Copy and paste this into your browser if the button doesn't work)`;
+    }
+
     if (isBatch) {
-      bodyPayload = (toAddresses as string[]).map((e) => ({
-        from: FROM_EMAIL,
+      bodyPayload = (targetEmail as string[]).map((e) => ({
+        from: fromEmail,
         to: e,
+        reply_to: fromEmail,
         subject: emailContent.subject,
-        html: emailContent.html
+        html: emailContent.html,
+        text: textContent
       }));
     } else {
       bodyPayload = {
-        from: FROM_EMAIL,
-        to: toAddresses,
+        from: fromEmail,
+        to: targetEmail,
+        reply_to: fromEmail, // Help users reply directly
         subject: emailContent.subject,
-        html: emailContent.html
+        html: emailContent.html,
+        text: textContent
       };
     }
 
     const res = await fetch(endpoint, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Authorization": `Bearer ${resendKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(bodyPayload),
