@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronDown, Play, Layout, Smartphone, Heart } from 'lucide-react';
-import { smData as staticSmData } from '../data/socialMediaData';
+import { smData } from '../data/socialMediaData';
 import { supabase } from '../lib/supabaseClient';
 import './SocialMediaPage.css';
 import MiniBrowser from '../components/common/MiniBrowser';
@@ -35,7 +35,7 @@ const AnimatedCounter = ({ value, target, suffix }) => {
 
 /* ── Hero ──────────────────────────────────────────── */
 const SMHero = () => {
-    const { hero } = staticSmData;
+    const { hero } = smData;
 
     return (
         <section className="studio-section sm-hero-section" style={{
