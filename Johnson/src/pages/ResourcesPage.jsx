@@ -159,7 +159,7 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
                     animate={{ y: 0, scale: 1 }}
                     exit={{ y: 20, scale: 0.95 }}
                     onClick={e => e.stopPropagation()}
-                    style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '500px', padding: '2.5rem', position: 'relative' }}
+                    style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '500px', padding: '2.5rem', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
                 >
                     <button onClick={onClose} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
                         <X size={24} />
@@ -355,7 +355,7 @@ const FreeDownloadModal = ({ product, isOpen, onClose }) => {
                     animate={{ y: 0, scale: 1 }}
                     exit={{ y: 20, scale: 0.95 }}
                     onClick={e => e.stopPropagation()}
-                    style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '400px', padding: '2.5rem', position: 'relative' }}
+                    style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '400px', padding: '2.5rem', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}
                 >
                     <button onClick={onClose} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
                         <X size={24} />
