@@ -315,7 +315,15 @@ const CampaignSpotlight = () => {
                 {campaigns.map((campaign, idx) => {
                     const isEven = idx % 2 === 0;
                     const content = campaign.content || {};
-                    const metrics = content.before_after?.after || {};
+                    
+                    // Combine before_after.after metrics with custom_metrics
+                    const baseMetrics = content.before_after?.after || {};
+                    const customMetrics = (content.custom_metrics || []).reduce((acc, m) => {
+                        if (m.label && m.value) acc[m.label] = m.value;
+                        return acc;
+                    }, {});
+                    
+                    const metrics = { ...baseMetrics, ...customMetrics };
                     const struggles = content.challenges || [];
                     const tools = content.tool_stack ? content.tool_stack.split(',') : [];
 
@@ -403,8 +411,12 @@ const CampaignSpotlight = () => {
 
                             {/* Results Wrapper (Metrics) */}
                             <div className="project-results-wrapper" style={{ direction: 'ltr', textAlign: 'left', marginTop: '2rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                                    {Object.entries(metrics).map(([key, val]) => (
+                                <div style={{ 
+                                    display: 'grid', 
+                                    gridTemplateColumns: `repeat(${Math.min(Object.keys(metrics).length, 3)}, 1fr)`, 
+                                    gap: '1rem' 
+                                }}>
+                                    {Object.entries(metrics).slice(0, 3).map(([key, val]) => (
                                         <div key={`a-${key}`} style={{ 
                                             padding: '1.2rem', 
                                             background: '#BDFF00', 

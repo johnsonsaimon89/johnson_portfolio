@@ -22,21 +22,32 @@ const FeaturedProjects = () => {
                 .order('display_order', { ascending: true });
 
             if (!error && data) {
-                const formattedProjects = data.map(study => ({
-                    id: study.id,
-                    client: study.organization_name,
-                    industry: study.organization_type,
-                    websiteUrl: study.content.website_url || '',
-                    previewImageUrl: study.content.preview_image_url || '',
-                    paragraphs: study.content.paragraphs || [],
-                    metrics: {
-                        visitors: study.content.metrics?.visitors || '',
-                        sales: study.content.metrics?.sales || '',
-                        signups: study.content.metrics?.signups || ''
-                    },
-                    colors: study.content.colors || ['#6366f1', '#1e293b', '#f8fafc'],
-                    tools: study.content.tool_stack ? study.content.tool_stack.split(',').map(t => t.trim()) : []
-                }));
+                const formattedProjects = data.map(study => {
+                    const content = study.content || {};
+                    const coreMetrics = content.metrics || {};
+                    const customMetrics = content.custom_metrics || [];
+                    
+                    // Combine core metrics and custom metrics into a single array
+                    // Ensure core metrics are only included if they have values
+                    const allMetrics = [
+                        coreMetrics.visitors ? { label: 'VISITORS', value: coreMetrics.visitors } : null,
+                        coreMetrics.sales ? { label: 'SALES', value: coreMetrics.sales } : null,
+                        coreMetrics.signups ? { label: 'SIGNUPS', value: coreMetrics.signups } : null,
+                        ...customMetrics.map(m => m.label && m.value ? { label: m.label.toUpperCase(), value: m.value } : null)
+                    ].filter(Boolean); // Only keep non-null metrics
+
+                    return {
+                        id: study.id,
+                        client: study.organization_name,
+                        industry: study.organization_type,
+                        websiteUrl: content.website_url || '',
+                        previewImageUrl: content.preview_image_url || '',
+                        paragraphs: content.paragraphs || [],
+                        displayMetrics: allMetrics,
+                        colors: content.colors || ['#6366f1', '#1e293b', '#f8fafc'],
+                        tools: content.tool_stack ? content.tool_stack.split(',').map(t => t.trim()) : []
+                    };
+                });
                 setProjects(formattedProjects);
             }
             setLoading(false);
@@ -126,22 +137,22 @@ const FeaturedProjects = () => {
                                     )}
 
                                     {/* Metrics Row */}
-                                    <div className="project-results-wrapper" style={{ margin: '2rem 0', gridColumn: 'auto' }}>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-                                            <div className="result-stat" style={{ padding: '1rem', background: 'var(--brand-accent)', border: '1px solid var(--brand-accent)' }}>
-                                                <span className="result-val" style={{ fontSize: '1.4rem', color: '#000' }}>{project.metrics.visitors || 'N/A'}</span>
-                                                <span className="result-label" style={{ fontSize: '0.65rem', opacity: 0.8, color: '#000', fontWeight: 700 }}>VISITORS</span>
-                                            </div>
-                                            <div className="result-stat" style={{ padding: '1rem', background: 'var(--brand-accent)', border: '1px solid var(--brand-accent)' }}>
-                                                <span className="result-val" style={{ fontSize: '1.4rem', color: '#000' }}>{project.metrics.sales || 'N/A'}</span>
-                                                <span className="result-label" style={{ fontSize: '0.65rem', opacity: 0.8, color: '#000', fontWeight: 700 }}>SALES</span>
-                                            </div>
-                                            <div className="result-stat" style={{ padding: '1rem', background: 'var(--brand-accent)', border: '1px solid var(--brand-accent)' }}>
-                                                <span className="result-val" style={{ fontSize: '1.4rem', color: '#000' }}>{project.metrics.signups || 'N/A'}</span>
-                                                <span className="result-label" style={{ fontSize: '0.65rem', opacity: 0.8, color: '#000', fontWeight: 700 }}>SIGNUPS</span>
+                                    {project.displayMetrics && project.displayMetrics.length > 0 && (
+                                        <div className="project-results-wrapper" style={{ margin: '2rem 0', gridColumn: 'auto' }}>
+                                            <div style={{ 
+                                                display: 'grid', 
+                                                gridTemplateColumns: `repeat(${Math.min(project.displayMetrics.length, 3)}, 1fr)`, 
+                                                gap: '1rem' 
+                                            }}>
+                                                {project.displayMetrics.slice(0, 3).map((metric, mIdx) => (
+                                                    <div key={mIdx} className="result-stat" style={{ padding: '1rem', background: 'var(--brand-accent)', border: '1px solid var(--brand-accent)' }}>
+                                                        <span className="result-val" style={{ fontSize: '1.4rem', color: '#000' }}>{metric.value}</span>
+                                                        <span className="result-label" style={{ fontSize: '0.65rem', opacity: 0.8, color: '#000', fontWeight: 700 }}>{metric.label}</span>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     {/* Toolstack */}
                                     <div className="project-toolstack">
