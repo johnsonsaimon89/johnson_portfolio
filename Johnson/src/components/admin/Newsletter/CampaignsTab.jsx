@@ -152,11 +152,11 @@ const CampaignsTab = ({ onEditCampaign }) => {
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: '0.875rem' }}>Campaign</th>
-                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: '0.875rem' }}>Status</th>
-                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: '0.875rem' }}>Target</th>
-                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: '0.875rem' }}>Performance</th>
-                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: '0.875rem', textAlign: 'right' }}>Actions</th>
+                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: 'var(--fs-p2)' }}>Campaign</th>
+                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: 'var(--fs-p2)' }}>Status</th>
+                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: 'var(--fs-p2)' }}>Target</th>
+                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: 'var(--fs-p2)' }}>Performance</th>
+                                <th style={{ padding: '1rem', color: '#6b7280', fontWeight: 600, fontSize: 'var(--fs-p2)', textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>

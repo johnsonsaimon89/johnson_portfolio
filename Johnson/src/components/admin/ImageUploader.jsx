@@ -169,7 +169,7 @@ const ImageUploader = ({ bucketName = 'portfolio_images', onUploadSuccess, curre
                     {uploading ? (
                         <div className="upload-state">
                             <Loader2 size={24} className="spin text-accent" />
-                            <p className="upload-text" style={{ fontSize: '0.8rem' }}>Uploading...</p>
+                            <p className="upload-text" style={{ fontSize: 'var(--fs-p2)' }}>Uploading...</p>
                         </div>
                     ) : (
                         <div className="upload-state">

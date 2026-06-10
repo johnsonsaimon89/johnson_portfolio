@@ -30,13 +30,13 @@ const EditableBlock = ({ block, onUpdate, onDelete, onDuplicate, onEditSettings,
                             contentEditable
                             suppressContentEditableWarning
                             onBlur={(e) => onUpdate({ title: e.target.innerText })}
-                            style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'var(--heading-font)' }}
+                            style={{ fontSize: 'var(--fs-p1)', marginBottom: '1rem', fontFamily: 'var(--heading-font)' }}
                         >{block.data.title}</h1>
                         <p
                             contentEditable
                             suppressContentEditableWarning
                             onBlur={(e) => onUpdate({ subtitle: e.target.innerText })}
-                            style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.8 }}
+                            style={{ fontSize: 'var(--fs-p1)', marginBottom: '2rem', opacity: 0.8 }}
                         >{block.data.subtitle}</p>
 
                         {/* Interactive WYSIWYG Button Editor */}
@@ -57,7 +57,7 @@ const EditableBlock = ({ block, onUpdate, onDelete, onDuplicate, onEditSettings,
                         contentEditable
                         suppressContentEditableWarning
                         onBlur={(e) => onUpdate({ content: e.target.innerText })}
-                        style={{ fontSize: '1.1rem', lineHeight: 1.6 }}
+                        style={{ fontSize: 'var(--fs-p2)', lineHeight: 1.6 }}
                     >
                         {block.data.content}
                     </div>
@@ -75,7 +75,7 @@ const EditableBlock = ({ block, onUpdate, onDelete, onDuplicate, onEditSettings,
                             onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
                         >
-                            <div style={{ background: 'white', color: 'black', padding: '8px 20px', borderRadius: '50px', fontWeight: '600', fontSize: '0.9rem' }}>
+                            <div style={{ background: 'white', color: 'black', padding: '8px 20px', borderRadius: '50px', fontWeight: '600', fontSize: 'var(--fs-p2)' }}>
                                 Change Media
                             </div>
                         </div>
@@ -85,7 +85,7 @@ const EditableBlock = ({ block, onUpdate, onDelete, onDuplicate, onEditSettings,
                 return (
                     <div className="rendered-form" style={{ padding: '2rem', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', border: '1px dashed #ccc' }}>
                         <h3>{block.data.title || 'Contact Form'}</h3>
-                        <p style={{ color: '#666', fontSize: '0.9rem' }}>(Form Placeholder - The actual form will render on the live site)</p>
+                        <p style={{ color: '#666', fontSize: 'var(--fs-p2)' }}>(Form Placeholder - The actual form will render on the live site)</p>
 
                         <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div style={{ height: '40px', background: 'white', border: '1px solid #ddd', borderRadius: '4px', maxWidth: '300px' }}></div>

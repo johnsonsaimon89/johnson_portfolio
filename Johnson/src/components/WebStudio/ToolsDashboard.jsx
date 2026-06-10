@@ -32,11 +32,11 @@ const ToolsDashboard = () => {
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.05 }}
                         >
-                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, fontSize: 'var(--fs-p2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                                 {tool.category}
                             </span>
                             <h4 style={{ margin: '1.5rem 0 0.5rem 0' }}>{tool.name}</h4>
-                            <p style={{ fontSize: '0.85rem', marginBottom: 0 }}>{tool.description}</p>
+                            <p style={{ fontSize: 'var(--fs-p2)', marginBottom: 0 }}>{tool.description}</p>
                         </motion.div>
                     ))}
                 </div>

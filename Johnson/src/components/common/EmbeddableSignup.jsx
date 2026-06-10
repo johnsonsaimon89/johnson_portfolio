@@ -60,7 +60,7 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
     return (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%', maxWidth: '400px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                {showLabels && <label style={{ fontSize: '0.875rem', color: '#f3f4f6' }}>Name (Optional)</label>}
+                {showLabels && <label style={{ fontSize: 'var(--fs-p2)', color: '#f3f4f6' }}>Name (Optional)</label>}
                 <input
                     type="text"
                     value={name}
@@ -73,13 +73,13 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
                         background: 'rgba(255,255,255,0.05)',
                         color: '#fff',
                         outline: 'none',
-                        fontSize: '0.875rem'
+                        fontSize: 'var(--fs-p2)'
                     }}
                 />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                {showLabels && <label style={{ fontSize: '0.875rem', color: '#f3f4f6' }}>Email *</label>}
+                {showLabels && <label style={{ fontSize: 'var(--fs-p2)', color: '#f3f4f6' }}>Email *</label>}
                 <input
                     type="email"
                     value={email}
@@ -93,7 +93,7 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
                         background: 'rgba(255,255,255,0.05)',
                         color: '#fff',
                         outline: 'none',
-                        fontSize: '0.875rem'
+                        fontSize: 'var(--fs-p2)'
                     }}
                 />
             </div>
@@ -118,7 +118,7 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
             </button>
 
             {status === 'error' && (
-                <p style={{ color: '#ff6584', fontSize: '0.875rem', margin: 0, textAlign: 'center' }}>
+                <p style={{ color: '#ff6584', fontSize: 'var(--fs-p2)', margin: 0, textAlign: 'center' }}>
                     {message}
                 </p>
             )}

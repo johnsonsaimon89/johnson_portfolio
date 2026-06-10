@@ -145,7 +145,7 @@ const EmailTemplatesManager = () => {
                         <span className="stat-label">Currently Editing</span>
                         <div className="stat-icon"><Mail size={18} /></div>
                     </div>
-                    <div className="stat-value" style={{ fontSize: '1.2rem' }}>{TEMPLATE_CONFIGS.find(t => t.id === selectedType)?.label}</div>
+                    <div className="stat-value" style={{ fontSize: 'var(--fs-p1)' }}>{TEMPLATE_CONFIGS.find(t => t.id === selectedType)?.label}</div>
                     <div className="stat-footer">Multi-colored focus</div>
                 </div>
             </div>
@@ -154,7 +154,7 @@ const EmailTemplatesManager = () => {
                 <div className="panel-header">
                     <div>
                         <h3 style={{ border: 'none', margin: 0 }}>Template Ecosystem</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                        <p style={{ margin: '4px 0 0', fontSize: 'var(--fs-p2)', color: '#64748b' }}>
                             Customize the automated emails sent to your customers.
                         </p>
                     </div>
@@ -181,7 +181,7 @@ const EmailTemplatesManager = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '0.85rem',
-                                        fontSize: '0.9rem',
+                                        fontSize: 'var(--fs-p2)',
                                         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                                     }}
                                 >
@@ -200,7 +200,7 @@ const EmailTemplatesManager = () => {
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                                         <span style={{ fontWeight: 700, color: selectedType === t.id ? '#000' : 'rgba(255,255,255,0.7)' }}>{t.label}</span>
-                                        <span style={{ fontSize: '0.65rem', opacity: selectedType === t.id ? 0.7 : 0.5, color: selectedType === t.id ? '#000' : 'inherit' }}>{t.description}</span>
+                                        <span style={{ fontSize: 'var(--fs-p2)', opacity: selectedType === t.id ? 0.7 : 0.5, color: selectedType === t.id ? '#000' : 'inherit' }}>{t.description}</span>
                                     </div>
                                 </button>
                             ))}
@@ -212,7 +212,7 @@ const EmailTemplatesManager = () => {
                         <div className="admin-form">
                             {/* Subject Field */}
                             <div className="form-group">
-                                <label style={{ marginBottom: '0.6rem', display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>Email Subject Line</label>
+                                <label style={{ marginBottom: '0.6rem', display: 'block', fontSize: 'var(--fs-p2)', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>Email Subject Line</label>
                                 <input
                                     type="text"
                                     value={editingTemplate.subject}
@@ -224,7 +224,7 @@ const EmailTemplatesManager = () => {
                                         color: '#000',
                                         border: `1px solid ${activeTemplateColor}30`,
                                         borderLeft: `5px solid ${activeTemplateColor}`,
-                                        fontSize: '1rem',
+                                        fontSize: 'var(--fs-p2)',
                                         fontWeight: 600,
                                         padding: '1rem',
                                         borderRadius: '12px',
@@ -237,14 +237,14 @@ const EmailTemplatesManager = () => {
                             {/* Content Editor / Preview */}
                             <div className="form-group">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1.25rem' }}>
-                                    <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>Body Architecture</label>
+                                    <label style={{ fontSize: 'var(--fs-p2)', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>Body Architecture</label>
                                     <div style={{ display: 'flex', background: '#f8fafc', padding: '0.4rem', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
                                         <button 
                                             type="button"
                                             onClick={() => setActiveTab('code')}
                                             style={{
                                                 padding: '0.6rem 1.4rem',
-                                                fontSize: '0.75rem',
+                                                fontSize: 'var(--fs-p2)',
                                                 fontWeight: 800,
                                                 borderRadius: '10px',
                                                 border: 'none',
@@ -265,7 +265,7 @@ const EmailTemplatesManager = () => {
                                             onClick={() => setActiveTab('preview')}
                                             style={{
                                                 padding: '0.6rem 1.4rem',
-                                                fontSize: '0.75rem',
+                                                fontSize: 'var(--fs-p2)',
                                                 fontWeight: 800,
                                                 borderRadius: '10px',
                                                 border: 'none',
@@ -292,7 +292,7 @@ const EmailTemplatesManager = () => {
                                             type="button"
                                             onClick={() => copyToClipboard(p)}
                                             style={{
-                                                fontSize: '0.65rem',
+                                                fontSize: 'var(--fs-p2)',
                                                 padding: '0.4rem 0.85rem',
                                                 background: '#fff',
                                                 border: `1px solid ${activeTemplateColor}20`,
@@ -321,7 +321,7 @@ const EmailTemplatesManager = () => {
                                         style={{ 
                                             fontFamily: '"Fira Code", "JetBrains Mono", monospace', 
                                             lineHeight: '1.7', 
-                                            fontSize: '0.9rem',
+                                            fontSize: 'var(--fs-p2)',
                                             backgroundColor: '#0f172a',
                                             color: '#f1f5f9',
                                             border: `1px solid ${activeTemplateColor}30`,
@@ -374,7 +374,7 @@ const EmailTemplatesManager = () => {
                                         border: 'none',
                                         borderRadius: '14px',
                                         fontWeight: 800,
-                                        fontSize: '0.95rem',
+                                        fontSize: 'var(--fs-p2)',
                                         cursor: 'pointer',
                                         boxShadow: `0 8px 25px ${activeTemplateColor}40`,
                                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'

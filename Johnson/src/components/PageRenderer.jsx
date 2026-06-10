@@ -12,8 +12,8 @@ const PageRenderer = ({ blocks }) => {
             case 'hero':
                 return (
                     <div className="rendered-hero" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: 'var(--bg-color)', color: 'var(--text-color)', ...style }}>
-                        <h1 style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'var(--heading-font)' }}>{data.title}</h1>
-                        <p style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.8 }}>{data.subtitle}</p>
+                        <h1 style={{ fontSize: 'var(--fs-p1)', marginBottom: '1rem', fontFamily: 'var(--heading-font)' }}>{data.title}</h1>
+                        <p style={{ fontSize: 'var(--fs-p1)', marginBottom: '2rem', opacity: 0.8 }}>{data.subtitle}</p>
                         {data.primaryButtonText && (
                             <a
                                 href={data.primaryButtonLink || '#'}
@@ -26,7 +26,7 @@ const PageRenderer = ({ blocks }) => {
                 );
             case 'text':
                 return (
-                    <div className="rendered-text" style={{ fontSize: '1.1rem', lineHeight: 1.6, ...style }}>
+                    <div className="rendered-text" style={{ fontSize: 'var(--fs-p2)', lineHeight: 1.6, ...style }}>
                         {data.content}
                     </div>
                 );

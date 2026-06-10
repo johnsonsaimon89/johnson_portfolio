@@ -132,8 +132,8 @@ const NewsletterPopup = () => {
                                 <Mail size={32} color="var(--brand-accent, #BDFF00)" />
                             </motion.div>
 
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>Let’s keep in touch</h3>
-                            <p style={{ color: 'var(--muted-color, #888)', fontSize: '0.875rem', marginBottom: '2rem', lineHeight: 1.6 }}>
+                            <h3 style={{ fontSize: 'var(--fs-p1)', fontWeight: 800, color: 'white', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>Let’s keep in touch</h3>
+                            <p style={{ color: 'var(--muted-color, #888)', fontSize: 'var(--fs-p2)', marginBottom: '2rem', lineHeight: 1.6 }}>
                                 I share periodic updates on my latest projects, digital strategy tips, and behind-the-scenes thoughts on creation.
                             </p>
 
@@ -145,7 +145,7 @@ const NewsletterPopup = () => {
                                 onClick={closePopup}
                                 style={{
                                     marginTop: '1.5rem',
-                                    fontSize: '0.875rem',
+                                    fontSize: 'var(--fs-p2)',
                                     color: 'var(--muted-color, #888)',
                                     background: 'none',
                                     border: 'none',

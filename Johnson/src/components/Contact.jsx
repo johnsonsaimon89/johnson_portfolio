@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Mail, Phone, ArrowRight, Loader2, CheckCircle, XCircle, MessageCircle } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 import { supabase, isSupabaseReady } from '../lib/supabaseClient';
-import emailService from '../lib/emailService';
 import './Contact.css';
 
 const Toast = ({ type, message, onClose }) => (
@@ -42,11 +41,9 @@ const Contact = () => {
     const { contact } = portfolioData;
     const [header] = useState({
         contact_badge: 'Talk',
-        contact_title: "LET'S START SOMETHING GREAT",
-        contact_description: "If you have an idea, project, or collaboration in mind, I’d love to hear about it. Whether you're looking to grow your social media presence or build a new website, feel free to reach out and start a conversation."
+        contact_title: "LET'S START\nSOMETHING\nGREAT",
+        contact_description: "If you have an idea, project, or collaboration in mind, I’d love to hear about it. Whether you're looking to grow your social media presence or build a new website, feel free to reach out."
     });
-
-    // Removed dynamic fetching to restore hardcoded text
 
     const [form, setForm] = useState({
         name: '',
@@ -54,7 +51,7 @@ const Contact = () => {
         phone: '',
         service: '',
         message: '',
-        honeypot: '', // invisible spam trap
+        honeypot: '',
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -81,7 +78,6 @@ const Contact = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Spam trap — if honeypot is filled, silently reject
         if (form.honeypot) return;
 
         const errs = validate();
@@ -93,7 +89,6 @@ const Contact = () => {
         setLoading(true);
         setToast(null);
 
-        // Graceful fallback when Supabase credentials aren't configured yet
         if (!isSupabaseReady) {
             setLoading(false);
             setToast({
@@ -109,7 +104,6 @@ const Contact = () => {
                 fullMessage += `\n\nPhone/WhatsApp: ${form.phone.trim()}`;
             }
 
-            // Also include honeypot check again just to be safe
             if (form.honeypot) return;
 
             const { error } = await supabase.from('messages').insert([{
@@ -120,9 +114,6 @@ const Contact = () => {
             }]);
 
             if (error) throw error;
-
-            // Email notifications are now handled by database triggers (auto-reply + admin alert)
-            // to prevent duplicates and improve sender reputation.
 
             setToast({ type: 'success', message: "Message sent! Johnson will be in touch soon." });
             setForm({ name: '', email: '', phone: '', service: '', message: '', honeypot: '' });
@@ -135,69 +126,44 @@ const Contact = () => {
         }
     };
 
-    const inputStyle = {
-        background: 'transparent',
-        border: 'none',
-        borderBottom: '1px solid var(--glass-border)',
-        padding: '1rem 0',
-        color: 'white',
-        outline: 'none',
-        width: '100%',
-        fontSize: '1rem',
-        transition: 'border-color 0.2s',
-    };
-
     return (
         <section id="talk" className="section contact">
             <div className="container">
-                <div className="contact-grid">
-                    {/* Left panel — contact info */}
-                    <div className="contact-info-panel">
+                <div className="contact-editorial-layout">
+                    {/* Left Panel: Massive Typography & Clean Details */}
+                    <div className="contact-editorial-left">
                         <span className="contact-label">{header.contact_badge}</span>
-                        <h2 style={{ marginTop: '2rem' }} dangerouslySetInnerHTML={{ __html: header.contact_title.replace('GREAT', '<span style="color: var(--brand-accent)">GREAT</span>') }} />
-                        <p style={{ color: 'var(--muted-color)', marginTop: '1.5rem', lineHeight: 1.7 }}>
+                        <h2 
+                            className="contact-editorial-title"
+                            dangerouslySetInnerHTML={{ __html: header.contact_title.replace(/\n/g, '<br/>').replace('GREAT', '<span style="color: var(--brand-accent)">GREAT</span>') }} 
+                        />
+                        <p className="contact-editorial-desc">
                             {header.contact_description}
                         </p>
 
-                        <div className="contact-details">
-                            <a href={`mailto:${contact.email}`} className="contact-detail-item">
-                                <div className="glass contact-icon"><Mail size={20} /></div>
-                                <div>
-                                    <p style={{ color: 'var(--muted-color)', fontSize: '0.85rem' }}>Email</p>
-                                    <p style={{ fontWeight: 600 }}>{contact.email}</p>
-                                </div>
+                        <div className="contact-editorial-info">
+                            <a href={`mailto:${contact.email}`} className="info-item">
+                                <Mail size={18} />
+                                <span>{contact.email}</span>
                             </a>
-
-                            <a href={`tel:${contact.phone}`} className="contact-detail-item">
-                                <div className="glass contact-icon"><Phone size={20} /></div>
-                                <div>
-                                    <p style={{ color: 'var(--muted-color)', fontSize: '0.85rem' }}>Call / WhatsApp</p>
-                                    <p style={{ fontWeight: 600 }}>{contact.phone}</p>
-                                </div>
+                            <a href={`tel:${contact.phone}`} className="info-item">
+                                <Phone size={18} />
+                                <span>{contact.phone}</span>
                             </a>
-
-                            <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="contact-detail-item contact-wa-item">
-                                <div className="glass contact-icon contact-icon--wa"><MessageCircle size={20} /></div>
-                                <div>
-                                    <p style={{ color: 'var(--muted-color)', fontSize: '0.85rem' }}>WhatsApp</p>
-                                    <p style={{ fontWeight: 600 }}>Chat Directly →</p>
-                                </div>
+                            <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="info-item info-item--wa">
+                                <MessageCircle size={18} />
+                                <span>Chat Directly via WhatsApp →</span>
                             </a>
-
-                            <div className="contact-detail-item">
-                                <div className="glass contact-icon"><MapPin size={20} /></div>
-                                <div>
-                                    <p style={{ color: 'var(--muted-color)', fontSize: '0.85rem' }}>Location</p>
-                                    <p style={{ fontWeight: 600 }}>{contact.address}</p>
-                                </div>
+                            <div className="info-item">
+                                <MapPin size={18} />
+                                <span>{contact.address}</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right panel — form */}
-                    <div className="glass contact-form-panel">
-                        <form onSubmit={handleSubmit} noValidate>
-                            {/* Honeypot — hidden from humans, visible to bots */}
+                    {/* Right Panel: Clean Minimalist Form (No Glass) */}
+                    <div className="contact-editorial-right">
+                        <form className="contact-minimal-form" onSubmit={handleSubmit} noValidate>
                             <input
                                 type="text"
                                 name="honeypot"
@@ -211,29 +177,25 @@ const Contact = () => {
 
                             <div className="form-row">
                                 <div className="form-field">
-                                    <label className="form-label">Full Name <span className="form-required">*</span></label>
                                     <input
                                         type="text"
                                         name="name"
                                         value={form.name}
                                         onChange={handleChange}
-                                        placeholder="John Doe"
-                                        style={inputStyle}
-                                        className={errors.name ? 'input-error' : ''}
+                                        placeholder="Full Name *"
+                                        className={`minimal-input ${errors.name ? 'input-error' : ''}`}
                                     />
                                     {errors.name && <span className="form-error">{errors.name}</span>}
                                 </div>
 
                                 <div className="form-field">
-                                    <label className="form-label">Email Address <span className="form-required">*</span></label>
                                     <input
                                         type="email"
                                         name="email"
                                         value={form.email}
                                         onChange={handleChange}
-                                        placeholder="john@example.com"
-                                        style={inputStyle}
-                                        className={errors.email ? 'input-error' : ''}
+                                        placeholder="Email Address *"
+                                        className={`minimal-input ${errors.email ? 'input-error' : ''}`}
                                     />
                                     {errors.email && <span className="form-error">{errors.email}</span>}
                                 </div>
@@ -241,26 +203,24 @@ const Contact = () => {
 
                             <div className="form-row">
                                 <div className="form-field">
-                                    <label className="form-label">Phone / WhatsApp</label>
                                     <input
                                         type="tel"
                                         name="phone"
                                         value={form.phone}
                                         onChange={handleChange}
-                                        placeholder="+255 700 000 000"
-                                        style={inputStyle}
+                                        placeholder="Phone / WhatsApp"
+                                        className="minimal-input"
                                     />
                                 </div>
 
                                 <div className="form-field">
-                                    <label className="form-label">Service Needed</label>
                                     <select
                                         name="service"
                                         value={form.service}
                                         onChange={handleChange}
-                                        className="form-select"
+                                        className="minimal-select"
                                     >
-                                        <option value="">Select a service…</option>
+                                        <option value="">Service Needed…</option>
                                         {SERVICES.map(s => (
                                             <option key={s} value={s}>{s}</option>
                                         ))}
@@ -268,33 +228,33 @@ const Contact = () => {
                                 </div>
                             </div>
 
-                            <div className="form-field">
-                                <label className="form-label">Your Message <span className="form-required">*</span></label>
+                            <div className="form-field form-field-full">
                                 <textarea
                                     name="message"
                                     value={form.message}
                                     onChange={handleChange}
-                                    rows="5"
-                                    placeholder="Tell me about your project, goals, timeline, or budget…"
-                                    style={{ ...inputStyle, resize: 'none' }}
-                                    className={errors.message ? 'input-error' : ''}
+                                    rows="4"
+                                    placeholder="Tell me about your project, goals, timeline, or budget… *"
+                                    className={`minimal-input minimal-textarea ${errors.message ? 'input-error' : ''}`}
                                 />
                                 {errors.message && <span className="form-error">{errors.message}</span>}
                             </div>
 
-                            <motion.button
-                                type="submit"
-                                className="btn-primary contact-submit-btn"
-                                whileHover={{ scale: loading ? 1 : 1.02 }}
-                                whileTap={{ scale: loading ? 1 : 0.98 }}
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <><Loader2 size={20} className="spin" /> Sending…</>
-                                ) : (
-                                    <>Send Message <ArrowRight size={20} /></>
-                                )}
-                            </motion.button>
+                            <div className="form-submit-container">
+                                <motion.button
+                                    type="submit"
+                                    className="btn-primary contact-submit-btn"
+                                    whileHover={{ scale: loading ? 1 : 1.02 }}
+                                    whileTap={{ scale: loading ? 1 : 0.98 }}
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <><Loader2 size={20} className="spin" /> Sending…</>
+                                    ) : (
+                                        <>Send Message <ArrowRight size={20} /></>
+                                    )}
+                                </motion.button>
+                            </div>
                         </form>
                     </div>
                 </div>

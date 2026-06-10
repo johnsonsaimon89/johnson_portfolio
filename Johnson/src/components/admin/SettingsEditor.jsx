@@ -149,7 +149,7 @@ const SettingsEditor = () => {
             <div className="admin-panel" style={{ maxWidth: '800px', margin: '0 auto' }}>
                 <div className="panel-header">
                     <h3>Global Site Settings</h3>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted-color)' }}>
+                    <p style={{ margin: 0, fontSize: 'var(--fs-p2)', color: 'var(--muted-color)' }}>
                         Update the text content shown across your website.
                     </p>
                 </div>
@@ -178,7 +178,7 @@ const SettingsEditor = () => {
                     <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem' }}>About Section</h4>
                     <div className="form-group mb-2">
                         <label>Profile Biography</label>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--muted-color)', marginBottom: '0.5rem', marginTop: '-0.3rem' }}>
+                        <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', marginBottom: '0.5rem', marginTop: '-0.3rem' }}>
                             Separate paragraphs with a blank line (press Enter twice).
                         </p>
                         <textarea
@@ -268,7 +268,7 @@ const SettingsEditor = () => {
                     </div>
 
                     <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem' }}>Payment Details (Checkout)</h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--muted-color)', marginBottom: '1rem' }}>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', marginBottom: '1rem' }}>
                         These details will be displayed to customers during the checkout process for digital products.
                     </p>
 
@@ -303,7 +303,7 @@ const SettingsEditor = () => {
                     </div>
                     
                     <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem' }}>Behind The Scenes (Resources Page)</h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--muted-color)', marginBottom: '1rem' }}>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', marginBottom: '1rem' }}>
                         Update the content for the "Behind the Scenes" section on the Resources page.
                     </p>
 
@@ -364,7 +364,7 @@ const SettingsEditor = () => {
                     </div>
 
                     <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem', color: '#BDFF00' }}>Email & Backend Configuration</h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--muted-color)', marginBottom: '1rem' }}>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', marginBottom: '1rem' }}>
                         Critical settings for order notifications and automated emails. <strong>Restarting emails requires these to be set.</strong>
                     </p>
                     <div className="form-group">
@@ -386,7 +386,7 @@ const SettingsEditor = () => {
                             onChange={handleInputChange}
                             placeholder="Paste your service_role key here"
                         />
-                        <p style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.4rem' }}>
+                        <p style={{ fontSize: 'var(--fs-p2)', color: '#64748b', marginTop: '0.4rem' }}>
                             Go to Supabase Dashboard → Project Settings → API and copy the <code>service_role</code> secret.
                         </p>
                     </div>

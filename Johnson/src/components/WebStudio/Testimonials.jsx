@@ -49,7 +49,7 @@ const Testimonials = () => {
                 <div style={{ textAlign: 'center', marginBottom: '8rem' }}>
                     <span className="badge">Proof</span>
                     <h2 style={{ fontSize: 'var(--fs-h1)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>Client Perspectives</h2>
-                    <p style={{ color: 'var(--muted-color)', fontSize: '1.2rem', marginTop: '1.5rem', marginInline: 'auto', maxWidth: '540px' }}>
+                    <p style={{ color: 'var(--muted-color)', fontSize: 'var(--fs-p1)', marginTop: '1.5rem', marginInline: 'auto', maxWidth: '540px' }}>
                         The results and relationships that define my studio.
                     </p>
                 </div>
@@ -78,12 +78,12 @@ const Testimonials = () => {
                                     boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
                                 }}
                             >
-                                <p style={{ margin: '0 0 0.8rem 0', fontSize: '1.1rem', lineHeight: 1.5, fontStyle: 'italic', fontWeight: 400 }}>"{test.quote}"</p>
+                                <p style={{ margin: '0 0 0.8rem 0', fontSize: 'var(--fs-p2)', lineHeight: 1.5, fontStyle: 'italic', fontWeight: 400 }}>"{test.quote}"</p>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: isEven ? 'flex-start' : 'flex-end' }}>
                                     <span style={{
                                         fontWeight: 800,
                                         color: 'var(--brand-accent)',
-                                        fontSize: '0.75rem',
+                                        fontSize: 'var(--fs-p2)',
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.05em'
                                     }}>

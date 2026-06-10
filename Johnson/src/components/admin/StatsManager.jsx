@@ -192,8 +192,8 @@ const StatsManager = () => {
                                     {items.map((stat) => (
                                         <div key={stat.id} className="admin-list-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1rem' }}>
                                             <div className="item-content">
-                                                <div className="item-title" style={{ fontSize: '1.25rem', fontWeight: '800' }}>{stat.metric_value}</div>
-                                                <div className="item-subtitle" style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>{stat.metric_name}</div>
+                                                <div className="item-title" style={{ fontSize: 'var(--fs-p1)', fontWeight: '800' }}>{stat.metric_value}</div>
+                                                <div className="item-subtitle" style={{ fontSize: 'var(--fs-p2)', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>{stat.metric_name}</div>
                                                 <div className="item-meta mt-1">
                                                     {stat.trend && <span className="indicator indicator-success">{stat.trend}</span>}
                                                 </div>

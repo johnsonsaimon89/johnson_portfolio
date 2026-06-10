@@ -273,8 +273,8 @@ const FinancialAnalytics = () => {
         <div className="admin-component-container">
             <div className="panel-header" style={{ marginBottom: '2rem', border: 'none' }}>
                 <div>
-                    <h3 style={{ border: 'none', margin: 0, fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.02em' }}>Financial Ecosystem</h3>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Real-time organic performance tracking</p>
+                    <h3 style={{ border: 'none', margin: 0, fontSize: 'var(--fs-p1)', fontWeight: '800', letterSpacing: '-0.02em' }}>Financial Ecosystem</h3>
+                    <p style={{ margin: 0, fontSize: 'var(--fs-p2)', color: '#64748b' }}>Real-time organic performance tracking</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     <div className="date-range-btns" style={{ display: 'flex', background: '#f8fafc', padding: '4px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
@@ -284,7 +284,7 @@ const FinancialAnalytics = () => {
                                 onClick={() => setDateRange(range)}
                                 style={{ 
                                     padding: '0.4rem 0.8rem', 
-                                    fontSize: '0.75rem', 
+                                    fontSize: 'var(--fs-p2)', 
                                     border: 'none',
                                     borderRadius: '8px',
                                     cursor: 'pointer',
@@ -305,10 +305,10 @@ const FinancialAnalytics = () => {
                     </button>
 
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button onClick={handleExportCSV} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', borderRadius: '10px', fontSize: '0.8rem', padding: '0.6rem 1rem' }}>
+                        <button onClick={handleExportCSV} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', borderRadius: '10px', fontSize: 'var(--fs-p2)', padding: '0.6rem 1rem' }}>
                             <FileText size={14} /> CSV
                         </button>
-                        <button onClick={handleExportExcel} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', borderRadius: '10px', fontSize: '0.8rem', padding: '0.6rem 1rem' }}>
+                        <button onClick={handleExportExcel} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', borderRadius: '10px', fontSize: 'var(--fs-p2)', padding: '0.6rem 1rem' }}>
                             <FileSpreadsheet size={14} /> Excel
                         </button>
                     </div>
@@ -430,7 +430,7 @@ const FinancialAnalytics = () => {
                         </ResponsiveContainer>
                         <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             {productPerformance.map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem' }}>
+                                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: 'var(--fs-p2)' }}>
                                     <div style={{ width: '12px', height: '12px', borderRadius: '4px', backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }}></div>
                                     <div style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '140px', fontWeight: '700', color: '#334155' }}>{item.name}</div>
                                 </div>
@@ -449,7 +449,7 @@ const FinancialAnalytics = () => {
                             <select 
                                 value={statusFilter} 
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', borderRadius: '10px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: 'bold' }}
+                                style={{ padding: '0.4rem 0.75rem', fontSize: 'var(--fs-p2)', borderRadius: '10px', border: '1px solid #e2e8f0', cursor: 'pointer', fontWeight: 'bold' }}
                             >
                                 <option value="all">All Real-time Triggers</option>
                                 <option value="confirmed">Confirmed Success</option>
@@ -469,18 +469,18 @@ const FinancialAnalytics = () => {
                                 marginBottom: '0.75rem'
                             }}>
                                 <div className="item-content">
-                                    <div className="item-title" style={{ fontSize: '1rem', fontWeight: '700' }}>{order.customer_email}</div>
+                                    <div className="item-title" style={{ fontSize: 'var(--fs-p2)', fontWeight: '700' }}>{order.customer_email}</div>
                                     <div className="item-meta">
                                         <Calendar size={14} /> {new Date(order.created_at).toLocaleDateString()}
                                         <Package size={14} /> {order.product_title || 'Uncategorized Digital Asset'}
                                     </div>
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontWeight: '800', fontSize: '1.2rem', color: '#0f172a' }}>{parseFloat(order.amount_tzs).toLocaleString()}</div>
+                                    <div style={{ fontWeight: '800', fontSize: 'var(--fs-p1)', color: '#0f172a' }}>{parseFloat(order.amount_tzs).toLocaleString()}</div>
                                     <span style={{ 
                                         padding: '0.25rem 0.6rem', 
                                         borderRadius: '6px', 
-                                        fontSize: '0.65rem', 
+                                        fontSize: 'var(--fs-p2)', 
                                         fontWeight: '800', 
                                         textTransform: 'uppercase',
                                         background: order.status === 'confirmed' ? '#d1fae5' : '#fef3c7',
@@ -509,7 +509,7 @@ const FinancialAnalytics = () => {
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className="mt-1" style={{ fontSize: '0.8rem', color: '#475569', textAlign: 'center', fontWeight: '500' }}>
+                    <div className="mt-1" style={{ fontSize: 'var(--fs-p2)', color: '#475569', textAlign: 'center', fontWeight: '500' }}>
                         Organic lead velocity in the {dateRange} window.
                     </div>
                 </div>
@@ -524,14 +524,14 @@ const FinancialAnalytics = () => {
                         </div>
                         <div>
                             <h3 style={{ color: '#991b1b', fontWeight: '800' }}>Danger Zone</h3>
-                            <p style={{ margin: 0, fontSize: '0.8rem', color: '#b91c1c' }}>System data management and testing overrides</p>
+                            <p style={{ margin: 0, fontSize: 'var(--fs-p2)', color: '#b91c1c' }}>System data management and testing overrides</p>
                         </div>
                     </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0' }}>
                     <div style={{ maxWidth: '60%' }}>
                         <p style={{ margin: 0, fontWeight: '700', color: '#7f1d1d' }}>Reset All Financial Records</p>
-                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#b91c1c', opacity: 0.8 }}>Wipe all order history and revenue data. Useful for clearing test data before going live.</p>
+                        <p style={{ margin: 0, fontSize: 'var(--fs-p2)', color: '#b91c1c', opacity: 0.8 }}>Wipe all order history and revenue data. Useful for clearing test data before going live.</p>
                     </div>
                     <button 
                         onClick={handleResetFinances}
@@ -541,7 +541,7 @@ const FinancialAnalytics = () => {
                             color: '#fff', 
                             padding: '0.75rem 1.5rem', 
                             borderRadius: '12px', 
-                            fontSize: '0.9rem', 
+                            fontSize: 'var(--fs-p2)', 
                             fontWeight: '800',
                             border: 'none',
                             cursor: 'pointer',

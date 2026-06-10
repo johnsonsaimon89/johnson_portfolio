@@ -19,7 +19,7 @@ const StudioCTA = () => {
                             color: 'var(--muted-color)', 
                             maxWidth: '600px', 
                             margin: '2.5rem auto 3.5rem auto',
-                            fontSize: '1.2rem',
+                            fontSize: 'var(--fs-p1)',
                             lineHeight: 1.6 
                         }}>
                             Let's build a digital asset that stands out, tells your story, and helps you win more clients.

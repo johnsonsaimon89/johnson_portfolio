@@ -24,7 +24,7 @@ const ProcessTimeline = () => {
                 <div style={{ textAlign: 'left', marginBottom: '8rem' }}>
                     <span className="badge">Methodology</span>
                     <h2 style={{ fontSize: 'var(--fs-h1)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>The Process</h2>
-                    <p className="lead" style={{ color: 'var(--muted-color)', maxWidth: '540px', marginTop: '1.5rem', fontSize: '1.2rem', lineHeight: 1.6 }}>
+                    <p className="lead" style={{ color: 'var(--muted-color)', maxWidth: '540px', marginTop: '1.5rem', fontSize: 'var(--fs-p1)', lineHeight: 1.6 }}>
                         A systematic approach to building websites that balance creativity with strategic conversion paths.
                     </p>
                 </div>
@@ -49,7 +49,7 @@ const ProcessTimeline = () => {
                                 }}
                             >
                                 <div className="process-num">{step.num}</div>
-                                <h4 style={{ fontSize: '1.25rem', marginTop: '1.5rem', marginBottom: '1rem' }}>{step.title}</h4>
+                                <h4 style={{ fontSize: 'var(--fs-p1)', marginTop: '1.5rem', marginBottom: '1rem' }}>{step.title}</h4>
                                 <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6, margin: 0 }}>
                                     {step.desc}
                                 </p>

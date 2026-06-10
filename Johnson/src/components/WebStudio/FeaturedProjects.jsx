@@ -146,8 +146,8 @@ const FeaturedProjects = () => {
                                             }}>
                                                 {project.displayMetrics.slice(0, 3).map((metric, mIdx) => (
                                                     <div key={mIdx} className="result-stat" style={{ padding: '1rem', background: 'var(--brand-accent)', border: '1px solid var(--brand-accent)' }}>
-                                                        <span className="result-val" style={{ fontSize: '1.4rem', color: '#000' }}>{metric.value}</span>
-                                                        <span className="result-label" style={{ fontSize: '0.65rem', opacity: 0.8, color: '#000', fontWeight: 700 }}>{metric.label}</span>
+                                                        <span className="result-val" style={{ fontSize: 'var(--fs-p1)', color: '#000' }}>{metric.value}</span>
+                                                        <span className="result-label" style={{ fontSize: 'var(--fs-p2)', opacity: 0.8, color: '#000', fontWeight: 700 }}>{metric.label}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -156,7 +156,7 @@ const FeaturedProjects = () => {
 
                                     {/* Toolstack */}
                                     <div className="project-toolstack">
-                                        <div style={{ fontSize: '0.75rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                                        <div style={{ fontSize: 'var(--fs-p2)', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                                             TOOLSTACK: <span style={{ color: '#fff' }}>{project.tools.join(' + ')}</span>
                                         </div>
                                     </div>

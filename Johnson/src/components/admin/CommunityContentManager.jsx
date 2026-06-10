@@ -363,7 +363,7 @@ const CommunityContentManager = () => {
                     </div>
 
                     <div className="panel-header" style={{ marginBottom: '1rem', marginTop: '1rem' }}>
-                        <h4 style={{ margin: 0, fontSize: '0.9rem' }}>Metrics</h4>
+                        <h4 style={{ margin: 0, fontSize: 'var(--fs-p2)' }}>Metrics</h4>
                     </div>
                     <div className="form-row">
                         <div className="form-group" style={{ flex: 1 }}>
@@ -389,7 +389,7 @@ const CommunityContentManager = () => {
             <div className="admin-panel mt-3">
                 <div className="panel-header">
                     <h3>Existing Content</h3>
-                    <p style={{ fontSize: '0.8rem', color: '#666', margin: 0 }}>Drag to reorder.</p>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: '#666', margin: 0 }}>Drag to reorder.</p>
                 </div>
                 {loading ? (
                     <div className="admin-loading">Loading...</div>

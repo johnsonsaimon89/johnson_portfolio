@@ -178,7 +178,7 @@ const FileUploader = ({
                     ) : (
                         <div className="upload-state">
                             <FileIcon size={32} style={{ color: '#000', marginBottom: '0.5rem', opacity: 0.8 }} />
-                            <p className="upload-text" style={{ fontSize: '0.8rem' }}>{getFileName(currentFileUrl)}</p>
+                            <p className="upload-text" style={{ fontSize: 'var(--fs-p2)' }}>{getFileName(currentFileUrl)}</p>
                         </div>
                     )}
                     
@@ -212,7 +212,7 @@ const FileUploader = ({
                     {uploading ? (
                         <div className="upload-state">
                             <Loader2 size={24} className="spin text-accent" />
-                            <p className="upload-text" style={{ fontSize: '0.8rem' }}>Uploading...</p>
+                            <p className="upload-text" style={{ fontSize: 'var(--fs-p2)' }}>Uploading...</p>
                         </div>
                     ) : (
                         <div className="upload-state">
@@ -221,7 +221,7 @@ const FileUploader = ({
                             </div>
                             <Upload size={24} style={{ color: '#000', marginBottom: '4px', opacity: 0.8 }} />
                             <p className="upload-text">Add File</p>
-                            <p className="upload-hint" style={{ fontSize: '0.75rem' }}>
+                            <p className="upload-hint" style={{ fontSize: 'var(--fs-p2)' }}>
                                 {storageType === 'mega' ? 'Mega.nz Secure' : (storageType === 'r2' ? 'R2 Edge' : 'Supabase Stack')}
                             </p>
                         </div>

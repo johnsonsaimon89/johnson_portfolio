@@ -107,7 +107,7 @@ const EmailBroadcastManager = () => {
                                 style={{ height: '400px', fontFamily: 'monospace', fontSize: '13px' }}
                                 disabled={sending}
                             />
-                            <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem' }}>
+                            <p style={{ fontSize: 'var(--fs-p2)', color: '#64748b', marginTop: '0.5rem' }}>
                                 Tip: Use <code>{"{{name}}"}</code> to personalize with the subscriber's name.
                             </p>
                         </div>

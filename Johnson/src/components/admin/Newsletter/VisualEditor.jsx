@@ -146,7 +146,7 @@ const VisualEditor = ({ campaignId, onBack }) => {
                             placeholder="Campaign Subject Line..."
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
-                            style={{ width: '100%', padding: '0.5rem', fontSize: '1.2rem', border: 'none', borderBottom: '2px solid #e5e7eb', background: 'transparent', outline: 'none' }}
+                            style={{ width: '100%', padding: '0.5rem', fontSize: 'var(--fs-p1)', border: 'none', borderBottom: '2px solid #e5e7eb', background: 'transparent', outline: 'none' }}
                         />
                     </div>
                 </div>
@@ -158,7 +158,7 @@ const VisualEditor = ({ campaignId, onBack }) => {
                             style={{
                                 width: '250px',
                                 padding: '0.4rem',
-                                fontSize: '0.875rem',
+                                fontSize: 'var(--fs-p2)',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
@@ -223,7 +223,7 @@ const VisualEditor = ({ campaignId, onBack }) => {
                                         placeholder="Or type custom tags..."
                                         value={segmentTags}
                                         onChange={(e) => setSegmentTags(e.target.value)}
-                                        style={{ width: '100%', padding: '0.4rem', fontSize: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px' }}
+                                        style={{ width: '100%', padding: '0.4rem', fontSize: 'var(--fs-p2)', border: '1px solid #d1d5db', borderRadius: '4px' }}
                                     />
                                 </div>
                             </div>

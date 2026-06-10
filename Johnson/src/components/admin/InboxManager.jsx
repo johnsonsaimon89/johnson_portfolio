@@ -89,8 +89,8 @@ const InboxManager = () => {
             {/* List Sidebar */}
             <div className="admin-panel" style={{ padding: '1.5rem', height: 'calc(100vh - 250px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(10px)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #f1f5f9' }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
-                        Messages <span style={{ color: '#10b981', fontSize: '0.85rem', fontWeight: 600, marginLeft: '4px' }}>({messages.filter(m => m.status === 'unread').length} new)</span>
+                    <h3 style={{ fontSize: 'var(--fs-p2)', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
+                        Messages <span style={{ color: '#10b981', fontSize: 'var(--fs-p2)', fontWeight: 600, marginLeft: '4px' }}>({messages.filter(m => m.status === 'unread').length} new)</span>
                     </h3>
                     <button onClick={fetchMessages} className="icon-btn" title="Refresh Inbox" style={{ width: '32px', height: '32px' }}>
                         <Clock size={16} />
@@ -104,7 +104,7 @@ const InboxManager = () => {
                 ) : messages.length === 0 ? (
                     <div className="admin-empty" style={{ border: 'none', background: 'transparent', padding: '3rem 1rem' }}>
                         <Mail size={40} style={{ opacity: 0.1, margin: '0 auto 1rem auto' }} />
-                        <p style={{ fontSize: '0.9rem', color: '#94a3b8', fontWeight: 500 }}>Your inbox is clear</p>
+                        <p style={{ fontSize: 'var(--fs-p2)', color: '#94a3b8', fontWeight: 500 }}>Your inbox is clear</p>
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -134,11 +134,11 @@ const InboxManager = () => {
                             >
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{msg.name}</span>
-                                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>{formatDate(msg.created_at)}</span>
+                                        <span style={{ fontSize: 'var(--fs-p2)', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{msg.name}</span>
+                                        <span style={{ fontSize: 'var(--fs-p2)', color: '#94a3b8', fontWeight: 600 }}>{formatDate(msg.created_at)}</span>
                                     </div>
                                     <div style={{ 
-                                        fontSize: '0.8rem', 
+                                        fontSize: 'var(--fs-p2)', 
                                         color: msg.status === 'unread' ? '#000' : '#64748b', 
                                         fontWeight: msg.status === 'unread' ? 700 : 500, 
                                         whiteSpace: 'nowrap', 
@@ -148,7 +148,7 @@ const InboxManager = () => {
                                     }}>
                                         {msg.subject || 'No Subject'}
                                     </div>
-                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', opacity: 0.8 }}>
+                                    <div style={{ fontSize: 'var(--fs-p2)', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', opacity: 0.8 }}>
                                         {msg.message}
                                     </div>
                                 </div>
@@ -185,14 +185,14 @@ const InboxManager = () => {
                                     alignItems: 'center', 
                                     justifyContent: 'center', 
                                     fontWeight: 900, 
-                                    fontSize: '1.1rem',
+                                    fontSize: 'var(--fs-p2)',
                                     border: '1px solid #e2e8f0',
                                 }}>
                                     {selectedMessage.name.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <div style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>{selectedMessage.name}</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>
+                                    <div style={{ fontSize: 'var(--fs-p2)', fontWeight: 800, color: '#0f172a' }}>{selectedMessage.name}</div>
+                                    <div style={{ fontSize: 'var(--fs-p2)', color: '#64748b', fontWeight: 500 }}>
                                         <a href={`mailto:${selectedMessage.email}`} style={{ color: 'inherit', textDecoration: 'none' }}>{selectedMessage.email}</a>
                                     </div>
                                 </div>
@@ -218,12 +218,12 @@ const InboxManager = () => {
                         </div>
 
                         <div style={{ maxWidth: '700px' }}>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 900, color: '#0f172a', marginBottom: '2rem', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
+                            <h2 style={{ fontSize: 'var(--fs-p1)', fontWeight: 900, color: '#0f172a', marginBottom: '2rem', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
                                 {selectedMessage.subject || 'No Subject'}
                             </h2>
                             <div style={{ 
                                 lineHeight: 1.8, 
-                                fontSize: '1.05rem', 
+                                fontSize: 'var(--fs-p2)', 
                                 color: '#334155', 
                                 whiteSpace: 'pre-wrap',
                                 background: '#fbfcfd',
@@ -235,7 +235,7 @@ const InboxManager = () => {
                             </div>
                         </div>
 
-                        <div style={{ marginTop: '4rem', paddingTop: '2rem', borderTop: '1px solid #f1f5f9', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        <div style={{ marginTop: '4rem', paddingTop: '2rem', borderTop: '1px solid #f1f5f9', fontSize: 'var(--fs-p2)', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Received — {new Date(selectedMessage.created_at).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
                         </div>
                     </div>
@@ -244,8 +244,8 @@ const InboxManager = () => {
                         <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
                             <Mail size={32} style={{ color: '#cbd5e1' }} />
                         </div>
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Select a message</h3>
-                        <p style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', maxWidth: '240px', lineHeight: 1.6 }}>Choose an inquiry from the left to view the full details and respond.</p>
+                        <h3 style={{ fontSize: 'var(--fs-p1)', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Select a message</h3>
+                        <p style={{ color: '#64748b', fontSize: 'var(--fs-p2)', textAlign: 'center', maxWidth: '240px', lineHeight: 1.6 }}>Choose an inquiry from the left to view the full details and respond.</p>
                     </div>
                 )}
             </div>

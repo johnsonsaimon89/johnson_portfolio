@@ -155,7 +155,7 @@ const HomeSplash = () => {
                         className="studio-btn studio-btn-primary"
                         style={{
                             padding: '1.2rem 3rem',
-                            fontSize: '1rem',
+                            fontSize: 'var(--fs-p2)',
                             letterSpacing: '0.1em',
                             fontWeight: 800
                         }}

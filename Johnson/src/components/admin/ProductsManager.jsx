@@ -252,7 +252,7 @@ const ProductsManager = () => {
                     <h3>Global Payment Details (Checkout)</h3>
                 </div>
                 <form onSubmit={handlePaymentSubmit} className="admin-form">
-                    <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '1rem' }}>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: '#6b7280', marginBottom: '1rem' }}>
                         These details appear in the checkout modal for all digital products.
                     </p>
                     <div className="form-row">
@@ -486,7 +486,7 @@ const ProductsManager = () => {
                                             {product.is_on_sale ? (
                                                 <>
                                                     <span style={{ fontWeight: '800', color: '#10b981' }}>{product.sale_price_tzs.toLocaleString()} TZS</span>
-                                                    <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{product.price_tzs.toLocaleString()}</span>
+                                                    <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: 'var(--fs-p2)', marginLeft: '0.5rem' }}>{product.price_tzs.toLocaleString()}</span>
                                                     <span className="trend-badge ml-2" style={{ marginLeft: '0.5rem', background: '#dcfce7', color: '#166534' }}>{product.sale_label || 'SALE'}</span>
                                                 </>
                                             ) : (

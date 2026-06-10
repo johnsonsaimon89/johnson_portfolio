@@ -155,7 +155,7 @@ const OrdersManager = () => {
                                     className={`filter-badge ${statusFilter === status ? 'active' : ''}`}
                                     style={{
                                         padding: '0.25rem 0.75rem',
-                                        fontSize: '0.7rem',
+                                        fontSize: 'var(--fs-p2)',
                                         borderRadius: '20px',
                                         border: '1px solid #e2e8f0',
                                         background: statusFilter === status ? '#000' : '#fff',
@@ -179,7 +179,7 @@ const OrdersManager = () => {
                                 alignItems: 'center',
                                 gap: '0.5rem',
                                 padding: '0.5rem 1rem',
-                                fontSize: '0.8rem',
+                                fontSize: 'var(--fs-p2)',
                                 borderRadius: '8px',
                                 background: '#dc2626',
                                 color: '#fff',
@@ -206,7 +206,7 @@ const OrdersManager = () => {
                                     onChange={toggleSelectAll}
                                     style={{ cursor: 'pointer' }}
                                 />
-                                <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>Select All</span>
+                                <span style={{ fontSize: 'var(--fs-p2)', fontWeight: '700', color: '#64748b' }}>Select All</span>
                             </div>
                         </div>
                         {filteredOrders.map((order) => {
@@ -232,7 +232,7 @@ const OrdersManager = () => {
                                                 <span style={{ color: '#cbd5e1' }}>•</span>
                                                 {new Date(order.created_at).toLocaleDateString()}
                                                 {order.sale_event && (
-                                                    <span className="trend-badge ml-2" style={{ marginLeft: '0.5rem', background: '#e0e7ff', color: '#4338ca', fontSize: '0.65rem' }}>
+                                                    <span className="trend-badge ml-2" style={{ marginLeft: '0.5rem', background: '#e0e7ff', color: '#4338ca', fontSize: 'var(--fs-p2)' }}>
                                                         ✨ {order.sale_event}
                                                     </span>
                                                 )}

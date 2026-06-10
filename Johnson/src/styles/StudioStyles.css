@@ -11,7 +11,7 @@
     border-radius: 100px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.75rem;
+    font-size: var(--fs-p2);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -42,7 +42,7 @@
 
 .process-num {
     font-family: monospace;
-    font-size: 0.85rem;
+    font-size: var(--fs-p2);
     color: var(--brand-accent);
     margin-bottom: 1.5rem;
     opacity: 0.6;
@@ -60,7 +60,7 @@
 }
 
 .project-tag {
-    font-size: 0.75rem;
+    font-size: var(--fs-p2);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.2em;
@@ -92,14 +92,14 @@
 }
 
 .result-val {
-    font-size: 2rem;
+    font-size: var(--fs-p1);
     font-weight: 800;
     color: #fff;
     line-height: 1;
 }
 
 .result-label {
-    font-size: 0.7rem;
+    font-size: var(--fs-p2);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--muted-color);

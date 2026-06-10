@@ -111,7 +111,7 @@ const About = ({ id }) => {
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.2em',
                                         fontWeight: 600,
-                                        fontSize: 'var(--fs-p3)',
+                                        fontSize: 'var(--fs-p2)',
                                         marginTop: '1rem'
                                     }}>
                                         {stat.label}

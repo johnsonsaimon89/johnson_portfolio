@@ -339,7 +339,7 @@ const ShortFormManager = () => {
             <div className="admin-panel mt-3">
                 <div className="panel-header">
                     <h3>Existing Content</h3>
-                    <p style={{ fontSize: '0.8rem', color: '#666', margin: 0 }}>Drag to reorder.</p>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: '#666', margin: 0 }}>Drag to reorder.</p>
                 </div>
                 {loading ? (
                     <div className="admin-loading">Loading...</div>

@@ -58,7 +58,7 @@ const MediaLibrary = () => {
                 <div className="header-text">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <h3 style={{ margin: 0 }}>Media Assets</h3>
-                        <span style={{ fontSize: '0.65rem', background: '#f6821f', color: 'white', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                        <span style={{ fontSize: 'var(--fs-p2)', background: '#f6821f', color: 'white', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
                             POWERED BY R2
                         </span>
                     </div>
@@ -119,7 +119,7 @@ const MediaLibrary = () => {
                                 ) : (
                                     <div className="upload-state">
                                         <File size={48} color="#94a3b8" />
-                                        <p style={{ fontSize: '0.8rem', color: '#64748b' }}>Document</p>
+                                        <p style={{ fontSize: 'var(--fs-p2)', color: '#64748b' }}>Document</p>
                                     </div>
                                 )}
                                 
@@ -138,14 +138,14 @@ const MediaLibrary = () => {
                                     whiteSpace: 'nowrap', 
                                     overflow: 'hidden', 
                                     textOverflow: 'ellipsis', 
-                                    fontSize: '0.85rem', 
+                                    fontSize: 'var(--fs-p2)', 
                                     fontWeight: 600,
                                     color: 'var(--text-color)',
                                     marginBottom: '0.5rem'
                                 }}>
                                     {file.name}
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: 'var(--muted-color)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--fs-p2)', color: 'var(--muted-color)' }}>
                                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         <Cloud size={10} color="#f6821f" /> R2 STORAGE
                                     </span>

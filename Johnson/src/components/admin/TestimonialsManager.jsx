@@ -48,7 +48,7 @@ const SortableTestimonial = ({ item, onEdit, onDelete }) => {
                     <GripVertical size={20} />
                 </div>
                 <div className="item-content">
-                    <div className="item-title" style={{ fontSize: '0.9rem', fontStyle: 'italic', marginBottom: '0.5rem' }}>
+                    <div className="item-title" style={{ fontSize: 'var(--fs-p2)', fontStyle: 'italic', marginBottom: '0.5rem' }}>
                         "{item.quote}"
                     </div>
                     <div className="item-meta">
@@ -280,7 +280,7 @@ const TestimonialsManager = () => {
             <div className="admin-panel mt-3">
                 <div className="panel-header">
                     <h3>Existing Testimonials</h3>
-                    <p style={{ fontSize: '0.8rem', color: '#666', margin: 0 }}>Drag the handle <GripVertical size={14} style={{ verticalAlign: 'middle' }} /> to reorder.</p>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: '#666', margin: 0 }}>Drag the handle <GripVertical size={14} style={{ verticalAlign: 'middle' }} /> to reorder.</p>
                 </div>
                 {loading ? (
                     <div className="admin-loading">Loading...</div>

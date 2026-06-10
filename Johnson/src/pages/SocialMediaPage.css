@@ -134,7 +134,7 @@
 
 .client-logo {
     font-weight: 800;
-    font-size: 1.25rem;
+    font-size: var(--fs-p1);
     letter-spacing: -1px;
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -168,7 +168,7 @@
     }
 
     .client-logo {
-        font-size: 1rem;
+        font-size: var(--fs-p2);
         padding: 0.6rem 1.4rem;
     }
 

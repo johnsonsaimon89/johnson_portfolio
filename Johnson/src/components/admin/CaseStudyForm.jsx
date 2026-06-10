@@ -139,7 +139,8 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                     <label>Case Study Type</label>
                     <select value={type} onChange={(e) => setType(e.target.value)} disabled={!!initialData} className="premium-select">
                         <option value="web">Web Studio</option>
-                        <option value="social">Social Media</option>
+                        <option value="social">Brand Case Study</option>
+                        <option value="platform">Platform Expertise</option>
                     </select>
                 </div>
                 <div className="form-group half">
@@ -153,14 +154,58 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
 
             <div className="form-row">
                 <div className="form-group half">
-                    <label>Organization Name</label>
-                    <input type="text" name="organization_name" value={formData.organization_name} onChange={handleInputChange} required placeholder="e.g. EduLearn" />
+                    <label>Organization / Platform Name</label>
+                    <input type="text" name="organization_name" value={formData.organization_name} onChange={handleInputChange} required placeholder="e.g. Instagram" />
                 </div>
                 <div className="form-group half">
                     <label>Industry / Vertical</label>
                     <input type="text" name="organization_type" value={formData.organization_type} onChange={handleInputChange} required placeholder="e.g. Fintech Tech" />
                 </div>
             </div>
+
+            {type === 'platform' && (
+                <>
+                    <div className="form-section-header mt-2">
+                        <h4>Platform Profile Details</h4>
+                    </div>
+                    <div className="form-row">
+                        <div className="form-group half">
+                            <label>Profile Display Name</label>
+                            <input 
+                                type="text" 
+                                value={formData.content.account_name || ''} 
+                                onChange={(e) => handleContentChange('account_name', e.target.value)} 
+                                placeholder="e.g. Johnson Saimon" 
+                            />
+                        </div>
+                        <div className="form-group half">
+                            <label>Profile Handle / Username</label>
+                            <input 
+                                type="text" 
+                                value={formData.content.account_handle || ''} 
+                                onChange={(e) => handleContentChange('account_handle', e.target.value)} 
+                                placeholder="e.g. @johnsonsaimon" 
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label>Profile Picture URL</label>
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <input 
+                                type="text" 
+                                style={{ flex: 1 }}
+                                value={formData.content.account_logo_url || ''} 
+                                onChange={(e) => handleContentChange('account_logo_url', e.target.value)} 
+                                placeholder="https://..." 
+                            />
+                            <ImageUploader 
+                                onUploadSuccess={(url) => handleContentChange('account_logo_url', url)}
+                                currentImageUrl={formData.content.account_logo_url}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
 
             <div className="form-row">
                 <div className="form-group half">
@@ -207,25 +252,25 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
 
             <div className="form-divider" />
 
+            <div className="form-section-header mt-2">
+                <h4>Narrative (Description)</h4>
+            </div>
+            <div className="form-group">
+                <label>Description Paragraphs</label>
+                {formData.content.paragraphs.map((p, i) => (
+                    <textarea
+                        key={i}
+                        value={p}
+                        onChange={(e) => handleContentChange('paragraphs', e.target.value, i)}
+                        placeholder={`Paragraph ${i + 1} - Briefly explain the problem or solution...`}
+                        rows="3"
+                        className="mt-1"
+                    />
+                ))}
+            </div>
+
             {type === 'web' ? (
                 <>
-                    <div className="form-section-header mt-2">
-                        <h4>Narrative (Web Studio)</h4>
-                    </div>
-                    <div className="form-group">
-                        <label>Description Paragraphs</label>
-                        {formData.content.paragraphs.map((p, i) => (
-                            <textarea
-                                key={i}
-                                value={p}
-                                onChange={(e) => handleContentChange('paragraphs', e.target.value, i)}
-                                placeholder={`Paragraph ${i + 1} - Briefly explain the problem or solution...`}
-                                rows="3"
-                                className="mt-1"
-                            />
-                        ))}
-                    </div>
-
                     <div className="form-section-header mt-2">
                         <h4>Brand Aesthetic</h4>
                     </div>
@@ -253,7 +298,7 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                                                 newColors[idx] = e.target.value;
                                                 handleContentChange('colors', newColors);
                                             }}
-                                            style={{ fontSize: '0.7rem', width: '60px', textAlign: 'center' }}
+                                            style={{ fontSize: 'var(--fs-p2)', width: '60px', textAlign: 'center' }}
                                         />
                                     </div>
                                 ))}
@@ -278,26 +323,11 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                             <input type="text" value={formData.content.metrics?.signups || ''} onChange={(e) => handleMetricChange('signups', e.target.value)} placeholder="e.g. +22%" />
                         </div>
                     </div>
-
-
-                    <div className="form-group mt-1">
-                        <label>Custom Metrics</label>
-                        {formData.content.custom_metrics?.map((m, i) => (
-                            <div key={i} className="form-row align-center mb-1">
-                                <input type="text" placeholder="Label" value={m.label} onChange={(e) => updateCustomMetric(i, 'label', e.target.value)} style={{ flex: 1 }} />
-                                <input type="text" placeholder="Value" value={m.value} onChange={(e) => updateCustomMetric(i, 'value', e.target.value)} style={{ flex: 1 }} />
-                                <button type="button" onClick={() => removeCustomMetric(i)} className="action-btn delete"><Trash2 size={16} /></button>
-                            </div>
-                        ))}
-                        <button type="button" onClick={addCustomMetric} className="studio-btn studio-btn-outline" style={{ marginTop: '0.5rem' }}>
-                            <Plus size={16} /> Add Custom Metric
-                        </button>
-                    </div>
                 </>
             ) : (
                 <>
                     <div className="form-section-header">
-                        <h4>Strategic Breakdown (Social Media)</h4>
+                        <h4>Strategic Breakdown ({type === 'platform' ? 'Platform' : 'Brand'})</h4>
                     </div>
                     
                     <div className="form-group">
@@ -368,7 +398,7 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                     <div className="form-group">
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem', background: '#f9fafb', padding: '1rem', borderRadius: '12px', border: '1px solid #eee' }}>
                             {(formData.content.content_types || []).map((type, idx) => (
-                                <span key={idx} style={{ background: '#000', color: '#fff', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span key={idx} style={{ background: '#000', color: '#fff', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: 'var(--fs-p2)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     {type}
                                     <X size={14} style={{ cursor: 'pointer' }} onClick={() => {
                                         const newTypes = formData.content.content_types.filter((_, i) => i !== idx);
@@ -377,7 +407,7 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                                 </span>
                             ))}
                             {(!formData.content.content_types || formData.content.content_types.length === 0) && (
-                                <span style={{ color: '#999', fontSize: '0.8rem' }}>No deliverables added yet.</span>
+                                <span style={{ color: '#999', fontSize: 'var(--fs-p2)' }}>No deliverables added yet.</span>
                             )}
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -443,6 +473,23 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                 </>
             )}
 
+            <div className="form-section-header mt-3">
+                <h4>Custom Metrics (Dynamic Layout)</h4>
+            </div>
+            <div className="form-group mt-1">
+                <label>Custom Metrics</label>
+                {formData.content.custom_metrics?.map((m, i) => (
+                    <div key={i} className="form-row align-center mb-1">
+                        <input type="text" placeholder="Label" value={m.label} onChange={(e) => updateCustomMetric(i, 'label', e.target.value)} style={{ flex: 1 }} />
+                        <input type="text" placeholder="Value" value={m.value} onChange={(e) => updateCustomMetric(i, 'value', e.target.value)} style={{ flex: 1 }} />
+                        <button type="button" onClick={() => removeCustomMetric(i)} className="action-btn delete"><Trash2 size={16} /></button>
+                    </div>
+                ))}
+                <button type="button" onClick={addCustomMetric} className="studio-btn studio-btn-outline" style={{ marginTop: '0.5rem' }}>
+                    <Plus size={16} /> Add Custom Metric
+                </button>
+            </div>
+
             <div className="form-actions mt-3">
                 <button type="submit" className="premium-submit-btn">
                     {initialData ? 'Update Case Study' : 'Publish Case Study'}
@@ -463,7 +510,7 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                 .form-section-header h4 {
                     margin: 0;
                     color: #111;
-                    font-size: 0.9rem;
+                    font-size: var(--fs-p2);
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
                 }
@@ -495,7 +542,7 @@ const CaseStudyForm = ({ initialData, onSave, onCancel, type: initialType }) => 
                 .x-bullet {
                     color: #ef4444;
                     font-weight: 800;
-                    font-size: 1.2rem;
+                    font-size: var(--fs-p1);
                 }
                 .metrics-comparison-grid {
                     display: grid;

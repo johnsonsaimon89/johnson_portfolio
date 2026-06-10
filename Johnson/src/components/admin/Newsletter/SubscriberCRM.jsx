@@ -141,7 +141,7 @@ const SubscriberCRM = () => {
                                 placeholder="Search by email..." 
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
-                                style={{ padding: '0.5rem 1rem 0.5rem 2.2rem', fontSize: '0.85rem', width: '200px', borderRadius: '100px', border: '1px solid #e2e8f0' }}
+                                style={{ padding: '0.5rem 1rem 0.5rem 2.2rem', fontSize: 'var(--fs-p2)', width: '200px', borderRadius: '100px', border: '1px solid #e2e8f0' }}
                             />
                         </div>
                     </div>
@@ -160,12 +160,12 @@ const SubscriberCRM = () => {
                             {filteredSubscribers.map((sub) => (
                                 <div key={sub.id} className="admin-list-item" style={{ padding: '1rem 1.5rem', border: '1px solid #f1f5f9', background: '#fff' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flex: 1 }}>
-                                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem', color: '#64748b' }}>
+                                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 'var(--fs-p2)', color: '#64748b' }}>
                                             {sub.email.charAt(0).toUpperCase()}
                                         </div>
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' }}>{sub.email}</div>
-                                            <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <div style={{ fontWeight: 700, fontSize: 'var(--fs-p2)', color: '#0f172a' }}>{sub.email}</div>
+                                            <div style={{ fontSize: 'var(--fs-p2)', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 {sub.name && <span>{sub.name} •</span>}
                                                 <span style={{ textTransform: 'capitalize' }}>via {sub.source}</span>
                                             </div>
@@ -177,7 +177,7 @@ const SubscriberCRM = () => {
                                                 </span>
                                             ))}
                                         </div>
-                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8', textAlign: 'right', minWidth: '100px', fontWeight: 500 }}>
+                                        <div style={{ fontSize: 'var(--fs-p2)', color: '#94a3b8', textAlign: 'right', minWidth: '100px', fontWeight: 500 }}>
                                             {new Date(sub.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </div>
                                     </div>
@@ -195,7 +195,7 @@ const SubscriberCRM = () => {
                 {/* Manual Add Sidebar */}
                 <div className="admin-panel" style={{ background: '#fff', border: '1px solid #f1f5f9' }}>
                     <div className="panel-header" style={{ marginBottom: '1.5rem', border: 'none', padding: 0 }}>
-                        <h3 style={{ fontSize: '1rem', fontWeight: 800 }}>Quick Add</h3>
+                        <h3 style={{ fontSize: 'var(--fs-p2)', fontWeight: 800 }}>Quick Add</h3>
                     </div>
                     <form onSubmit={handleAddSubscriber} className="admin-form" style={{ gap: '1.25rem' }}>
                         <div className="form-group">

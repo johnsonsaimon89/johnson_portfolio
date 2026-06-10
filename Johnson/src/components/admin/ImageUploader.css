@@ -51,21 +51,21 @@
 
 .upload-text {
     margin: 0;
-    font-size: 0.9rem; /* Slightly smaller for grid items */
+    font-size: var(--fs-p2); /* Slightly smaller for grid items */
     color: #111;
     font-weight: 600;
 }
 
 .upload-hint {
     margin: 0;
-    font-size: 0.75rem;
+    font-size: var(--fs-p2);
     color: #94a3b8;
     line-height: 1.2;
 }
 
 .r2-badge-refined {
     pointer-events: none;
-    font-size: 0.6rem;
+    font-size: var(--fs-p2);
     background: rgba(246, 130, 31, 0.1);
     color: #f6821f;
     padding: 3px 8px;
@@ -81,7 +81,7 @@
 
 .mega-badge-refined {
     pointer-events: none;
-    font-size: 0.6rem;
+    font-size: var(--fs-p2);
     background: rgba(234, 67, 53, 0.1);
     color: #ea4335;
     padding: 3px 8px;
@@ -97,7 +97,7 @@
 
 .supabase-badge-refined {
     pointer-events: none;
-    font-size: 0.6rem;
+    font-size: var(--fs-p2);
     background: rgba(62, 207, 142, 0.1);
     color: #3ecf8e;
     padding: 3px 8px;
@@ -139,7 +139,7 @@
 .upload-error {
     margin-top: 1rem;
     color: #ef4444;
-    font-size: 0.85rem;
+    font-size: var(--fs-p2);
     background: #fef2f2;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -241,7 +241,7 @@
     color: #fff;
     padding: 3px 8px;
     border-radius: 4px;
-    font-size: 0.6rem;
+    font-size: var(--fs-p2);
     font-weight: 800;
     display: flex;
     align-items: center;

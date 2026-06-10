@@ -139,7 +139,7 @@ const ProfilePage = () => {
                                 {about.philosophy && (
                                     <p style={{ 
                                         color: 'var(--brand-accent)', 
-                                        fontSize: '1.1rem', 
+                                        fontSize: 'var(--fs-p2)', 
                                         fontWeight: 600, 
                                         borderLeft: '2px solid var(--brand-accent)',
                                         paddingLeft: '1.5rem',

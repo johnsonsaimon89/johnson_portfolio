@@ -256,7 +256,7 @@
 }
 
 .block-hero h1 {
-    font-size: 2.5rem;
+    font-size: var(--fs-p1);
     margin-bottom: 10px;
 }
 

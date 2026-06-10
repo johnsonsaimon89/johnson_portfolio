@@ -26,6 +26,7 @@ import './AdminDashboard.css';
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('blog_manager');
+    const [expandedNav, setExpandedNav] = useState({ case_studies: false });
     const [counts, setCounts] = useState({
         inbox: 0,
         orders: 0
@@ -128,35 +129,99 @@ const AdminDashboard = () => {
                             <Users size={18} />
                         </div>
                         <div className="user-info" style={{ overflow: 'hidden' }}>
-                            <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Johnson</div>
-                            <div style={{ fontSize: '0.75rem', color: '#71717a', textTransform: 'capitalize' }}>Administrator</div>
+                            <div style={{ fontSize: 'var(--fs-p2)', fontWeight: '600', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Johnson</div>
+                            <div style={{ fontSize: 'var(--fs-p2)', color: '#71717a', textTransform: 'capitalize' }}>Administrator</div>
                         </div>
                     </div>
                 </div>
 
                 <nav className="admin-nav">
                     <div className="admin-nav-group-title">Core Management</div>
-                    {[
-                        { id: 'blog_manager', label: 'Blog CMS', icon: <LayoutList size={18} /> },
-                        { id: 'media', label: 'Media Library', icon: <LayoutList size={18} /> },
-                        { id: 'case_studies', label: 'Case Studies', icon: <LayoutList size={18} /> },
-                    ].map((item, index) => (
-                        <motion.button
-                            key={item.id}
-                            initial={{ x: -10, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: index * 0.05 }}
-                            className={`admin-nav-item ${activeTab === item.id ? 'active' : ''}`}
-                            onClick={() => setActiveTab(item.id)}
-                            style={{ '--tab-accent': tabThemes[item.id] }}
-                        >
-                            {React.cloneElement(item.icon, { color: tabThemes[item.id], style: { opacity: activeTab === item.id ? 1 : 0.8 } })}
-                            <span>{item.label}</span>
-                            {activeTab === item.id && <motion.div layoutId="active-pill" className="active-pill" />}
-                        </motion.button>
-                    ))}
+                    
+                    {/* Blog Manager */}
+                    <motion.button
+                        initial={{ x: -10, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        className={`admin-nav-item ${activeTab === 'blog_manager' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('blog_manager')}
+                        style={{ '--tab-accent': tabThemes['blog_manager'] }}
+                    >
+                        <LayoutList size={18} color={tabThemes['blog_manager']} style={{ opacity: activeTab === 'blog_manager' ? 1 : 0.8 }} />
+                        <span>Blog CMS</span>
+                        {activeTab === 'blog_manager' && <motion.div layoutId="active-pill" className="active-pill" />}
+                    </motion.button>
+                    
+                    {/* Media Library */}
+                    <motion.button
+                        initial={{ x: -10, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.05 }}
+                        className={`admin-nav-item ${activeTab === 'media' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('media')}
+                        style={{ '--tab-accent': tabThemes['media'] }}
+                    >
+                        <LayoutList size={18} color={tabThemes['media']} style={{ opacity: activeTab === 'media' ? 1 : 0.8 }} />
+                        <span>Media Library</span>
+                        {activeTab === 'media' && <motion.div layoutId="active-pill" className="active-pill" />}
+                    </motion.button>
 
-                    <div className="admin-nav-group-title">Engagement</div>
+                    {/* Case Studies (Dropdown) */}
+                    <motion.div
+                        initial={{ x: -10, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="nav-dropdown-container"
+                    >
+                        <button
+                            className={`admin-nav-item ${activeTab.startsWith('case_studies') ? 'active' : ''}`}
+                            onClick={() => {
+                                setExpandedNav(prev => ({ ...prev, case_studies: !prev.case_studies }));
+                                if (!activeTab.startsWith('case_studies')) {
+                                    setActiveTab('case_studies_all');
+                                }
+                            }}
+                            style={{ '--tab-accent': tabThemes['case_studies'] }}
+                        >
+                            <LayoutList size={18} color={tabThemes['case_studies']} style={{ opacity: activeTab.startsWith('case_studies') ? 1 : 0.8 }} />
+                            <span>Case Studies</span>
+                            <ChevronRight size={14} style={{ marginLeft: 'auto', transform: expandedNav.case_studies ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', color: '#71717a' }} />
+                            {activeTab.startsWith('case_studies') && <motion.div layoutId="active-pill" className="active-pill" />}
+                        </button>
+                        
+                        <AnimatePresence>
+                            {expandedNav.case_studies && (
+                                <motion.div 
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    style={{ overflow: 'hidden', marginLeft: '1.5rem', borderLeft: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.2rem', marginBottom: '0.5rem' }}
+                                >
+                                    {[
+                                        { id: 'case_studies_web', label: 'Web Projects' },
+                                        { id: 'case_studies_social', label: 'Brand Strategies' },
+                                        { id: 'case_studies_platform', label: 'Platform Expertise' }
+                                    ].map(sub => (
+                                        <button 
+                                            key={sub.id}
+                                            className={`admin-nav-subitem ${activeTab === sub.id ? 'active' : ''}`} 
+                                            onClick={() => setActiveTab(sub.id)}
+                                            style={{ 
+                                                background: 'transparent', border: 'none', color: activeTab === sub.id ? '#fff' : '#a1a1aa', 
+                                                textAlign: 'left', padding: '0.4rem 0.8rem', fontSize: 'var(--fs-p2)', fontWeight: activeTab === sub.id ? '600' : '400',
+                                                cursor: 'pointer', borderRadius: '0 6px 6px 0', transition: 'all 0.2s'
+                                            }}
+                                            onMouseEnter={(e) => { if(activeTab !== sub.id) e.target.style.color = '#fff'; }}
+                                            onMouseLeave={(e) => { if(activeTab !== sub.id) e.target.style.color = '#a1a1aa'; }}
+                                        >
+                                            {sub.label}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+
+                    <div className="admin-nav-group-title mt-4">Engagement</div>
                     {[
                         { id: 'testimonials', label: 'Testimonials', icon: <MessageSquareQuote size={18} /> },
                         { id: 'community', label: 'Community', icon: <Users size={18} /> },
@@ -258,9 +323,9 @@ const AdminDashboard = () => {
                 <header className="admin-header">
                     <div className="header-title">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                            <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', color: '#71717a', letterSpacing: '0.05em' }}>Dashboard</span>
+                            <span style={{ fontSize: 'var(--fs-p2)', fontWeight: '800', textTransform: 'uppercase', color: '#71717a', letterSpacing: '0.05em' }}>Dashboard</span>
                             <ChevronRight size={12} style={{ color: '#a1a1aa' }} />
-                            <span style={{ fontSize: '0.65rem', fontWeight: '900', textTransform: 'uppercase', color: tabThemes[activeTab], letterSpacing: '0.08em', transition: 'color 0.3s ease' }}>
+                            <span style={{ fontSize: 'var(--fs-p2)', fontWeight: '900', textTransform: 'uppercase', color: tabThemes[activeTab], letterSpacing: '0.08em', transition: 'color 0.3s ease' }}>
                                 {activeTab.replace('_', ' ')}
                             </span>
                         </div>
@@ -268,7 +333,7 @@ const AdminDashboard = () => {
                             {activeTab === 'blog_manager' && 'Blog CMS Manager'}
                             {activeTab === 'media' && 'Media Library'}
 
-                            {activeTab === 'case_studies' && 'Manage Case Studies'}
+                            {activeTab.startsWith('case_studies') && 'Manage Case Studies'}
 
                             {activeTab === 'testimonials' && 'Client Testimonials'}
                             {activeTab === 'products' && 'Digital Products'}
@@ -291,8 +356,8 @@ const AdminDashboard = () => {
                             style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}
                         >
                             <div style={{ textAlign: 'right', display: 'none', md: 'block' }}>
-                                <div style={{ fontSize: '0.7rem', color: '#71717a', fontWeight: '500' }}>System Status</div>
-                                <div style={{ fontSize: '0.8rem', fontWeight: '600', color: '#059669', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                <div style={{ fontSize: 'var(--fs-p2)', color: '#71717a', fontWeight: '500' }}>System Status</div>
+                                <div style={{ fontSize: 'var(--fs-p2)', fontWeight: '600', color: '#059669', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'flex-end' }}>
                                     <div className="header-status-dot"></div>
                                     Operational
                                 </div>
@@ -314,7 +379,7 @@ const AdminDashboard = () => {
                             {activeTab === 'blog_manager' && <BlogManager />}
                             {activeTab === 'media' && <MediaLibrary />}
 
-                            {activeTab === 'case_studies' && <CaseStudiesManager />}
+                            {activeTab.startsWith('case_studies') && <CaseStudiesManager initialFilter={activeTab.split('_')[2] || 'all'} />}
 
                             {activeTab === 'testimonials' && <TestimonialsManager />}
                             {activeTab === 'products' && <ProductsManager />}

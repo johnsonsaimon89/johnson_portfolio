@@ -6,7 +6,7 @@ import { smData } from '../data/socialMediaData';
 import { supabase } from '../lib/supabaseClient';
 import './SocialMediaPage.css';
 import MiniBrowser from '../components/common/MiniBrowser';
-
+import PlatformMockup from '../components/common/PlatformMockup';
 /* ── Animated Counter ─────────────────────────────── */
 const AnimatedCounter = ({ value, target, suffix }) => {
     const [count, setCount] = useState(0);
@@ -242,8 +242,8 @@ const OurStrategy = () => (
                 {smData.strategy.map((item, idx) => (
                     <motion.div key={idx} className="process-card" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} style={{ padding: '2rem' }}>
                         <div className="process-num">{(idx + 1).toString().padStart(2, '0')}</div>
-                        <h4 style={{ fontSize: '1.2rem', marginTop: '1rem' }}>{item.title}</h4>
-                        <p style={{ fontSize: 'var(--fs-p3)', marginBottom: 0, opacity: 0.7 }}>{item.description}</p>
+                        <h4 style={{ fontSize: 'var(--fs-p1)', marginTop: '1rem' }}>{item.title}</h4>
+                        <p style={{ fontSize: 'var(--fs-p2)', marginBottom: 0, opacity: 0.7 }}>{item.description}</p>
                     </motion.div>
                 ))}
             </div>
@@ -255,7 +255,9 @@ const OurStrategy = () => (
 const CampaignSpotlight = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [campaigns, setCampaigns] = useState([]);
+    const [platformCampaigns, setPlatformCampaigns] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 1024);
@@ -263,14 +265,17 @@ const CampaignSpotlight = () => {
 
         const fetchCampaigns = async () => {
             if (!supabase) return;
+
             const { data, error } = await supabase
                 .from('case_studies')
                 .select('*')
-                .eq('type', 'social')
+                .in('type', ['social', 'platform'])
+                .eq('is_active', true)
                 .order('display_order', { ascending: true });
 
             if (!error && data && data.length > 0) {
-                setCampaigns(data);
+                setCampaigns(data.filter(c => c.type === 'social'));
+                setPlatformCampaigns(data.filter(c => c.type === 'platform'));
             } else {
                 // Fallback to static data if no DB data exists yet
                 setCampaigns(smData.campaigns.map((c, i) => ({
@@ -311,10 +316,136 @@ const CampaignSpotlight = () => {
                 </motion.div>
             </div>
 
-            <div className="project-card-grid" style={{ display: 'flex', flexDirection: 'column', gap: '8rem' }}>
-                {campaigns.map((campaign, idx) => {
-                    const isEven = idx % 2 === 0;
-                    const content = campaign.content || {};
+            {/* Platform Command Center */}
+            {platformCampaigns.length > 0 && (
+                <div style={{ marginBottom: '8rem' }}>
+                    <div style={{ marginBottom: '3rem' }}>
+                        <span className="badge">Platform Expertise</span>
+                        <h3 style={{ fontSize: 'var(--fs-h2)' }}>Native Content Strategies.</h3>
+                    </div>
+                    
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', marginBottom: '4rem' }}
+                    >
+                        {platformCampaigns.map((c, idx) => {
+                            const tabName = c.organization_name || c.organization_type || `Platform ${idx + 1}`;
+                            return (
+                                <button
+                                    key={idx}
+                                    onClick={() => setActiveTab(idx)}
+                                    style={{
+                                        padding: '0.8rem 1.8rem',
+                                        borderRadius: '100px',
+                                        border: `1px solid ${activeTab === idx ? '#BDFF00' : 'rgba(255,255,255,0.1)'}`,
+                                        background: activeTab === idx ? 'rgba(189,255,0,0.1)' : 'transparent',
+                                        color: activeTab === idx ? '#BDFF00' : 'var(--muted-color)',
+                                        fontWeight: 800,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em',
+                                        cursor: 'pointer',
+                                        fontSize: 'var(--fs-p2)',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    {tabName}
+                                </button>
+                            );
+                        })}
+                    </motion.div>
+
+                    <AnimatePresence mode="wait">
+                        {platformCampaigns.map((campaign, idx) => {
+                            if (idx !== activeTab) return null;
+                            const content = campaign.content || {};
+                            
+                            const baseMetrics = content.before_after?.after || {};
+                            const customMetrics = (content.custom_metrics || []).reduce((acc, m) => {
+                                if (m.label && m.value) acc[m.label] = m.value;
+                                return acc;
+                            }, {});
+                            const metrics = { ...baseMetrics, ...customMetrics };
+                            const struggles = content.challenges || [];
+                            const tools = content.tool_stack ? content.tool_stack.split(',') : [];
+
+                            return (
+                                <motion.div 
+                                    key={`platform-${campaign.id || idx}`}
+                                    className="web-project-card sm-campaign-card" 
+                                    initial={{ opacity: 0, y: 30 }} 
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -30 }}
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: isMobile ? '1fr' : 'minmax(300px, 1fr) minmax(300px, 1fr)',
+                                        gap: isMobile ? '2rem' : '4rem',
+                                        alignItems: 'start'
+                                    }}
+                                >
+                                    {/* Content Side */}
+                                    <div className="campaign-content" style={{ textAlign: 'left' }}>
+                                        <h3 style={{ 
+                                            fontSize: 'var(--fs-h3)', fontWeight: 900, textTransform: 'uppercase', lineHeight: 1.1, margin: '0 0 2rem 0', letterSpacing: '-0.02em'
+                                        }}>
+                                            {campaign.organization_name} Strategy
+                                        </h3>
+                                        
+                                        <div className="project-description">
+                                            <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6 }}>{content.paragraphs?.[0]}</p>
+                                            <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                                {struggles.map((s, i) => s && (
+                                                    <span key={i} style={{ color: '#ff5f56', fontSize: 'var(--fs-p2)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
+                                                        <span style={{ fontWeight: 900, fontSize: 'var(--fs-p2)' }}>×</span> {s}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6 }}>{content.paragraphs?.[1]}</p>
+                                        </div>
+
+                                        <div className="project-results-wrapper" style={{ marginTop: '2rem' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(Object.keys(metrics).length, 3)}, 1fr)`, gap: '1rem' }}>
+                                                {Object.entries(metrics).slice(0, 3).map(([key, val]) => (
+                                                    <div key={`p-${key}`} style={{ padding: '1.2rem', background: '#BDFF00', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80px' }}>
+                                                        <span style={{ fontSize: 'var(--fs-p1)', color: '#000', fontWeight: 900, lineHeight: 1 }}>{val}</span>
+                                                        <span style={{ fontSize: 'var(--fs-p2)', color: '#000', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem', opacity: 0.8 }}>{key}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        
+                                        {tools.length > 0 && (
+                                            <div className="project-toolstack" style={{ marginTop: '2rem', fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                TOOLSTACK: {tools.map(t => t.trim()).join(' + ')}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Visual Platform Mockup */}
+                                    <div className="project-card-visual">
+                                        <PlatformMockup 
+                                            platform={campaign.organization_name}
+                                            accountName={content.account_name}
+                                            accountHandle={content.account_handle}
+                                            accountLogo={content.account_logo_url}
+                                            mediaItems={content.media_items?.length ? content.media_items : (content.preview_image_url ? [content.preview_image_url] : [])}
+                                        />
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
+                </div>
+            )}
+
+            {/* Brand Case Studies */}
+            {campaigns.length > 0 && (
+                <>
+
+                    <div className="project-card-grid" style={{ display: 'flex', flexDirection: 'column', gap: '8rem' }}>
+                        {campaigns.map((campaign, idx) => {
+                            const isEven = idx % 2 === 0;
+                            const content = campaign.content || {};
                     
                     // Combine before_after.after metrics with custom_metrics
                     const baseMetrics = content.before_after?.after || {};
@@ -347,7 +478,7 @@ const CampaignSpotlight = () => {
                                 <span style={{ 
                                     color: 'var(--brand-accent)', 
                                     fontWeight: 900, 
-                                    fontSize: '0.75rem', 
+                                    fontSize: 'var(--fs-p2)', 
                                     textTransform: 'uppercase', 
                                     letterSpacing: '0.15em',
                                     display: 'block',
@@ -370,8 +501,8 @@ const CampaignSpotlight = () => {
                                     <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6 }}>{content.paragraphs?.[0]}</p>
                                     <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                                         {struggles.map((s, i) => s && (
-                                            <span key={i} style={{ color: '#ff5f56', fontSize: 'var(--fs-p3)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
-                                                <span style={{ fontWeight: 900, fontSize: '1.1rem' }}>×</span> {s}
+                                            <span key={i} style={{ color: '#ff5f56', fontSize: 'var(--fs-p2)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
+                                                <span style={{ fontWeight: 900, fontSize: 'var(--fs-p2)' }}>×</span> {s}
                                             </span>
                                         ))}
                                     </div>
@@ -397,7 +528,7 @@ const CampaignSpotlight = () => {
                                                 border: '1px solid rgba(255,255,255,0.1)', 
                                                 borderRadius: '8px', 
                                                 padding: '0.4rem 1rem', 
-                                                fontSize: '0.7rem', 
+                                                fontSize: 'var(--fs-p2)', 
                                                 fontWeight: 700,
                                                 color: '#fff',
                                                 textTransform: 'capitalize'
@@ -426,8 +557,8 @@ const CampaignSpotlight = () => {
                                             justifyContent: 'center',
                                             minHeight: '80px'
                                         }}>
-                                            <span style={{ fontSize: '1.4rem', color: '#000', fontWeight: 900, lineHeight: 1 }}>{val}</span>
-                                            <span style={{ fontSize: '0.6rem', color: '#000', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem', opacity: 0.8 }}>{key}</span>
+                                            <span style={{ fontSize: 'var(--fs-p1)', color: '#000', fontWeight: 900, lineHeight: 1 }}>{val}</span>
+                                            <span style={{ fontSize: 'var(--fs-p2)', color: '#000', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem', opacity: 0.8 }}>{key}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -435,14 +566,16 @@ const CampaignSpotlight = () => {
                             
                             {/* Toolstack */}
                             <div className="project-toolstack" style={{ direction: 'ltr', textAlign: 'left', marginTop: '2rem' }}>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--muted-color)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                <div style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                     TOOLSTACK: {tools.map(t => t.trim()).join(' + ')}
                                 </div>
                             </div>
                         </motion.div>
                     );
                 })}
-            </div>
+                    </div>
+                </>
+            )}
         </div>
     </section>
     );
@@ -566,8 +699,8 @@ const FeedGrid = () => {
                             </div>
                             <div style={{ padding: isMobile ? '1.5rem' : '2rem 2rem 2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ color: 'var(--brand-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}>{selectedPost.type}</span>
-                                    {!isMobile && <button onClick={() => setSelectedPost(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1.5rem' }}>×</button>}
+                                    <span style={{ color: 'var(--brand-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: 'var(--fs-p2)' }}>{selectedPost.type}</span>
+                                    {!isMobile && <button onClick={() => setSelectedPost(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 'var(--fs-p1)' }}>×</button>}
                                 </div>
                                 <h3 style={{ margin: 0 }}>{selectedPost.title}</h3>
                                 <p style={{ color: '#fff', fontWeight: 600, margin: 0 }}>{selectedPost.hook}</p>
@@ -576,7 +709,7 @@ const FeedGrid = () => {
                                     {selectedPost.metrics && Object.entries(selectedPost.metrics).map(([key, val]) => (
                                         <div key={key}>
                                             <span style={{ display: 'block', fontWeight: 800, color: 'var(--brand-accent)' }}>{val}</span>
-                                            <span style={{ color: 'var(--muted-color)', textTransform: 'capitalize', fontSize: '0.8rem' }}>{key}</span>
+                                            <span style={{ color: 'var(--muted-color)', textTransform: 'capitalize', fontSize: 'var(--fs-p2)' }}>{key}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -739,8 +872,8 @@ const ReelMockup = () => {
                                             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Heart size={20} fill="#fff" /></div>
                                             <div style={{ width: 35, height: 35, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
                                         </div>
-                                        <h4 style={{ margin: '0 0 0.5rem 0', maxWidth: '80%', fontSize: '1.1rem', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{reel.title}</h4>
-                                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>▶ {reel.views} views</p>
+                                        <h4 style={{ margin: '0 0 0.5rem 0', maxWidth: '80%', fontSize: 'var(--fs-p2)', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{reel.title}</h4>
+                                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: 'var(--fs-p2)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>▶ {reel.views} views</p>
                                     </div>
                                 </div>
                             ))}
@@ -748,7 +881,7 @@ const ReelMockup = () => {
                     </motion.div>
                 </div>
                 <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-                    <span style={{ color: 'var(--brand-accent)', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Reels + TikTok Specialist</span>
+                    <span style={{ color: 'var(--brand-accent)', fontWeight: 800, fontSize: 'var(--fs-p2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Reels + TikTok Specialist</span>
                     <h3 style={{ fontSize: 'var(--fs-h2)', margin: '1rem 0' }}>{reels[activeIndex]?.era || eraTitle}</h3>
                     <p style={{ color: 'var(--muted-color)', fontSize: 'var(--fs-p2)' }}>
                         {reels[activeIndex]?.description || "Attention spans are shrinking. I script, shoot, and edit vertical video designed entirely around the all-important first 3-second hook."}
@@ -776,7 +909,7 @@ const ReelMockup = () => {
                                     transition: 'all 0.3s ease'
                                 }}
                             >
-                                <span className="result-val" style={{ fontSize: '1.1rem', color: activeIndex === idx ? 'var(--brand-accent)' : '#fff' }}>{reel.title}</span>
+                                <span className="result-val" style={{ fontSize: 'var(--fs-p2)', color: activeIndex === idx ? 'var(--brand-accent)' : '#fff' }}>{reel.title}</span>
                                 <span className="result-label">{reel.category || 'Technique'}</span>
                             </motion.div>
                         ))}
@@ -856,12 +989,12 @@ const SocialTestimonials = () => {
                                     boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
                                 }}
                             >
-                                <p style={{ margin: '0 0 0.8rem 0', fontSize: '1.1rem', lineHeight: 1.5, fontStyle: 'italic', fontWeight: 400 }}>"{test.quote}"</p>
+                                <p style={{ margin: '0 0 0.8rem 0', fontSize: 'var(--fs-p2)', lineHeight: 1.5, fontStyle: 'italic', fontWeight: 400 }}>"{test.quote}"</p>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: isEven ? 'flex-start' : 'flex-end' }}>
                                     <span style={{
                                         fontWeight: 800,
                                         color: 'var(--brand-accent)',
-                                        fontSize: '0.75rem',
+                                        fontSize: 'var(--fs-p2)',
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.05em'
                                     }}>
@@ -890,9 +1023,9 @@ const EducationalTools = () => (
             <div className="process-grid">
                 {smData.educationalTools.map((tool, idx) => (
                     <motion.div key={idx} className="process-card" initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-                        <span style={{ color: 'var(--brand-accent)', fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tool.category}</span>
+                        <span style={{ color: 'var(--brand-accent)', fontWeight: 700, fontSize: 'var(--fs-p2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{tool.category}</span>
                         <h4 style={{ margin: '0.5rem 0' }}>{tool.name}</h4>
-                        <p style={{ fontSize: '0.85rem', marginBottom: 0 }}>{tool.description}</p>
+                        <p style={{ fontSize: 'var(--fs-p2)', marginBottom: 0 }}>{tool.description}</p>
                     </motion.div>
                 ))}
             </div>
@@ -918,7 +1051,6 @@ export const SMCallToAction = () => (
 const SocialMediaPage = () => (
     <div className="social-page">
         <SMHero />
-        <ClientLogos />
         <CampaignSpotlight />
         <OurStrategy />
         <FeedGrid />

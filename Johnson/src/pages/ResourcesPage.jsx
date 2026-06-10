@@ -41,7 +41,7 @@ const ProductCard = ({ product, isFree, onClick }) => {
                             color: '#fff',
                             padding: '0.4rem 0.8rem',
                             borderRadius: '100px',
-                            fontSize: '0.7rem',
+                            fontSize: 'var(--fs-p2)',
                             fontWeight: 800,
                             boxShadow: '0 4px 12px rgba(255,0,0,0.3)',
                             textTransform: 'uppercase',
@@ -56,7 +56,7 @@ const ProductCard = ({ product, isFree, onClick }) => {
                             color: '#000', // BLACK text
                             padding: '0.4rem 0.8rem',
                             borderRadius: '100px',
-                            fontSize: '0.7rem',
+                            fontSize: 'var(--fs-p2)',
                             fontWeight: 800,
                             boxShadow: '0 4px 12px rgba(0,255,0,0.2)',
                             textTransform: 'uppercase',
@@ -75,7 +75,7 @@ const ProductCard = ({ product, isFree, onClick }) => {
                 alignSelf: 'flex-start',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
-                fontSize: '0.7rem',
+                fontSize: 'var(--fs-p2)',
                 color: isFree ? '#00f2fe' : 'var(--brand-accent)',
                 background: isFree ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255,255,255,0.05)',
                 padding: '0.3rem 0.8rem',
@@ -91,16 +91,16 @@ const ProductCard = ({ product, isFree, onClick }) => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontWeight: 800, fontSize: '1.25rem', color: '#fff' }}>
+                    <span style={{ fontWeight: 800, fontSize: 'var(--fs-p1)', color: '#fff' }}>
                         {formatPrice(displayPrice)}
                     </span>
                     {isOnSale && (
-                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem', textDecoration: 'line-through' }}>
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 'var(--fs-p2)', textDecoration: 'line-through' }}>
                             {formatPrice(product.price_tzs)}
                         </span>
                     )}
                 </div>
-                <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>
+                <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 'var(--fs-p2)' }}>
                     {product.sales_count || (isFree ? `${product.downloads} downloads` : product.salesCount)}
                 </span>
             </div>
@@ -167,11 +167,11 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
 
                     {step === 1 && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Step 1: Choose Payment Method</span>
+                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, textTransform: 'uppercase', fontSize: 'var(--fs-p2)', letterSpacing: '0.1em' }}>Step 1: Choose Payment Method</span>
                             <h2 style={{ margin: 0 }}>{product.title}</h2>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem' }}>
-                                <div style={{ fontWeight: 800, fontSize: '1.5rem' }}>{formatPrice(product.is_on_sale ? product.sale_price_tzs : product.price_tzs)}</div>
-                                {product.is_on_sale && <div style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.3)', fontSize: '0.9rem' }}>{formatPrice(product.price_tzs)}</div>}
+                                <div style={{ fontWeight: 800, fontSize: 'var(--fs-p1)' }}>{formatPrice(product.is_on_sale ? product.sale_price_tzs : product.price_tzs)}</div>
+                                {product.is_on_sale && <div style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.3)', fontSize: 'var(--fs-p2)' }}>{formatPrice(product.price_tzs)}</div>}
                             </div>
 
                             <div style={{ display: 'grid', gap: '1rem' }}>
@@ -195,18 +195,18 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
 
                     {step === 2 && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem' }}>Step 2: Confirm & Receive</span>
+                            <span style={{ color: 'var(--brand-accent)', fontWeight: 700, textTransform: 'uppercase', fontSize: 'var(--fs-p2)' }}>Step 2: Confirm & Receive</span>
                             <h2 style={{ margin: 0 }}>Payment Instructions</h2>
                             
                              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.15)', padding: '1.5rem', borderRadius: '12px' }}>
                                 <p style={{ margin: '0 0 1rem 0' }}>Please send <strong>{formatPrice(product.is_on_sale ? product.sale_price_tzs : product.price_tzs)}</strong> using <strong>{selectedMethod === 'Bank' ? 'Bank Transfer' : 'Mobile Payment'}</strong> to:</p>
-                                <div style={{ fontWeight: 800, textAlign: 'center', letterSpacing: '2px', color: 'var(--brand-accent)', fontSize: '1.2rem' }}>
+                                <div style={{ fontWeight: 800, textAlign: 'center', letterSpacing: '2px', color: 'var(--brand-accent)', fontSize: 'var(--fs-p1)' }}>
                                     {selectedMethod === 'Bank' ? settings.bankAcc : settings.lipa}
                                 </div>
-                                {selectedMethod === 'Bank' && <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--muted-color)', marginTop: '0.5rem' }}>Bank: {settings.bankName} | Name: JOHNSON SAIMON</div>}
+                                {selectedMethod === 'Bank' && <div style={{ textAlign: 'center', fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', marginTop: '0.5rem' }}>Bank: {settings.bankName} | Name: JOHNSON SAIMON</div>}
                             </div>
 
-                            <p style={{ color: 'var(--muted-color)', fontSize: '0.9rem' }}>{productsData.payment.microcopy.postPayment}</p>
+                            <p style={{ color: 'var(--muted-color)', fontSize: 'var(--fs-p2)' }}>{productsData.payment.microcopy.postPayment}</p>
                             
                             <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} onSubmit={async (e) => {
                                 e.preventDefault();
@@ -269,7 +269,7 @@ const PaymentModal = ({ product, isOpen, onClose }) => {
                             </p>
                             
                             <div style={{ background: 'rgba(189, 255, 0, 0.1)', border: '1px solid rgba(189, 255, 0, 0.2)', padding: '1rem', borderRadius: '12px', textAlign: 'left', width: '100%' }}>
-                                <p style={{ color: 'var(--brand-accent)', fontSize: '0.85rem', margin: 0, display: 'flex', gap: '10px' }}>
+                                <p style={{ color: 'var(--brand-accent)', fontSize: 'var(--fs-p2)', margin: 0, display: 'flex', gap: '10px' }}>
                                     <span>💡</span> <span><strong>Check your Spam folder</strong> if you don't see our email within 10 minutes.</span>
                                 </p>
                             </div>
@@ -363,7 +363,7 @@ const FreeDownloadModal = ({ product, isOpen, onClose }) => {
 
                     {!success ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            <span style={{ color: '#00f2fe', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em' }}>Free Download</span>
+                            <span style={{ color: '#00f2fe', fontWeight: 700, textTransform: 'uppercase', fontSize: 'var(--fs-p2)', letterSpacing: '0.1em' }}>Free Download</span>
                             <h2 style={{ margin: 0 }}>{product.title}</h2>
                             <p style={{ color: 'var(--muted-color)' }}>Where should we send your download link?</p>
 
@@ -373,7 +373,7 @@ const FreeDownloadModal = ({ product, isOpen, onClose }) => {
                                 <button type="submit" disabled={loading} className="studio-btn studio-btn-outline" style={{ marginTop: '0.5rem', width: '100%', justifyContent: 'center' }}>
                                     {loading ? <><Loader2 size={18} className="spin" style={{ marginRight: '0.5rem' }} /> Sending...</> : 'Get Free Resource'}
                                 </button>
-                                <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center', margin: 0 }}>
+                                <p style={{ fontSize: 'var(--fs-p2)', color: 'rgba(255,255,255,0.3)', textAlign: 'center', margin: 0 }}>
                                     You'll be added to my weekly newsletter. No spam.
                                 </p>
                             </form>
@@ -389,7 +389,7 @@ const FreeDownloadModal = ({ product, isOpen, onClose }) => {
                             </p>
                             
                             <div style={{ background: 'rgba(0, 242, 254, 0.1)', border: '1px solid rgba(0, 242, 254, 0.2)', padding: '1rem', borderRadius: '12px', textAlign: 'left', width: '100%' }}>
-                                <p style={{ color: '#00f2fe', fontSize: '0.85rem', margin: 0, display: 'flex', gap: '10px' }}>
+                                <p style={{ color: '#00f2fe', fontSize: 'var(--fs-p2)', margin: 0, display: 'flex', gap: '10px' }}>
                                     <span>💡</span> <span><strong>Check your Spam folder</strong> and mark as "Not Spam" to ensure you get future updates.</span>
                                 </p>
                             </div>

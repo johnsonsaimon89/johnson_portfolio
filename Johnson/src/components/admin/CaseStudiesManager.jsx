@@ -280,7 +280,7 @@ const CaseStudiesManager = () => {
                             <div className="filter-group">
                                 <label>Content Category</label>
                                 <div className="tab-filters">
-                                    {['all', 'web', 'social'].map(type => (
+                                    {['all', 'web', 'social', 'platform'].map(type => (
                                         <button 
                                             key={type}
                                             className={`tab-filter-btn ${filterType === type ? 'active' : ''}`}
@@ -382,14 +382,14 @@ const CaseStudiesManager = () => {
                     margin-bottom: 3rem;
                 }
                 .header-text h3 {
-                    font-size: 1.5rem;
+                    font-size: var(--fs-p1);
                     margin: 0 0 0.5rem 0;
                     color: #111;
                 }
                 .header-text p {
                     margin: 0;
                     color: #666;
-                    font-size: 0.95rem;
+                    font-size: var(--fs-p2);
                 }
                 .premium-add-btn {
                     display: flex;
@@ -416,7 +416,7 @@ const CaseStudiesManager = () => {
                 }
                 .filter-group label {
                     display: block;
-                    font-size: 0.75rem;
+                    font-size: var(--fs-p2);
                     font-weight: 700;
                     color: #9ca3af;
                     text-transform: uppercase;
@@ -436,7 +436,7 @@ const CaseStudiesManager = () => {
                     border: none;
                     background: transparent;
                     border-radius: 6px;
-                    font-size: 0.85rem;
+                    font-size: var(--fs-p2);
                     font-weight: 600;
                     color: #666;
                     cursor: pointer;
@@ -479,7 +479,7 @@ const CaseStudiesManager = () => {
                     justify-content: center;
                     border-radius: 10px;
                     font-weight: 800;
-                    font-size: 1rem;
+                    font-size: var(--fs-p2);
                 }
                 .item-type-indicator[data-type="web"] {
                     background: #eff6ff;
@@ -491,11 +491,11 @@ const CaseStudiesManager = () => {
                 }
                 .item-title {
                     font-weight: 700;
-                    font-size: 1.05rem;
+                    font-size: var(--fs-p2);
                     color: #111;
                 }
                 .draft-badge {
-                    font-size: 0.7rem;
+                    font-size: var(--fs-p2);
                     background: #f3f4f6;
                     color: #6b7280;
                     padding: 0.1rem 0.4rem;
@@ -504,7 +504,7 @@ const CaseStudiesManager = () => {
                     margin-left: 0.5rem;
                 }
                 .item-subtitle {
-                    font-size: 0.85rem;
+                    font-size: var(--fs-p2);
                     color: #6b7280;
                     margin: 0.1rem 0 0.5rem 0;
                 }
@@ -514,7 +514,7 @@ const CaseStudiesManager = () => {
                     align-items: center;
                 }
                 .tool-tag-sm {
-                    font-size: 0.7rem;
+                    font-size: var(--fs-p2);
                     background: #f1f5f9;
                     border: 1px solid #cbd5e1;
                     padding: 0.1rem 0.5rem;
@@ -522,7 +522,7 @@ const CaseStudiesManager = () => {
                     color: #475569;
                 }
                 .tool-more {
-                    font-size: 0.7rem;
+                    font-size: var(--fs-p2);
                     color: #94a3b8;
                     font-weight: 600;
                 }
@@ -560,7 +560,7 @@ const CaseStudiesManager = () => {
                     border: 2px dashed #e5e7eb;
                 }
                 .empty-icon {
-                    font-size: 3rem;
+                    font-size: var(--fs-p1);
                     margin-bottom: 1.5rem;
                 }
                 .admin-empty-state h4 {

@@ -31,7 +31,7 @@ const WhatsAppButton = () => {
                     boxShadow: '0 4px 24px rgba(37, 211, 102, 0.4)',
                     textDecoration: 'none',
                     fontWeight: 600,
-                    fontSize: '0.9rem',
+                    fontSize: 'var(--fs-p2)',
                     overflow: 'hidden',
                     transition: 'padding 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     whiteSpace: 'nowrap',

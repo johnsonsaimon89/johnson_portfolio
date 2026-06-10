@@ -78,7 +78,7 @@
 
 .profile-service-number {
     font-family: monospace;
-    font-size: 1rem;
+    font-size: var(--fs-p2);
     font-weight: 800;
     color: var(--brand-accent);
     flex-shrink: 0;
@@ -173,7 +173,7 @@
     padding: 0.4rem 1rem;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 100px;
-    font-size: 0.8rem;
+    font-size: var(--fs-p2);
     font-weight: 600;
     color: var(--muted-color);
     text-decoration: none;

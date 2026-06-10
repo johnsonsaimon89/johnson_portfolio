@@ -129,7 +129,7 @@
 }
 
 .price-tag {
-    font-size: 1.25rem;
+    font-size: var(--fs-p1);
     font-weight: 800;
     color: #fff;
     margin-bottom: 1rem;
