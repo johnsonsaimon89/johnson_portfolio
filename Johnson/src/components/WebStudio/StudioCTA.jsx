@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const StudioCTA = () => {
     return (
@@ -26,9 +27,9 @@ const StudioCTA = () => {
                         </p>
 
                         <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-                            <a href="#contact" className="studio-btn studio-btn-primary" style={{ padding: '1rem 3rem' }}>
+                            <Link to="/contact" className="studio-btn studio-btn-primary" style={{ padding: '1rem 3rem' }}>
                                 Start a Project <ArrowRight size={20} />
-                            </a>
+                            </Link>
                             <a href="mailto:johnsonsaimon89@gmail.com" className="studio-btn studio-btn-outline" style={{ padding: '1rem 3rem' }}>
                                 Email Me <Mail size={20} />
                             </a>
