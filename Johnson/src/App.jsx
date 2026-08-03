@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 
 
 import HomeSplash from './components/HomeSplash';
 import Footer from './components/Footer';
-import WhatsAppButton from './components/WhatsAppButton';
-import NewsletterPopup from './components/common/NewsletterPopup';
 
-// Page Components (to be created)
+import NewsletterPopup from './components/common/NewsletterPopup';
+import CookieBanner from './components/common/CookieBanner';
+
+// Page Components
+import AboutPage from './pages/AboutPage';
+import WorkPage from './pages/WorkPage';
 import SocialMediaPage from './pages/SocialMediaPage';
 import WebPortfolioPage from './pages/WebPortfolioPage';
 import ResourcesPage from './pages/ResourcesPage';
-import ProfilePage from './pages/ProfilePage';
 import ContactPage from './pages/ContactPage';
 
 // Admin Components
@@ -66,50 +68,31 @@ function App() {
 
   return (
     <div className="app">
-      {/* Background Blobs - Deeper, more abstract */}
-      <motion.div
-        className="bg-blob"
-        animate={{ x: [0, 80, -40, 0], y: [0, -100, 60, 0], scale: [1, 1.2, 0.9, 1] }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-        style={{
-          top: '-10%', left: '-10%',
-          width: '600px', height: '600px',
-          background: 'transparent'
-        }}
-      />
-      <motion.div
-        className="bg-blob"
-        animate={{ x: [0, -90, 60, 0], y: [0, 80, -70, 0], scale: [1, 0.8, 1.15, 1] }}
-        transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-        style={{
-          bottom: '-10%', right: '-10%',
-          width: '700px', height: '700px',
-          background: 'transparent'
-        }}
-      />
-
-
-
-
       {!pathname.startsWith('/admin') && <Navbar />}
 
 
       <AnimatePresence mode="wait">
         <motion.div
           key={pathname}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
         >
           <Routes location={location}>
+            {/* Public pages, hero handles its own top padding */}
             <Route path="/" element={<HomeSplash />} />
-            <Route path="/social-media" element={<SocialMediaPage />} />
-            <Route path="/web-portfolio" element={<WebPortfolioPage />} />
-            <Route path="/resources" element={<ResourcesPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
+            {/* Primary pages */}
+            <Route path="/about"          element={<div className="page-content"><AboutPage /></div>} />
+            <Route path="/work"           element={<div className="page-content"><WorkPage /></div>} />
+            <Route path="/resources"      element={<div className="page-content"><ResourcesPage /></div>} />
+            <Route path="/contact"        element={<div className="page-content"><ContactPage /></div>} />
+            {/* Redirects from old routes */}
+            <Route path="/profile"        element={<Navigate to="/about" replace />} />
+            <Route path="/social-media"   element={<Navigate to="/work" replace />} />
+            <Route path="/web-portfolio"  element={<Navigate to="/work" replace />} />
+            {/* Admin */}
+            <Route path="/admin/login"   element={<AdminLogin />} />
             <Route
               path="/admin/dashboard"
               element={
@@ -118,19 +101,20 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/:slug" element={<DynamicPage />} />
+            <Route path="/:slug" element={<div className="page-content"><DynamicPage /></div>} />
           </Routes>
         </motion.div>
       </AnimatePresence>
 
-      {!pathname.startsWith('/admin') && pathname !== '/' && <Footer />}
+      {!pathname.startsWith('/admin') && <Footer />}
 
-      {/* Global WhatsApp floating button */}
-      {!pathname.startsWith('/admin') && <WhatsAppButton />}
 
 
       {/* Global Newsletter Popup (only shows for non-subscribers after 5s) */}
       {!pathname.startsWith('/admin') && pathname !== '/' && <NewsletterPopup />}
+      
+      {/* Cookie Banner */}
+      {!pathname.startsWith('/admin') && <CookieBanner />}
     </div>
   );
 }

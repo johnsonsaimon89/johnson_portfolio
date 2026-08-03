@@ -1,0 +1,307 @@
+diff --git a/Johnson/src/pages/AdminDashboard.css b/Johnson/src/pages/AdminDashboard.css
+index 6ad80d2..8d83b31 100644
+--- a/Johnson/src/pages/AdminDashboard.css
++++ b/Johnson/src/pages/AdminDashboard.css
+@@ -1,25 +1,25 @@
+ :root {
+-    --admin-sidebar-bg: #09090b;
+-    --admin-sidebar-hover: rgba(255, 255, 255, 0.03);
+-    --admin-sidebar-active: rgba(255, 255, 255, 0.08);
+-    --admin-sidebar-text: #71717a;
++    --admin-sidebar-bg: #0F0F0F;
++    --admin-sidebar-hover: rgba(255, 255, 255, 0.04);
++    --admin-sidebar-active: rgba(255, 255, 255, 0.09);
++    --admin-sidebar-text: #6B6B6B;
+     --admin-sidebar-text-active: #ffffff;
+-    --admin-main-bg: #ffffff;
+-    --admin-header-bg: rgba(255, 255, 255, 0.85);
+-    --admin-border: #f1f1f1;
+-    --admin-accent: #000000;
+-    --admin-accent-gradient: linear-gradient(135deg, #000 0%, #333 100%);
+-    --admin-card-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
+-    --admin-card-shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+-    --tab-accent: #000000; /* Default */
++    --admin-main-bg: #F7F6F3;
++    --admin-header-bg: rgba(247, 246, 243, 0.92);
++    --admin-border: #E8E8E5;
++    --admin-accent: #E05A3D;
++    --admin-accent-gradient: linear-gradient(135deg, #E05A3D 0%, #B8472F 100%);
++    --admin-card-shadow: 0 1px 3px rgba(0,0,0,0.04);
++    --admin-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.06);
++    --tab-accent: #E05A3D;
+ }
+ 
+ .admin-dashboard {
+     display: flex;
+     min-height: 100vh;
+     background-color: var(--admin-main-bg);
+-    color: #09090b;
+-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
++    color: #0F0F0F;
++    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+ }
+ 
+ /* Sidebar Styling */
+@@ -128,26 +128,24 @@
+     font-weight: 600;
+ }
+ 
+-/* Tab Highlight Pill */
++/* Tab Highlight Pill — flat, no glow */
+ .active-pill {
+     position: absolute;
+     left: 0;
+-    width: 4px;
+-    height: 18px;
++    width: 3px;
++    height: 16px;
+     background-color: var(--tab-accent);
+-    border-radius: 0 4px 4px 0;
+-    box-shadow: 0 0 10px var(--tab-accent);
++    border-radius: 0 3px 3px 0;
+ }
+ 
+ .admin-nav-item svg {
+-    transition: all 0.2s ease;
++    transition: transform 0.2s ease;
+     flex-shrink: 0;
+ }
+ 
+ .admin-nav-item:hover svg,
+ .admin-nav-item.active svg {
+-    transform: scale(1.1);
+-    filter: drop-shadow(0 0 5px currentColor);
++    transform: scale(1.05);
+ }
+ 
+ .nav-badge {
+@@ -205,17 +203,16 @@
+     justify-content: space-between;
+ }
+ 
+-/* Animated Border Top for Header based on tab */
++/* Header animated top border */
+ .admin-header::before {
+     content: '';
+     position: absolute;
+     top: 0;
+     left: 0;
+     right: 0;
+-    height: 3px;
++    height: 2px;
+     background: var(--tab-accent);
+-    opacity: 0.6;
+-    box-shadow: 0 0 15px var(--tab-accent);
++    opacity: 0.5;
+     transition: background 0.3s ease;
+ }
+ 
+@@ -223,12 +220,8 @@
+     font-size: var(--fs-p1);
+     font-weight: 800;
+     letter-spacing: -0.04em;
+-    color: #09090b;
++    color: #0F0F0F;
+     margin: 0;
+-    background: linear-gradient(135deg, #09090b 0%, #52525b 100%);
+-    -webkit-background-clip: text;
+-    background-clip: text;
+-    -webkit-text-fill-color: transparent;
+ }
+ 
+ .breadcrumb-label {
+diff --git a/Johnson/src/pages/AdminDashboard.jsx b/Johnson/src/pages/AdminDashboard.jsx
+index 4840f2a..60c9c8f 100644
+--- a/Johnson/src/pages/AdminDashboard.jsx
++++ b/Johnson/src/pages/AdminDashboard.jsx
+@@ -14,12 +14,15 @@ import NewsletterManager from '../components/admin/NewsletterManager';
+ import FinancialAnalytics from '../components/admin/FinancialAnalytics';
+ import BlogManager from '../components/admin/cms/BlogManager';
+ import MediaLibrary from '../components/admin/MediaLibrary';
++import PageImagesManager from '../components/admin/PageImagesManager';
+ import CaseStudiesManager from '../components/admin/CaseStudiesManager';
++import ProjectsManager from '../components/admin/ProjectsManager';
+ import RoleManager from '../components/admin/RoleManager';
+ import CommunityContentManager from '../components/admin/CommunityContentManager';
+ import EmailBroadcastManager from '../components/admin/EmailBroadcastManager';
+ import EmailTemplatesManager from '../components/admin/EmailTemplatesManager';
+ import ShortFormManager from '../components/admin/ShortFormManager';
++import HeroManager from '../components/admin/HeroManager';
+ import Toast from '../components/admin/Toast';
+ import './AdminDashboard.css';
+ 
+@@ -34,7 +37,9 @@ const AdminDashboard = () => {
+ 
+     const tabThemes = {
+         blog_manager: '#10b981',
++        hero_manager: '#ec4899',
+         media: '#0ea5e9',
++        page_images: '#f59e0b',
+         case_studies: '#6366f1',
+         testimonials: '#f59e0b',
+         community: '#8b5cf6',
+@@ -151,6 +156,20 @@ const AdminDashboard = () => {
+                         {activeTab === 'blog_manager' && <motion.div layoutId="active-pill" className="active-pill" />}
+                     </motion.button>
+                     
++                    {/* Hero Section Manager */}
++                    <motion.button
++                        initial={{ x: -10, opacity: 0 }}
++                        animate={{ x: 0, opacity: 1 }}
++                        transition={{ delay: 0.03 }}
++                        className={`admin-nav-item ${activeTab === 'hero_manager' ? 'active' : ''}`}
++                        onClick={() => setActiveTab('hero_manager')}
++                        style={{ '--tab-accent': tabThemes['hero_manager'] }}
++                    >
++                        <LayoutList size={18} color={tabThemes['hero_manager']} style={{ opacity: activeTab === 'hero_manager' ? 1 : 0.8 }} />
++                        <span>Hero Copy</span>
++                        {activeTab === 'hero_manager' && <motion.div layoutId="active-pill" className="active-pill" />}
++                    </motion.button>
++                    
+                     {/* Media Library */}
+                     <motion.button
+                         initial={{ x: -10, opacity: 0 }}
+@@ -165,67 +184,39 @@ const AdminDashboard = () => {
+                         {activeTab === 'media' && <motion.div layoutId="active-pill" className="active-pill" />}
+                     </motion.button>
+ 
+-                    {/* Case Studies (Dropdown) */}
+-                    <motion.div
++                    {/* Page Images */}
++                    <motion.button
++                        initial={{ x: -10, opacity: 0 }}
++                        animate={{ x: 0, opacity: 1 }}
++                        transition={{ delay: 0.08 }}
++                        className={`admin-nav-item ${activeTab === 'page_images' ? 'active' : ''}`}
++                        onClick={() => setActiveTab('page_images')}
++                        style={{ '--tab-accent': tabThemes['page_images'] }}
++                    >
++                        <LayoutList size={18} color={tabThemes['page_images']} style={{ opacity: activeTab === 'page_images' ? 1 : 0.8 }} />
++                        <span>Page Images</span>
++                        {activeTab === 'page_images' && <motion.div layoutId="active-pill" className="active-pill" />}
++                    </motion.button>
++
++                    {/* My Work */}
++                    <motion.button
+                         initial={{ x: -10, opacity: 0 }}
+                         animate={{ x: 0, opacity: 1 }}
+                         transition={{ delay: 0.1 }}
+-                        className="nav-dropdown-container"
++                        className={`admin-nav-item ${activeTab.startsWith('case_studies') ? 'active' : ''}`}
++                        onClick={() => setActiveTab('case_studies_all')}
++                        style={{ '--tab-accent': tabThemes['case_studies'] }}
+                     >
+-                        <button
+-                            className={`admin-nav-item ${activeTab.startsWith('case_studies') ? 'active' : ''}`}
+-                            onClick={() => {
+-                                setExpandedNav(prev => ({ ...prev, case_studies: !prev.case_studies }));
+-                                if (!activeTab.startsWith('case_studies')) {
+-                                    setActiveTab('case_studies_all');
+-                                }
+-                            }}
+-                            style={{ '--tab-accent': tabThemes['case_studies'] }}
+-                        >
+-                            <LayoutList size={18} color={tabThemes['case_studies']} style={{ opacity: activeTab.startsWith('case_studies') ? 1 : 0.8 }} />
+-                            <span>Case Studies</span>
+-                            <ChevronRight size={14} style={{ marginLeft: 'auto', transform: expandedNav.case_studies ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', color: '#71717a' }} />
+-                            {activeTab.startsWith('case_studies') && <motion.div layoutId="active-pill" className="active-pill" />}
+-                        </button>
+-                        
+-                        <AnimatePresence>
+-                            {expandedNav.case_studies && (
+-                                <motion.div 
+-                                    initial={{ height: 0, opacity: 0 }}
+-                                    animate={{ height: 'auto', opacity: 1 }}
+-                                    exit={{ height: 0, opacity: 0 }}
+-                                    style={{ overflow: 'hidden', marginLeft: '1.5rem', borderLeft: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.2rem', marginBottom: '0.5rem' }}
+-                                >
+-                                    {[
+-                                        { id: 'case_studies_web', label: 'Web Projects' },
+-                                        { id: 'case_studies_social', label: 'Brand Strategies' },
+-                                        { id: 'case_studies_platform', label: 'Platform Expertise' }
+-                                    ].map(sub => (
+-                                        <button 
+-                                            key={sub.id}
+-                                            className={`admin-nav-subitem ${activeTab === sub.id ? 'active' : ''}`} 
+-                                            onClick={() => setActiveTab(sub.id)}
+-                                            style={{ 
+-                                                background: 'transparent', border: 'none', color: activeTab === sub.id ? '#fff' : '#a1a1aa', 
+-                                                textAlign: 'left', padding: '0.4rem 0.8rem', fontSize: 'var(--fs-p2)', fontWeight: activeTab === sub.id ? '600' : '400',
+-                                                cursor: 'pointer', borderRadius: '0 6px 6px 0', transition: 'all 0.2s'
+-                                            }}
+-                                            onMouseEnter={(e) => { if(activeTab !== sub.id) e.target.style.color = '#fff'; }}
+-                                            onMouseLeave={(e) => { if(activeTab !== sub.id) e.target.style.color = '#a1a1aa'; }}
+-                                        >
+-                                            {sub.label}
+-                                        </button>
+-                                    ))}
+-                                </motion.div>
+-                            )}
+-                        </AnimatePresence>
+-                    </motion.div>
++                        <LayoutList size={18} color={tabThemes['case_studies']} style={{ opacity: activeTab.startsWith('case_studies') ? 1 : 0.8 }} />
++                        <span>My Work</span>
++                        {activeTab.startsWith('case_studies') && <motion.div layoutId="active-pill" className="active-pill" />}
++                    </motion.button>
+ 
+                     <div className="admin-nav-group-title mt-4">Engagement</div>
+                     {[
+                         { id: 'testimonials', label: 'Testimonials', icon: <MessageSquareQuote size={18} /> },
+                         { id: 'community', label: 'Community', icon: <Users size={18} /> },
+-                        { id: 'short_form', label: 'Short-Form', icon: <Play size={18} /> },
++                        { id: 'short_form', label: 'Short Form', icon: <Play size={18} /> },
+                     ].map((item, index) => (
+                         <motion.button
+                             key={item.id}
+@@ -331,10 +322,11 @@ const AdminDashboard = () => {
+                         </div>
+                         <h1>
+                             {activeTab === 'blog_manager' && 'Blog CMS Manager'}
++                            {activeTab === 'hero_manager' && 'Hero Copywriter'}
+                             {activeTab === 'media' && 'Media Library'}
+-
+-                            {activeTab.startsWith('case_studies') && 'Manage Case Studies'}
+-
++                            {activeTab === 'page_images' && 'Page Images Manager'}
++                            {activeTab === 'case_studies' && 'Manage Case Studies'}
++                            {activeTab === 'projects' && 'Manage Carousel Projects'}
+                             {activeTab === 'testimonials' && 'Client Testimonials'}
+                             {activeTab === 'products' && 'Digital Products'}
+                             {activeTab === 'orders' && 'Purchase Orders'}
+@@ -346,7 +338,7 @@ const AdminDashboard = () => {
+                             {activeTab === 'email_templates' && 'Email Templates'}
+                             {activeTab === 'campaigns' && 'Email Campaign Broadcast'}
+                             {activeTab === 'community' && 'Community Building Content'}
+-                            {activeTab === 'short_form' && 'The Era of Short-Form'}
++                            {activeTab === 'short_form' && 'The Era of Short Form'}
+                         </h1>
+                     </div>
+                     <div className="header-actions">
+@@ -366,21 +358,22 @@ const AdminDashboard = () => {
+                     </div>
+                 </header>
+ 
+-                <div className="admin-content">
++                <div className="admin-content-area">
+                     <AnimatePresence mode="wait">
+                         <motion.div
+                             key={activeTab}
+                             initial={{ opacity: 0, y: 10 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             exit={{ opacity: 0, y: -10 }}
+-                            transition={{ duration: 0.2, ease: "easeOut" }}
+-                            className="content-transition-wrapper"
++                            transition={{ duration: 0.2 }}
++                            style={{ height: '100%' }}
+                         >
+                             {activeTab === 'blog_manager' && <BlogManager />}
++                            {activeTab === 'hero_manager' && <HeroManager />}
+                             {activeTab === 'media' && <MediaLibrary />}
+-
++                            {activeTab === 'page_images' && <PageImagesManager />}
+                             {activeTab.startsWith('case_studies') && <CaseStudiesManager initialFilter={activeTab.split('_')[2] || 'all'} />}
+-
++                            {activeTab === 'projects' && <ProjectsManager />}
+                             {activeTab === 'testimonials' && <TestimonialsManager />}
+                             {activeTab === 'products' && <ProductsManager />}
+                             {activeTab === 'orders' && <OrdersManager />}

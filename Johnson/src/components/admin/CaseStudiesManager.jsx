@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Trash2, Edit2, Plus, X, GripVertical, Database } from 'lucide-react';
+import { Trash2, Edit2, Plus, X, GripVertical, Database, Folder } from 'lucide-react';
 import CaseStudyForm from './CaseStudyForm';
 import { toast } from '../../utils/toast';
 import {
@@ -19,7 +19,7 @@ import {
     useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { webData } from '../../data/webData';
+import { portfolioData } from '../../data/portfolioData';
 
 const SortableItem = ({ study, onEdit, onDelete }) => {
     const {
@@ -44,25 +44,15 @@ const SortableItem = ({ study, onEdit, onDelete }) => {
                 <div className="drag-handle" {...attributes} {...listeners}>
                     <GripVertical size={20} color="#999" />
                 </div>
-                <div className="item-type-indicator" data-type={study.type}>
-                    {study.type === 'web' ? 'W' : 'S'}
+                <div className="item-type-indicator" data-type="storytelling">
+                    W
                 </div>
                 <div className="item-info">
                     <div className="item-title-row">
-                        <span className="item-title">{study.organization_name}</span>
+                        <span className="item-title">{study.content?.title || study.organization_name || 'Untitled'}</span>
                         {!study.is_active && <span className="draft-badge">Draft</span>}
                     </div>
-                    <div className="item-subtitle">{study.organization_type}</div>
-                    {study.content.tool_stack && (
-                        <div className="item-tools-preview">
-                            {study.content.tool_stack.split(',').slice(0, 3).map((t, i) => (
-                                <span key={i} className="tool-tag-sm">{t.trim()}</span>
-                            ))}
-                            {study.content.tool_stack.split(',').length > 3 && (
-                                <span className="tool-more">+{study.content.tool_stack.split(',').length - 3}</span>
-                            )}
-                        </div>
-                    )}
+                    <div className="item-subtitle">{study.organization_name} • {study.organization_type}</div>
                 </div>
             </div>
             <div className="item-actions-premium">
@@ -107,7 +97,9 @@ const CaseStudiesManager = () => {
 
             if (error) throw error;
             
-            setCaseStudies(data || []);
+            // Filter out the slideshow projects so they only appear in the ProjectsManager
+            const filteredData = (data || []).filter(d => !d.content?.isProject);
+            setCaseStudies(filteredData);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching case studies:', error);
@@ -160,25 +152,22 @@ const CaseStudiesManager = () => {
     };
 
     const handleSeedData = async () => {
-        toast.confirm('This will seed existing web projects into your database. Continue?', async () => {
-            const projects = webData.projects.map((p, index) => ({
+        toast.confirm('This will seed the Work Page case studies into your database. Continue?', async () => {
+            const projects = portfolioData.caseStudies.map((p, index) => ({
                 type: 'web',
-                organization_name: p.client,
-                organization_type: p.industry,
+                organization_name: p.organization,
+                organization_type: p.category,
                 is_active: true,
                 display_order: index,
                 content: {
-                    paragraphs: [p.challenge, p.solution, p.outcome],
-                    metrics: {
-                        visitors: p.results.mobileEngagement || p.results.interactionTime || '',
-                        sales: p.results.conversion || '',
-                        signups: p.results.formSubmissions || ''
-                    },
-                    custom_metrics: Object.entries(p.results)
-                        .filter(([k]) => !['mobileEngagement', 'interactionTime', 'conversion', 'formSubmissions'].includes(k))
-                        .map(([k, v]) => ({ label: k, value: v })),
-                    colors: p.colors || ['#6366f1', '#1e293b', '#f8fafc'],
-                    tool_stack: p.tools?.join(', ') || ''
+                    title: p.title,
+                    url: p.url || '',
+                    context: p.context || '',
+                    challenge: p.challenge || '',
+                    role: p.role || '',
+                    approach: p.approach || '',
+                    image: p.image || '',
+                    impact: p.impact || []
                 }
             }));
 
@@ -238,17 +227,15 @@ const CaseStudiesManager = () => {
         });
     };
 
-    const filteredStudies = filterType === 'all' 
-        ? caseStudies 
-        : caseStudies.filter(s => s.type === filterType);
+    const filteredStudies = caseStudies;
 
     return (
         <div className="admin-component-container refined-manager">
             <div className="admin-panel premium-panel">
                 <div className="panel-header-refined">
                     <div className="header-text">
-                        <h3>Case Studies</h3>
-                        <p>Manage your portfolio projects and social media impact stories.</p>
+                        <h3>My Work</h3>
+                        <p>Manage your portfolio projects and work pages.</p>
                     </div>
                     {!isAdding && !isEditing && (
                         <div className="header-actions">
@@ -276,22 +263,7 @@ const CaseStudiesManager = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="manager-toolbar">
-                            <div className="filter-group">
-                                <label>Content Category</label>
-                                <div className="tab-filters">
-                                    {['all', 'web', 'social', 'platform'].map(type => (
-                                        <button 
-                                            key={type}
-                                            className={`tab-filter-btn ${filterType === type ? 'active' : ''}`}
-                                            onClick={() => setFilterType(type)}
-                                        >
-                                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+
 
                         {loading ? (
                             <div className="admin-loading-shimmer">
@@ -301,7 +273,7 @@ const CaseStudiesManager = () => {
                             </div>
                         ) : filteredStudies.length === 0 ? (
                             <div className="admin-empty-state">
-                                <div className="empty-icon">📁</div>
+                                <div className="empty-icon"><Folder size={48} opacity={0.3} /></div>
                                 <h4>No case studies found</h4>
                                 <p>Start by adding your first project or campaign.</p>
                                 <button className="premium-add-btn secondary" onClick={() => setIsAdding(true)}>

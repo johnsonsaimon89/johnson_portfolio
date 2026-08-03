@@ -1,7 +1,7 @@
 export const smData = {
     hero: {
         title: "Social",
-        content: "This section focuses on my work in social media strategy and digital content creation.\n\nI help brands grow and manage their presence across TikTok, Instagram, YouTube, and Facebook through strategic content planning, video production, and performance tracking."
+        content: "I help brands and organizations create meaningful digital relationships through strategic content planning, audience research, storytelling, and consistent communication."
     },
     clients: [
         { name: "NatureVoice", logo: "NV", industry: "Conservation" },

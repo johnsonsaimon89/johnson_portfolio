@@ -86,7 +86,7 @@ const ShortFormManager = () => {
     const [formData, setFormData] = useState({
         title: '',
         views: '',
-        era: 'The Era of Short-Form',
+        era: 'The Era of Short Form',
         category: 'Technique',
         video_url: '',
         media_items: [],
@@ -99,7 +99,7 @@ const ShortFormManager = () => {
         if (!supabase) return;
 
         const channel = supabase
-            .channel('short-form-db-changes')
+            .channel('short form-db-changes')
             .on('postgres_changes', { event: '*', table: 'short_form_content', schema: 'public' }, () => {
                 fetchItems();
             })
@@ -119,7 +119,7 @@ const ShortFormManager = () => {
             .order('display_order', { ascending: true })
             .order('created_at', { ascending: false });
 
-        if (error) console.error('Error fetching short-form content:', error);
+        if (error) console.error('Error fetching short form content:', error);
         else setItems(data || []);
         setLoading(false);
     };
@@ -182,7 +182,7 @@ const ShortFormManager = () => {
         setFormData({
             title: '',
             views: '',
-            era: 'The Era of Short-Form',
+            era: 'The Era of Short Form',
             category: 'Technique',
             video_url: '',
             media_items: [],
@@ -196,7 +196,7 @@ const ShortFormManager = () => {
         setFormData({
             title: item.title,
             views: item.views || '',
-            era: item.era || 'The Era of Short-Form',
+            era: item.era || 'The Era of Short Form',
             category: item.category || 'Technique',
             video_url: item.video_url || '',
             media_items: item.media_items || [],
@@ -257,7 +257,7 @@ const ShortFormManager = () => {
         <div className="admin-component-container">
             <div className="admin-panel">
                 <div className="panel-header">
-                    <h3>{isEditing ? 'Edit Short-Form' : 'Add New Short-Form'}</h3>
+                    <h3>{isEditing ? 'Edit Short Form' : 'Add New Short Form'}</h3>
                     {isEditing && (
                         <button className="icon-btn" onClick={resetForm} title="Cancel">
                             <X size={20} />
@@ -277,7 +277,7 @@ const ShortFormManager = () => {
                         </div>
                         <div className="form-group half">
                             <label>Era / Section Label</label>
-                            <input type="text" name="era" value={formData.era} onChange={handleInputChange} placeholder="The Era of Short-Form" />
+                            <input type="text" name="era" value={formData.era} onChange={handleInputChange} placeholder="The Era of Short Form" />
                         </div>
                     </div>
 
@@ -331,7 +331,7 @@ const ShortFormManager = () => {
                     </div>
 
                     <button type="submit" className="admin-submit-btn mt-2">
-                        {isEditing ? 'Update Short-Form' : 'Add Short-Form'}
+                        {isEditing ? 'Update Short Form' : 'Add Short Form'}
                     </button>
                 </form>
             </div>

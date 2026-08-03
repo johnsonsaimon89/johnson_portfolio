@@ -1,21 +1,59 @@
+/* ProfilePage — Light Mode */
+
+/* Remove the old vh-based top padding — App.jsx .page-content wrapper handles it */
 .profile-page {
     background: var(--bg-color);
-    padding-top: 15vh;
 }
 
-@media (max-width: 768px) {
-    .profile-page {
-        padding-top: 10vh;
+/* ===== HERO GRID ===== */
+.profile-hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+@media (max-width: 992px) {
+    .profile-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
     }
+    .hero-text-content  { order: 1; }
+    .hero-image-container { order: 2; max-width: 350px; }
 }
 
-@media (max-width: 480px) {
-    .profile-page {
-        padding-top: 8vh;
-    }
+/* ===== HERO IMAGE ===== */
+.hero-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
 }
 
-/* ===== VISION SECTION GRID ===== */
+.profile-image-wrapper {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-color);
+}
+
+.profile-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.profile-image-wrapper:hover .profile-main-image {
+    transform: scale(1.03);
+}
+
+/* Remove the dark vignette overlay */
+.image-overlay-glow { display: none; }
+
+/* ===== VISION SECTION ===== */
 .profile-vision-grid {
     display: flex;
     justify-content: flex-start;
@@ -35,39 +73,31 @@
     margin-top: 1rem;
 }
 
-@media (max-width: 1024px) {
-    .profile-vision-grid {
-        grid-template-columns: 1fr;
-        gap: 6rem;
-    }
-}
-
 @media (max-width: 640px) {
-    .impact-stats-row {
-        grid-template-columns: 1fr;
-    }
+    .impact-stats-row { grid-template-columns: 1fr; }
 }
 
-/* ===== SERVICE CARD ===== */
+/* ===== SERVICE CARDS — Light mode ===== */
 .profile-service-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
     padding: 2rem 2.5rem;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
 }
 
 .profile-service-card:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.07);
+    border-color: #D0D0CC;
+    transform: translateY(-6px);
 }
 
 .profile-service-card.is-active {
-    background: rgba(255, 255, 255, 0.04);
     border-color: var(--brand-accent);
+    box-shadow: 0 0 0 3px rgba(224, 90, 61, 0.08);
 }
 
-/* Service header: number + title + optional CTA link */
+/* Service header */
 .profile-service-header {
     display: flex;
     align-items: center;
@@ -85,97 +115,29 @@
     min-width: 2rem;
 }
 
-/* Profile Page Specific Styles */
-.profile-page {
-    position: relative;
-    z-index: 1;
-}
-
-.profile-hero-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 4rem;
-    align-items: center;
-}
-
-.hero-image-container {
-    position: relative;
-    width: 100%;
-    max-width: 450px;
-    margin: 0 auto;
-}
-
-.profile-image-wrapper {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    aspect-ratio: 4/5;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.profile-main-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s ease;
-}
-
-.profile-image-wrapper:hover .profile-main-image {
-    transform: scale(1.03);
-}
-
-.image-overlay-glow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.4));
-    pointer-events: none;
-}
-
-@media (max-width: 992px) {
-    .profile-hero-grid {
-        grid-template-columns: 1fr !important;
-        gap: 3rem;
-        /* text-align: center removed for brand alignment */
-    }
-
-    .hero-text-content {
-        order: 1;
-    }
-
-    .hero-image-container {
-        order: 2;
-        max-width: 350px;
-    }
-
-    .hero-text-content .lead {
-        margin: 0; /* Align to left */
-    }
-}
+/* Title — dark text on light card */
 .profile-service-title {
     font-size: var(--fs-h3);
     font-weight: 700;
     letter-spacing: -0.02em;
     text-transform: uppercase;
-    color: #fff;
+    color: var(--text-color);   /* was #fff */
     flex: 1;
     margin: 0;
     line-height: 1.2;
 }
 
+/* Link pill — dark border */
 .profile-service-link {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     padding: 0.4rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--border-color);   /* was rgba(255,255,255,0.15) */
     border-radius: 100px;
     font-size: var(--fs-p2);
     font-weight: 600;
-    color: var(--muted-color);
+    color: var(--text-muted);   /* was --muted-color */
     text-decoration: none;
     transition: all 0.3s ease;
     flex-shrink: 0;
@@ -187,7 +149,7 @@
     color: var(--brand-accent);
 }
 
-/* Service body: description + details */
+/* Service body */
 .profile-service-body {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
@@ -196,14 +158,11 @@
 }
 
 @media (max-width: 768px) {
-    .profile-service-body {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
+    .profile-service-body { grid-template-columns: 1fr; gap: 1.5rem; }
 }
 
 .profile-service-desc {
-    color: var(--muted-color);
+    color: var(--text-muted);
     font-size: var(--fs-p2);
     line-height: 1.8;
     margin: 0;
@@ -218,12 +177,13 @@
     padding: 0;
 }
 
+/* Detail item — readable on white */
 .profile-service-detail-item {
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
     font-size: var(--fs-p2);
-    color: #ddd;
+    color: var(--text-color);   /* was #ddd */
     line-height: 1.6;
 }
 
@@ -234,4 +194,29 @@
     background: var(--brand-accent);
     flex-shrink: 0;
     margin-top: 0.45rem;
+}
+
+/* ===== ABOUT PAGE SPECIFIC ===== */
+.about-section {
+    padding-top: clamp(4rem, 6vw, 5rem) !important;
+    padding-bottom: clamp(4rem, 6vw, 5rem) !important;
+}
+
+/* ===== JOURNEY GRID ===== */
+.journey-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .journey-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .journey-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -176,7 +176,7 @@ const EmailTemplatesManager = () => {
                                         background: selectedType === t.id ? `${t.color}15` : 'transparent',
                                         border: '1px solid',
                                         borderColor: selectedType === t.id ? `${t.color}30` : 'transparent',
-                                        color: selectedType === t.id ? '#000' : 'rgba(255,255,255,0.4)',
+                                        color: selectedType === t.id ? '#0F172A' : '#64748b',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
@@ -189,7 +189,7 @@ const EmailTemplatesManager = () => {
                                         width: '32px', 
                                         height: '32px', 
                                         borderRadius: '8px', 
-                                        background: selectedType === t.id ? t.color : 'rgba(255,255,255,0.05)', 
+                                        background: selectedType === t.id ? t.color : '#f1f5f9', 
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
@@ -199,8 +199,8 @@ const EmailTemplatesManager = () => {
                                         <t.icon size={18} />
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                        <span style={{ fontWeight: 700, color: selectedType === t.id ? '#000' : 'rgba(255,255,255,0.7)' }}>{t.label}</span>
-                                        <span style={{ fontSize: 'var(--fs-p2)', opacity: selectedType === t.id ? 0.7 : 0.5, color: selectedType === t.id ? '#000' : 'inherit' }}>{t.description}</span>
+                                        <span style={{ fontWeight: 700, color: selectedType === t.id ? '#0F172A' : '#475569' }}>{t.label}</span>
+                                        <span style={{ fontSize: 'var(--fs-p2)', opacity: selectedType === t.id ? 0.7 : 0.8, color: selectedType === t.id ? '#0F172A' : '#64748b' }}>{t.description}</span>
                                     </div>
                                 </button>
                             ))}

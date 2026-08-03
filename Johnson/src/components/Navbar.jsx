@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
@@ -8,192 +8,142 @@ const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const { pathname, hash } = useLocation();
 
-    // Determine current active link (combining path and hash for anchors)
     const activePath = pathname === '/' && hash ? `/${hash}` : pathname;
 
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-
     const navLinks = [
-        { name: 'Home', href: '/', isPage: true },
-        { name: 'Profile', href: '/profile', isPage: true },
-        { name: 'Social', href: '/social-media', isPage: true },
-        { name: 'Studio', href: '/web-portfolio', isPage: true },
-        { name: 'Resources', href: '/resources', isPage: true },
-        { name: 'Talk', href: '/contact', isPage: true },
+        { name: 'About', href: '/about' },
+        { name: 'Work', href: '/work' },
+        { name: 'Shop', href: '/resources' },
     ];
 
     useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            setScrolled(currentScrollY > 50);
-
-            if (currentScrollY > lastScrollY && currentScrollY > 100) {
-                // Scrolling down
-                setIsVisible(false);
-            } else {
-                // Scrolling up
-                setIsVisible(true);
-            }
-            setLastScrollY(currentScrollY);
-        };
+        const handleScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+    }, []);
 
-    const handleAnchorClick = (e, href) => {
-        if (href === '/') {
-            if (pathname === '/') {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setIsMenuOpen(false);
-            }
-        } else {
-            setIsMenuOpen(false);
-        }
-    };
+    // Lock body scroll when mobile menu is open
+    useEffect(() => {
+        document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+    }, [isMenuOpen]);
 
-    const menuVariants = {
-        closed: { opacity: 0, scale: 0.95, y: 20, pointerEvents: 'none' },
-        open: { opacity: 1, scale: 1, y: 0, pointerEvents: 'auto' }
+    const handleNavClick = () => {
+        setIsMenuOpen(false);
+        window.scrollTo(0, 0);
     };
 
     return (
         <>
-            {/* Top Logo - Fixed */}
-            <motion.div
-                initial={{ y: -50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    padding: '1.5rem 2rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    zIndex: 11000,
-                    pointerEvents: 'none' // Let clicks pass through empty space
-                }}
+            {/* ── Full-width sticky header ── */}
+            <header
+                className={`site-header${scrolled ? ' scrolled' : ' at-top'}`}
+                style={{ fontFamily: 'var(--font-body)' }}
             >
-                <Link to="/" onClick={(e) => handleAnchorClick(e, '/')} style={{ pointerEvents: 'auto', fontWeight: 800, letterSpacing: '-1px' }}>
-                    JOHNSON<span style={{ color: 'var(--brand-accent)' }}>.</span>
-                </Link>
+                <div className="container header-inner">
+                    {/* Logo */}
+                    <Link
+                        to="/"
+                        className="header-logo"
+                        onClick={handleNavClick}
+                    >
+                        <img src="/logo.png" alt="Johnson Logo" style={{ height: '72px', width: 'auto', objectFit: 'contain', transform: 'translateY(4px)' }} />
+                    </Link>
 
-                {/* Mobile Menu Toggle */}
-                <button
-                    className="mobile-only"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    style={{
-                        pointerEvents: 'auto',
-                        width: '45px',
-                        height: '45px',
-                        borderRadius: '50%',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        backdropFilter: 'blur(10px)',
-                        border: '1px solid var(--glass-border)',
-                        color: '#fff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 11000
-                    }}
-                >
-                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-            </motion.div>
-
-            {/* Floating Dock (Desktop) */}
-            <motion.div
-                className="desktop-only floating-nav"
-                initial={{ y: 100, opacity: 0, x: '-50%' }}
-                animate={{
-                    y: isVisible ? 0 : 150,
-                    opacity: isVisible ? 1 : 0,
-                    x: '-50%'
-                }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            >
-                {navLinks.map((link) => {
-                    const isActive = activePath === link.href || (activePath === '/' && link.href === '/');
-                    return (
+                    {/* Desktop Nav */}
+                    <nav className="header-nav" aria-label="Primary navigation">
+                        {navLinks.map((link) => {
+                            const isActive = activePath === link.href;
+                            return (
+                                <Link
+                                    key={link.name}
+                                    to={link.href}
+                                    className={`header-nav-link${isActive ? ' active' : ''}`}
+                                    onClick={handleNavClick}
+                                >
+                                    {link.name}
+                                </Link>
+                            );
+                        })}
                         <Link
-                            key={link.name}
-                            to={link.href}
-                            onClick={(e) => handleAnchorClick(e, link.href)}
-                            className={`nav-pill ${isActive ? 'active' : ''}`}
+                            to="/contact"
+                            className="header-cta"
+                            onClick={handleNavClick}
                         >
-                            {isActive && (
-                                <motion.div
-                                    layoutId="nav-pill-active"
-                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                    style={{
-                                        position: 'absolute',
-                                        inset: 0,
-                                        background: 'var(--brand-accent)',
-                                        borderRadius: '100px',
-                                        zIndex: -1
-                                    }}
-                                />
-                            )}
-                            {link.name}
+                            Contact
                         </Link>
-                    );
-                })}
-            </motion.div>
+                    </nav>
 
-            {/* Mobile Fullscreen Menu */}
+                    {/* Mobile hamburger */}
+                    <button
+                        className="header-menu-btn"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                        aria-expanded={isMenuOpen}
+                    >
+                        {isMenuOpen ? (
+                            <svg width="20" height="20" viewBox="0 0 14 14" fill="none">
+                                <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                        ) : (
+                            <svg width="18" height="12" viewBox="0 0 18 12" fill="none">
+                                <rect width="18" height="2" rx="1" fill="currentColor"/>
+                                <rect y="5" width="12" height="2" rx="1" fill="currentColor"/>
+                                <rect y="10" width="18" height="2" rx="1" fill="currentColor"/>
+                            </svg>
+                        )}
+                    </button>
+                </div>
+            </header>
+
+            {/* ── Mobile fullscreen menu ── */}
             <AnimatePresence>
                 {isMenuOpen && (
                     <motion.div
-                        initial="closed"
-                        animate="open"
-                        exit="closed"
-                        variants={menuVariants}
-                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                        style={{
-                            position: 'fixed',
-                            inset: 0,
-                            background: 'rgba(5, 5, 5, 0.95)',
-                            backdropFilter: 'blur(20px)',
-                            zIndex: 10500,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            padding: '2rem'
-                        }}
+                        className="mobile-menu-overlay"
+                        initial={{ opacity: 0, y: -16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -16 }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        style={{ fontFamily: 'var(--font-main)', paddingTop: 'calc(var(--header-height) + 1rem)' }}
                     >
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', textAlign: 'center' }}>
-                            {navLinks.map((link, index) => {
-                                const isActive = activePath === link.href || (activePath === '/' && link.href === '/');
+
+                        {/* Mobile nav links */}
+                        <nav className="mobile-menu-links">
+                            {[{ name: 'Home', href: '/' }, ...navLinks].map((link, i) => {
+                                const isActive = activePath === link.href;
                                 return (
                                     <motion.div
                                         key={link.name}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.1 + (0.05 * index) }}
+                                        transition={{ delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
                                     >
                                         <Link
                                             to={link.href}
-                                            onClick={(e) => {
-                                                handleAnchorClick(e, link.href);
-                                                setIsMenuOpen(false);
-                                            }}
-                                            style={{
-                                                fontWeight: 800,
-                                                textTransform: 'uppercase',
-                                                color: isActive ? 'var(--brand-accent)' : '#fff',
-                                                WebkitTextStroke: isActive ? 'none' : '1px rgba(255,255,255,0.2)',
-                                            }}
+                                            className="mobile-menu-link"
+                                            onClick={handleNavClick}
+                                            style={{ color: isActive ? 'var(--brand-accent)' : 'var(--text-color)' }}
                                         >
                                             {link.name}
+                                            <ArrowUpRight size={20} strokeWidth={2} />
                                         </Link>
                                     </motion.div>
                                 );
                             })}
+                        </nav>
+
+                        {/* Mobile CTA */}
+                        <div className="mobile-menu-cta">
+                            <Link
+                                to="/contact"
+                                className="btn-primary"
+                                onClick={handleNavClick}
+                                style={{ width: '100%', justifyContent: 'center' }}
+                            >
+                                Contact →
+                            </Link>
                         </div>
                     </motion.div>
                 )}

@@ -2,7 +2,7 @@ import { toast } from '../../utils/toast';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import emailService from '../../lib/emailService';
-import { CheckCircle, Clock, Trash2 } from 'lucide-react';
+import { CheckCircle, Clock, Trash2, Sparkles } from 'lucide-react';
 import './AdminComponents.css';
 
 const OrdersManager = () => {
@@ -48,15 +48,7 @@ const OrdersManager = () => {
             if (!order) return;
 
             try {
-                // First mark confirmed
-                const { error: updateError } = await supabase
-                    .from('purchase_orders')
-                    .update({ status: 'confirmed' })
-                    .eq('id', id);
-
-                if (updateError) throw updateError;
-
-                // Optional: fetch product's current file_url if order doesn't have it
+                // Fetch product's current file_url if order doesn't have it
                 let finalFileUrl = order.file_url;
                 if (!finalFileUrl) {
                     const { data: prodData } = await supabase
@@ -69,16 +61,17 @@ const OrdersManager = () => {
                     }
                 }
 
-                // Trigger file delivery email via frontend service
-                await emailService.sendOrderNotification({
-                    name: order.customer_name,
-                    email: order.customer_email,
-                    productTitle: order.product_title,
-                    amount: order.amount_tzs,
-                    orderId: order.id,
-                    fileUrl: finalFileUrl,
-                    type: 'file_delivery'
-                });
+                // Update order with confirmed status and the correct file_url
+                // This will fire the Supabase database trigger that handles email delivery
+                const { error: updateError } = await supabase
+                    .from('purchase_orders')
+                    .update({ 
+                        status: 'confirmed',
+                        file_url: finalFileUrl
+                    })
+                    .eq('id', id);
+
+                if (updateError) throw updateError;
 
                 toast.success("Order approved! Email has been sent.");
                 fetchOrders();
@@ -233,7 +226,7 @@ const OrdersManager = () => {
                                                 {new Date(order.created_at).toLocaleDateString()}
                                                 {order.sale_event && (
                                                     <span className="trend-badge ml-2" style={{ marginLeft: '0.5rem', background: '#e0e7ff', color: '#4338ca', fontSize: 'var(--fs-p2)' }}>
-                                                        ✨ {order.sale_event}
+                                                        <Sparkles size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> {order.sale_event}
                                                     </span>
                                                 )}
                                                 <span className={`indicator ${isConfirmed ? 'indicator-success' : 'indicator-warning'} ml-2`}>

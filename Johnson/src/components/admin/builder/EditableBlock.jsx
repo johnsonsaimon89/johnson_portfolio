@@ -85,7 +85,7 @@ const EditableBlock = ({ block, onUpdate, onDelete, onDuplicate, onEditSettings,
                 return (
                     <div className="rendered-form" style={{ padding: '2rem', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', border: '1px dashed #ccc' }}>
                         <h3>{block.data.title || 'Contact Form'}</h3>
-                        <p style={{ color: '#666', fontSize: 'var(--fs-p2)' }}>(Form Placeholder - The actual form will render on the live site)</p>
+                        <p style={{ color: '#666', fontSize: 'var(--fs-p2)' }}>(Form Placeholder The actual form will render on the live site)</p>
 
                         <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div style={{ height: '40px', background: 'white', border: '1px solid #ddd', borderRadius: '4px', maxWidth: '300px' }}></div>

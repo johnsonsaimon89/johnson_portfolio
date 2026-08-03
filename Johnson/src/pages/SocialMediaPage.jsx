@@ -1,144 +1,148 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Play, Layout, Smartphone, Heart } from 'lucide-react';
+import { ChevronDown, Play, Layout, Smartphone, Heart, MessageCircle } from 'lucide-react';
 import { smData } from '../data/socialMediaData';
 import { supabase } from '../lib/supabaseClient';
 import './SocialMediaPage.css';
 import MiniBrowser from '../components/common/MiniBrowser';
 import PlatformMockup from '../components/common/PlatformMockup';
-/* ── Animated Counter ─────────────────────────────── */
-const AnimatedCounter = ({ value, target, suffix }) => {
-    const [count, setCount] = useState(0);
-    const ref = React.useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
+import AnimatedCounter from '../components/common/AnimatedCounter';
 
-    useEffect(() => {
-        if (isInView) {
-            const end = parseFloat(target);
-            if (isNaN(end)) return;
-            const duration = 2000;
-            const startTime = performance.now();
-            const animate = (currentTime) => {
-                const progress = Math.min((currentTime - startTime) / duration, 1);
-                const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                setCount(Math.floor(ease * end));
-                if (progress < 1) requestAnimationFrame(animate);
-                else setCount(value);
-            };
-            requestAnimationFrame(animate);
-        }
-    }, [isInView, target, value]);
-
-    return <span ref={ref}>{typeof count === 'number' ? count + suffix : value}</span>;
+const maskUp = {
+    hidden: { y: '110%', opacity: 0 },
+    show: (delay = 0) => ({
+        y: '0%', opacity: 1,
+        transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay },
+    }),
 };
 
-/* ── Hero ──────────────────────────────────────────── */
 const SMHero = () => {
     const { hero } = smData;
+    const [images, setImages] = useState({});
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            if (!supabase) return;
+            const { data } = await supabase
+                .from('page_images')
+                .select('page_key, image_url')
+                .in('page_key', ['social_hero_collage_1', 'social_hero_collage_2', 'social_hero_collage_3']);
+            if (data) {
+                const map = {};
+                data.forEach(row => { map[row.page_key] = row.image_url; });
+                setImages(map);
+            }
+        };
+        fetchImages();
+    }, []);
 
     return (
-        <section className="studio-section sm-hero-section" style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            paddingTop: '15vh',
+        <section style={{
+            background: 'var(--bg-subtle)',
+            paddingTop: 'calc(var(--header-height) + clamp(2rem, 5vw, 4rem))',
+            paddingBottom: 'clamp(2rem, 6vw, 5rem)',
             position: 'relative',
             overflow: 'hidden'
         }}>
+            <div style={{
+                position: 'absolute', inset: 0,
+                background: 'none',
+                pointerEvents: 'none',
+            }} />
             <div className="container" style={{ position: 'relative', zIndex: 10 }}>
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: '1.2fr 0.8fr',
-                    gap: '6rem',
+                    gridTemplateColumns: '1.1fr 0.9fr',
+                    gap: 'clamp(3rem, 6vw, 6rem)',
                     alignItems: 'center'
                 }}>
-
                     {/* Left Column: Content */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
-                        style={{ textAlign: 'left' }}
-                    >
-                        <span className="badge" style={{ background: 'var(--brand-accent)', color: '#000', border: 'none' }}>Social</span>
-                        <h1 style={{
-                            fontSize: 'var(--fs-h1)',
-                            marginTop: '2rem',
-                            lineHeight: 1.1,
-                            fontWeight: 900,
-                            letterSpacing: '-0.04em'
-                        }}>
-                            {hero.title}
-                        </h1>
-                        <p className="lead" style={{
-                            color: 'var(--muted-color)',
-                            marginTop: '2.5rem',
-                            fontSize: 'var(--fs-p1)',
-                            lineHeight: 1.6,
-                            maxWidth: '540px',
-                            whiteSpace: 'pre-wrap'
-                        }}>
+                    <div style={{ textAlign: 'left' }}>
+                        <div className="reveal-parent" style={{ marginBottom: '0.1em' }}>
+                            <motion.h1
+                                variants={maskUp} initial="hidden" animate="show" custom={0.1}
+                                style={{
+                                    fontSize: 'var(--fs-h1)',
+                                    marginTop: 0,
+                                    lineHeight: 1.05,
+                                    fontWeight: 900,
+                                    letterSpacing: '-0.04em',
+                                    color: 'var(--text-light)',
+                                    textTransform: 'uppercase'
+                                }}
+                            >
+                                Through
+                            </motion.h1>
+                        </div>
+                        <div className="reveal-parent" style={{ marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+                            <motion.h1
+                                variants={maskUp} initial="hidden" animate="show" custom={0.2}
+                                style={{
+                                    fontSize: 'var(--fs-h1)',
+                                    marginTop: 0,
+                                    lineHeight: 1.05,
+                                    fontWeight: 900,
+                                    letterSpacing: '-0.04em',
+                                    color: 'var(--brand-accent)',
+                                    textTransform: 'uppercase', margin: 0,
+                                }}
+                            >
+                                Storytelling
+                            </motion.h1>
+                        </div>
+                        <motion.p className="lead" 
+                            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
+                            style={{
+                                color: 'var(--text-muted)',
+                                fontSize: 'var(--fs-p1)',
+                                lineHeight: 1.65,
+                                maxWidth: '540px',
+                                whiteSpace: 'pre-wrap',
+                                margin: 0
+                            }}>
                             {hero.content}
-                        </p>
-
+                        </motion.p>
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                            style={{ marginTop: '3.5rem' }}
+                            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
+                            style={{ marginTop: '2.5rem' }}
                         >
-                            <Link to="/contact" className="studio-btn studio-btn-primary" style={{ padding: '1rem 2.5rem' }}>
+                            <Link to="/contact" className="btn-primary-dark">
                                 Book a Growth Session
                             </Link>
                         </motion.div>
-                    </motion.div>
+                    </div>
 
                     {/* Right Column: High-End Minimal Visual */}
                     <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }} className="desktop-only">
                         <motion.div
                             style={{
-                                width: '280px',
-                                height: '560px',
-                                borderRadius: '40px',
+                                width: '320px',
+                                height: '500px',
+                                borderRadius: '24px',
                                 background: 'rgba(255,255,255,0.02)',
                                 border: '1px solid rgba(255,255,255,0.1)',
-                                backdropFilter: 'blur(10px)',
                                 position: 'relative',
                                 overflow: 'hidden',
                                 boxShadow: '0 40px 80px rgba(0,0,0,0.5)',
-                                rotate: 2
                             }}
-                            initial={{ opacity: 0, scale: 0.9, x: 30 }}
+                            initial={{ opacity: 0, scale: 0.95, x: 20 }}
                             animate={{ opacity: 1, scale: 1, x: 0 }}
-                            transition={{ duration: 1, delay: 0.4 }}
+                            transition={{ duration: 0.9, delay: 0.3 }}
                         >
-                            {/* Visual Content Placeholder (Minimal) */}
-                            <div style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: '1rem' }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--brand-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Play size={18} color="#000" fill="#000" />
+                            {images['social_hero_collage_1'] ? (
+                                <img src={images['social_hero_collage_1']} alt="Hero Visual" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: '1rem' }}>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--brand-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Play size={18} color="#000" fill="#000" />
+                                    </div>
+                                    <div style={{ width: '80%', height: '10px', background: 'rgba(255,255,255,0.2)', borderRadius: '5px' }}></div>
+                                    <div style={{ width: '50%', height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px' }}></div>
                                 </div>
-                                <div style={{ width: '80%', height: '10px', background: 'rgba(255,255,255,0.2)', borderRadius: '5px' }}></div>
-                                <div style={{ width: '50%', height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px' }}></div>
-                            </div>
-
-                            {/* Floating "Like" micro-interaction */}
-                            <motion.div
-                                style={{ position: 'absolute', top: '20%', right: '-10px', width: '60px', height: '60px', borderRadius: '50%', background: '#ff4b2b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 10px 20px rgba(255,75,43,0.3)' }}
-                                animate={{ y: [0, -15, 0] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                            >
-                                <Heart size={24} fill="#fff" />
-                            </motion.div>
+                            )}
                         </motion.div>
                     </div>
-
-                </div>
-            </div>
-
-            <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-                <div style={{ width: '100%', height: '100%' }}>
-                    <motion.div animate={{ opacity: [0.05, 0.1, 0.05], scale: [1, 1.1, 1] }} transition={{ duration: 15, repeat: Infinity }} style={{ width: '100%', height: '100%', background: 'radial-gradient(circle at 70% 30%, rgba(var(--brand-accent-rgb), 0.1), transparent 70%)' }} />
                 </div>
             </div>
         </section>
@@ -206,17 +210,25 @@ const AnalyticsDash = () => {
     }, []);
 
     return (
-        <section className="studio-section">
+        <section className="section section-subtle">
             <div className="container">
-                <div style={{ textAlign: 'center', marginBottom: '6rem' }}>
-                    <span className="badge">Growth</span>
-                    <h2 style={{ fontSize: 'var(--fs-h2)' }}>{smData.analytics.title}</h2>
+                <div style={{ textAlign: 'left', marginBottom: '4rem' }}>
+                    <div className="reveal-parent">
+                        <motion.h2 
+                            initial={{ y: '110%', opacity: 0 }}
+                            whileInView={{ y: '0%', opacity: 1 }}
+                            viewport={{ once: true, margin: '-80px' }}
+                            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            {smData.analytics.title}
+                        </motion.h2>
+                    </div>
                 </div>
                 <div className="results-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
                     {metrics.map((metric, idx) => (
-                        <motion.div key={idx} className="result-stat" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }}>
+                        <motion.div key={idx} className="result-stat" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }}>
                             <span className="result-val"><AnimatedCounter value={metric.value} target={metric.target} suffix={metric.suffix} /></span>
-                            <span className="result-label">{metric.label}</span>
+                            <span className="result-label" style={{ color: 'var(--text-muted)' }}>{metric.label}</span>
                         </motion.div>
                     ))}
                 </div>
@@ -227,11 +239,19 @@ const AnalyticsDash = () => {
 
 /* ── Strategy (Process Cards) ─────────────────────── */
 const OurStrategy = () => (
-    <section className="studio-section">
+    <section className="section">
         <div className="container">
-            <div style={{ textAlign: 'left', marginBottom: '6rem' }}>
-                <span className="badge">How I Work</span>
-                <h2 style={{ fontSize: 'var(--fs-h2)' }}>Strategic Approach</h2>
+            <div style={{ textAlign: 'left', marginBottom: '2rem' }}>
+                <div className="reveal-parent">
+                    <motion.h2 
+                        initial={{ y: '110%', opacity: 0 }}
+                        whileInView={{ y: '0%', opacity: 1 }}
+                        viewport={{ once: true, margin: '-80px' }}
+                        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        Strategic Approach
+                    </motion.h2>
+                </div>
             </div>
             <div className="process-grid" style={{ 
                 display: 'grid', 
@@ -242,8 +262,8 @@ const OurStrategy = () => (
                 {smData.strategy.map((item, idx) => (
                     <motion.div key={idx} className="process-card" initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} style={{ padding: '2rem' }}>
                         <div className="process-num">{(idx + 1).toString().padStart(2, '0')}</div>
-                        <h4 style={{ fontSize: 'var(--fs-p1)', marginTop: '1rem' }}>{item.title}</h4>
-                        <p style={{ fontSize: 'var(--fs-p2)', marginBottom: 0, opacity: 0.7 }}>{item.description}</p>
+                        <h4 style={{ fontSize: 'var(--fs-p1)', margin: '0 0 0.5rem', color: 'var(--text-color)' }}>{item.title}</h4>
+                        <p style={{ fontSize: 'var(--fs-p2)', marginBottom: 0, color: 'var(--text-muted)' }}>{item.description}</p>
                     </motion.div>
                 ))}
             </div>
@@ -304,24 +324,39 @@ const CampaignSpotlight = () => {
     if (loading) return null;
 
     return (
-    <section className="studio-section">
+    <section className="section" style={{ background: 'var(--bg-subtle)' }}>
         <div className="container">
-            <div style={{ textAlign: 'left', marginBottom: '8rem' }}>
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                    <span className="badge">Case Studies</span>
-                    <h2 style={{ fontSize: 'var(--fs-h1)' }}>Real Growth for Real Brands.</h2>
-                    <p style={{ maxWidth: '600px' }}>
-                        I help brands grow by combining data-driven strategy with creative storytelling.
-                    </p>
-                </motion.div>
+            <div style={{ textAlign: 'left', marginBottom: '4rem' }}>
+                <div className="reveal-parent" style={{ marginBottom: '1rem' }}>
+                    <motion.h2 
+                        initial={{ y: '110%', opacity: 0 }}
+                        whileInView={{ y: '0%', opacity: 1 }}
+                        viewport={{ once: true, margin: '-80px' }}
+                        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        Real Growth for Real Brands.
+                    </motion.h2>
+                </div>
+                <motion.p style={{ maxWidth: '600px', color: 'var(--text-muted)' }} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2, duration: 0.6 }}>
+                    I help brands grow by combining data-driven strategy with creative storytelling.
+                </motion.p>
             </div>
 
             {/* Platform Command Center */}
             {platformCampaigns.length > 0 && (
                 <div style={{ marginBottom: '8rem' }}>
-                    <div style={{ marginBottom: '3rem' }}>
-                        <span className="badge">Platform Expertise</span>
-                        <h3 style={{ fontSize: 'var(--fs-h2)' }}>Native Content Strategies.</h3>
+                    <div style={{ marginBottom: '2rem' }}>
+                        <div className="reveal-parent">
+                            <motion.h3 
+                                initial={{ y: '110%', opacity: 0 }}
+                                whileInView={{ y: '0%', opacity: 1 }}
+                                viewport={{ once: true, margin: '-80px' }}
+                                transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+                                style={{ margin: 0, fontSize: 'var(--fs-h2)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-color)', textTransform: 'uppercase' }}
+                            >
+                                Native Content Strategies.
+                            </motion.h3>
+                        </div>
                     </div>
                     
                     <motion.div 
@@ -338,14 +373,14 @@ const CampaignSpotlight = () => {
                                     style={{
                                         padding: '0.8rem 1.8rem',
                                         borderRadius: '100px',
-                                        border: `1px solid ${activeTab === idx ? '#BDFF00' : 'rgba(255,255,255,0.1)'}`,
-                                        background: activeTab === idx ? 'rgba(189,255,0,0.1)' : 'transparent',
-                                        color: activeTab === idx ? '#BDFF00' : 'var(--muted-color)',
+                                        border: `1px solid ${activeTab === idx ? 'var(--brand-accent)' : 'var(--border-color)'}`,
+                                        background: activeTab === idx ? 'var(--surface-alt)' : 'transparent',
+                                        color: activeTab === idx ? 'var(--brand-accent)' : 'var(--text-muted)',
                                         fontWeight: 800,
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.05em',
                                         cursor: 'pointer',
-                                        fontSize: 'var(--fs-p2)',
+                                        fontSize: 'var(--fs-small)',
                                         transition: 'all 0.3s ease'
                                     }}
                                 >
@@ -395,8 +430,8 @@ const CampaignSpotlight = () => {
                                             <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6 }}>{content.paragraphs?.[0]}</p>
                                             <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                                                 {struggles.map((s, i) => s && (
-                                                    <span key={i} style={{ color: '#ff5f56', fontSize: 'var(--fs-p2)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
-                                                        <span style={{ fontWeight: 900, fontSize: 'var(--fs-p2)' }}>×</span> {s}
+                                                    <span key={i} style={{ color: 'var(--text-color)', fontSize: 'var(--fs-p2)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
+                                                        <span style={{ fontWeight: 900, fontSize: 'var(--fs-p2)', color: 'var(--brand-accent)' }}>×</span> {s}
                                                     </span>
                                                 ))}
                                             </div>
@@ -406,9 +441,9 @@ const CampaignSpotlight = () => {
                                         <div className="project-results-wrapper" style={{ marginTop: '2rem' }}>
                                             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(Object.keys(metrics).length, 3)}, 1fr)`, gap: '1rem' }}>
                                                 {Object.entries(metrics).slice(0, 3).map(([key, val]) => (
-                                                    <div key={`p-${key}`} style={{ padding: '1.2rem', background: '#BDFF00', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80px' }}>
-                                                        <span style={{ fontSize: 'var(--fs-p1)', color: '#000', fontWeight: 900, lineHeight: 1 }}>{val}</span>
-                                                        <span style={{ fontSize: 'var(--fs-p2)', color: '#000', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem', opacity: 0.8 }}>{key}</span>
+                                                    <div key={`p-${key}`} style={{ padding: '1.2rem', background: 'var(--surface-alt)', border: '1px solid var(--border-color)', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '80px' }}>
+                                                        <span style={{ fontSize: 'var(--fs-p1)', color: 'var(--text-color)', fontWeight: 900, lineHeight: 1 }}>{val}</span>
+                                                        <span style={{ fontSize: 'var(--fs-small)', color: 'var(--brand-accent)', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem' }}>{key}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -501,8 +536,8 @@ const CampaignSpotlight = () => {
                                     <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', lineHeight: 1.6 }}>{content.paragraphs?.[0]}</p>
                                     <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                                         {struggles.map((s, i) => s && (
-                                            <span key={i} style={{ color: '#ff5f56', fontSize: 'var(--fs-p2)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
-                                                <span style={{ fontWeight: 900, fontSize: 'var(--fs-p2)' }}>×</span> {s}
+                                            <span key={i} style={{ color: 'var(--text-color)', fontSize: 'var(--fs-p2)', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600 }}>
+                                                <span style={{ fontWeight: 900, fontSize: 'var(--fs-p2)', color: 'var(--brand-accent)' }}>×</span> {s}
                                             </span>
                                         ))}
                                     </div>
@@ -524,13 +559,13 @@ const CampaignSpotlight = () => {
                                     <div className="content-pills" style={{ marginTop: '2.5rem' }}>
                                         {(content.content_types || campaign.content_types_mapped || []).map(type => (
                                             <span key={type} style={{ 
-                                                background: '#1a1a1a', 
-                                                border: '1px solid rgba(255,255,255,0.1)', 
+                                                background: 'var(--surface-alt)', 
+                                                border: '1px solid var(--border-color)', 
                                                 borderRadius: '8px', 
                                                 padding: '0.4rem 1rem', 
                                                 fontSize: 'var(--fs-p2)', 
                                                 fontWeight: 700,
-                                                color: '#fff',
+                                                color: 'var(--text-color)',
                                                 textTransform: 'capitalize'
                                             }}>
                                                 {type}
@@ -550,15 +585,16 @@ const CampaignSpotlight = () => {
                                     {Object.entries(metrics).slice(0, 3).map(([key, val]) => (
                                         <div key={`a-${key}`} style={{ 
                                             padding: '1.2rem', 
-                                            background: '#BDFF00', 
+                                            background: 'var(--surface-alt)', 
+                                            border: '1px solid var(--border-color)',
                                             borderRadius: '12px',
                                             display: 'flex',
                                             flexDirection: 'column',
                                             justifyContent: 'center',
                                             minHeight: '80px'
                                         }}>
-                                            <span style={{ fontSize: 'var(--fs-p1)', color: '#000', fontWeight: 900, lineHeight: 1 }}>{val}</span>
-                                            <span style={{ fontSize: 'var(--fs-p2)', color: '#000', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem', opacity: 0.8 }}>{key}</span>
+                                            <span style={{ fontSize: 'var(--fs-p1)', color: 'var(--text-color)', fontWeight: 900, lineHeight: 1 }}>{val}</span>
+                                            <span style={{ fontSize: 'var(--fs-p2)', color: 'var(--brand-accent)', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.3rem' }}>{key}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -611,7 +647,7 @@ const FeedGrid = () => {
                 <div style={{ textAlign: 'left', marginBottom: '6rem' }}>
                     <span className="badge">Creator Work</span>
                     <h2 style={{ fontSize: 'var(--fs-h2)' }}>Content that Builds Communities.</h2>
-                    <p style={{ color: 'var(--muted-color)', maxWidth: '600px', margin: '1rem 0' }}>Exploring the strategy behind individual top-performing assets.</p>
+                    <p style={{ color: 'var(--muted-color)', maxWidth: '600px', margin: '1rem 0' }}>Exploring the strategy behind individual top performing assets.</p>
                 </div>
 
                 <div className="sm-feed-grid">
@@ -643,8 +679,8 @@ const FeedGrid = () => {
                                     <div style={{ width: '100%', height: '100%', background: `hsl(${(i * 40) % 360}, 30%, 20%)` }} />
                                 )}
                                 <div className="feed-overlay">
-                                    <span style={{ fontWeight: 600 }}>♥ {post.metrics?.likes || '0'}</span>
-                                    <span style={{ fontWeight: 600 }}>💬 {post.metrics?.comments || '0'}</span>
+                                    <span style={{ fontWeight: 600 }}><Heart size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} fill="currentColor" /> {post.metrics?.likes || '0'}</span>
+                                    <span style={{ fontWeight: 600 }}><MessageCircle size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> {post.metrics?.comments || '0'}</span>
                                 </div>
                             </motion.div>
                         );
@@ -743,7 +779,7 @@ const FeedGrid = () => {
 const ReelMockup = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [reels, setReels] = useState(smData.reels);
-    const [eraTitle, setEraTitle] = useState("The Era of Short-Form");
+    const [eraTitle, setEraTitle] = useState("The Era of Short Form");
     const [activeIndex, setActiveIndex] = useState(0);
     const [isManualScrolling, setIsManualScrolling] = useState(false);
 
@@ -873,7 +909,7 @@ const ReelMockup = () => {
                                             <div style={{ width: 35, height: 35, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
                                         </div>
                                         <h4 style={{ margin: '0 0 0.5rem 0', maxWidth: '80%', fontSize: 'var(--fs-p2)', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{reel.title}</h4>
-                                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: 'var(--fs-p2)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>▶ {reel.views} views</p>
+                                        <p style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: 'var(--fs-p2)', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}><Play size={12} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "4px" }} /> {reel.views} views</p>
                                     </div>
                                 </div>
                             ))}
@@ -1034,7 +1070,7 @@ const EducationalTools = () => (
 );
 
 /* ── CTA ──────────────────────────────────────────── */
-export const SMCallToAction = () => (
+const SMCallToAction = () => (
     <section className="studio-section" style={{ paddingBottom: '12rem' }}>
         <div className="container" style={{ textAlign: 'center' }}>
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>

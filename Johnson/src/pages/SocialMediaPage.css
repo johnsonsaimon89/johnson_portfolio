@@ -1,25 +1,24 @@
-@import url('../styles/StudioStyles.css');
-/* Social Media Page — uses shared studio classes from index.css */
+/* Social Media Page — Light Mode */
 
 .social-page {
-    background: #050505;
-    color: #fff;
+    background: var(--bg-color);
+    color: var(--text-color);
     min-height: 100vh;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--font-main);
 }
 
-/* ── Phone Mockup ────────────────────────────────── */
+/* ── Phone Mockup ── */
 .phone-mockup {
     width: 100%;
     max-width: 300px;
     max-height: 520px;
     aspect-ratio: 9/19.5;
-    background: #000;
+    background: #111;
     border-radius: 40px;
     border: 8px solid #222;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(255, 255, 255, 0.08);
 }
 
 .phone-mockup::before {
@@ -36,27 +35,25 @@
     z-index: 10;
 }
 
-/* ── Feed Grid ───────────────────────────────────── */
+/* ── Feed Grid ── */
 .sm-feed-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 4px;
-    background: #111;
+    background: #1a1a1a;
     border-radius: 16px;
     overflow: hidden;
 }
 
 .feed-item {
     aspect-ratio: 1;
-    background: #222;
+    background: #2a2a2a;
     position: relative;
     cursor: pointer;
     overflow: hidden;
 }
 
-.feed-item:hover .feed-overlay {
-    opacity: 1;
-}
+.feed-item:hover .feed-overlay { opacity: 1; }
 
 .feed-overlay {
     position: absolute;
@@ -70,7 +67,7 @@
     transition: opacity 0.3s ease;
 }
 
-/* ── Reel ─────────────────────────────────────────── */
+/* ── Reel ── */
 .reel-container {
     width: 100%;
     height: 100%;
@@ -81,9 +78,7 @@
     scrollbar-width: none;
 }
 
-.reel-container::-webkit-scrollbar {
-    display: none;
-}
+.reel-container::-webkit-scrollbar { display: none; }
 
 .reel-item {
     height: 100%;
@@ -93,30 +88,25 @@
     position: relative;
 }
 
-/* ── Metrics ──────────────────────────────────────── */
+/* ── Metrics — visible on light bg ── */
 .metric-value {
     font-size: var(--fs-h2);
     font-weight: 800;
     line-height: 1;
-    color: var(--brand-accent);
+    color: var(--text-color);
 }
 
-/* ── Infinite Marquee ─────────────────────────────── */
+/* ── Marquee ── */
 @keyframes marquee-scroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 .marquee-track {
     display: flex;
     width: max-content;
     animation: marquee-scroll 35s linear infinite;
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .marquee-track:hover {
@@ -132,12 +122,13 @@
     flex-shrink: 0;
 }
 
+/* Client logo pill — dark text on light bg */
 .client-logo {
     font-weight: 800;
     font-size: var(--fs-p1);
     letter-spacing: -1px;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-color);        /* was #fff */
+    border: 1px solid var(--border-color);  /* was rgba(255,255,255,0.08) */
     padding: 0.8rem 2.2rem;
     border-radius: 12px;
     white-space: nowrap;
@@ -147,43 +138,61 @@
 
 .client-logo:hover {
     border-color: var(--brand-accent);
+    color: var(--brand-accent);
 }
 
-/* ── Responsive ──────────────────────────────────── */
+/* ── Campaign Card ── */
+.sm-campaign-card {
+    display: grid !important;
+    grid-template-columns: 1.2fr 1fr;
+    grid-template-areas:
+        "content visual"
+        "results visual"
+        "tools   visual";
+    column-gap: 4rem;
+    row-gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.campaign-content         { grid-area: content; }
+.project-card-visual      { grid-area: visual; position: sticky; top: 100px; }
+.project-results-wrapper  { grid-area: results; margin: 0.5rem 0 0 !important; }
+.project-toolstack        { grid-area: tools;   margin: 0.5rem 0 0 !important; }
+
+.content-pills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+/* ── Responsive ── */
 @media (max-width: 1024px) {
-    .sm-hero-section .container>div {
+    .sm-hero-section .container > div {
         grid-template-columns: 1fr !important;
         gap: 4rem !important;
     }
+    .sm-campaign-card {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "content"
+            "visual"
+            "results"
+            "tools";
+        gap: 2rem;
+    }
+    .project-card-visual { position: static; margin-bottom: 2rem; }
 }
 
 @media (max-width: 768px) {
-    .sm-feed-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .marquee-set {
-        gap: 2.5rem;
-        padding-right: 2.5rem;
-    }
-
-    .client-logo {
-        font-size: var(--fs-p2);
-        padding: 0.6rem 1.4rem;
-    }
-
-    .phone-mockup {
-        margin: 0 auto;
-    }
+    .sm-feed-grid    { grid-template-columns: repeat(2, 1fr); }
+    .marquee-set     { gap: 2.5rem; padding-right: 2.5rem; }
+    .client-logo     { font-size: var(--fs-p2); padding: 0.6rem 1.4rem; }
+    .phone-mockup    { margin: 0 auto; }
 }
 
 @media (max-width: 640px) {
-    .phone-mockup {
-        max-width: 240px;
-        margin: 0 auto;
-    }
-
-    /* Target the visual container specifically for social socials */
+    .phone-mockup { max-width: 240px; margin: 0 auto; }
     .social-page .project-card-visual {
         margin-top: 1rem !important;
         margin-bottom: 2rem !important;
@@ -194,54 +203,6 @@
 }
 
 @media (max-width: 480px) {
-    .sm-feed-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .phone-mockup {
-        max-width: 220px;
-    }
+    .sm-feed-grid { grid-template-columns: repeat(2, 1fr); }
+    .phone-mockup { max-width: 220px; }
 }
-
-/* ── Campaign Spotlight Split Layout ──────────────── */
-.sm-campaign-card {
-    display: grid !important;
-    grid-template-columns: 1.2fr 1fr;
-    grid-template-areas: 
-        "content visual"
-        "results visual"
-        "tools visual";
-    column-gap: 4rem;
-    row-gap: 1.5rem;
-    align-items: flex-start;
-}
-
-.campaign-content { grid-area: content; }
-.project-card-visual { grid-area: visual; position: sticky; top: 120px; }
-.project-results-wrapper { grid-area: results; margin: 0.5rem 0 0 0 !important; }
-.project-toolstack { grid-area: tools; margin: 0.5rem 0 0 0 !important; }
-
-.content-pills {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-    justify-content: center;
-}
-
-@media (max-width: 1024px) {
-    .sm-campaign-card {
-        grid-template-columns: 1fr;
-        grid-template-areas: 
-            "content"
-            "visual"
-            "results"
-            "tools";
-        gap: 2rem;
-    }
-
-    .project-card-visual {
-        position: static;
-        margin-bottom: 2rem;
-    }
-}

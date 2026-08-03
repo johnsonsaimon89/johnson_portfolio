@@ -12,7 +12,7 @@ const hasValidCredentials =
 
 if (!hasValidCredentials) {
     console.warn(
-        '[Supabase] ⚠️  Credentials not yet configured.\n' +
+        '[Supabase] WARNING:  Credentials not yet configured.\n' +
         'Open your .env file and fill in:\n' +
         '  VITE_SUPABASE_URL=https://xxxx.supabase.co\n' +
         '  VITE_SUPABASE_ANON_KEY=your_anon_key\n' +

@@ -60,7 +60,7 @@ export function detectCurrency() {
 /**
  * Convert an amount from TZS to the target currency.
  */
-export function convertFromTZS(amountTZS, targetCurrency = 'TZS') {
+function convertFromTZS(amountTZS, targetCurrency = 'TZS') {
     const rate = EXCHANGE_RATES[targetCurrency] || 1;
     return amountTZS * rate;
 }

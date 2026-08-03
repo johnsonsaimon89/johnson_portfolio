@@ -1,90 +1,123 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { portfolioData } from '../data/portfolioData';
 import { Instagram, Linkedin, Facebook, Podcast } from 'lucide-react';
 
 const Footer = () => {
-    const { socials } = portfolioData;
+    const { socials, contact } = portfolioData;
 
     const getIcon = (name) => {
         switch (name.toLowerCase()) {
-            case 'instagram': return <Instagram size={20} strokeWidth={1.5} />;
-            case 'linkedin': return <Linkedin size={20} strokeWidth={1.5} />;
-            case 'facebook': return <Facebook size={20} strokeWidth={1.5} />;
-            case 'podcast': return <Podcast size={20} strokeWidth={1.5} />;
+            case 'instagram': return <Instagram size={16} strokeWidth={1.75} />;
+            case 'linkedin':  return <Linkedin  size={16} strokeWidth={1.75} />;
+            case 'facebook':  return <Facebook  size={16} strokeWidth={1.75} />;
+            case 'podcast':   return <Podcast   size={16} strokeWidth={1.75} />;
             default: return null;
         }
     };
 
+    const navColumns = [
+        {
+            title: 'How I Create Value',
+            links: [
+                { label: 'Communication Strategy',  href: '/about' },
+                { label: 'Brand Storytelling',       href: '/work' },
+                { label: 'Digital Experiences',      href: '/work' },
+                { label: 'Community Engagement',     href: '/work' },
+                { label: 'Creative Production',      href: '/work' },
+            ],
+        },
+        {
+            title: 'Explore',
+            links: [
+                { label: 'About',           href: '/about' },
+                { label: 'Selected Work',   href: '/work' },
+                { label: 'Shop',            href: '/resources' },
+                { label: 'Contact',         href: '/contact' },
+            ],
+        },
+        {
+            title: 'Connect',
+            links: [
+                { label: 'Email',     href: `mailto:${contact?.email || 'johnsonsaimon111@gmail.com'}` },
+                { label: `Instagram`, href: socials.find(s => s.name === 'Instagram')?.url || '#', external: true },
+                { label: 'LinkedIn',  href: socials.find(s => s.name === 'LinkedIn')?.url  || '#', external: true },
+                { label: 'Podcast',   href: '/about#podcast', external: false },
+            ],
+        },
+    ];
+
     return (
-        <footer style={{ padding: '4rem 0', borderTop: '1px solid var(--glass-border)' }}>
+        <footer className="site-footer">
             <div className="container">
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '3rem',
-                    alignItems: 'center',
-                    textAlign: 'center'
-                }}>
-                    <div>
-                        <h2 style={{ fontWeight: 800 }}>JOHNSON<span style={{ color: 'var(--brand-accent)' }}>.</span></h2>
-                        <p style={{ color: 'var(--muted-color)', marginTop: '0.5rem', }}>
-                            © 2026 Johnson Saimon. All rights reserved.
-                        </p>
+                <div className="footer-grid">
+
+                    {/* Brand column */}
+                    <div className="footer-brand-col">
+                        <div style={{ marginTop: '-24px' }}>
+                            <Link to="/" className="footer-logo">
+                                <img src="/footer-logo.svg" alt="Johnson Logo" style={{ height: '96px', width: 'auto', objectFit: 'contain' }} />
+                            </Link>
+                            <p className="footer-tagline">
+                                Helping people and organizations communicate with clarity through strategy, design, and thoughtful digital experiences.
+                            </p>
+                        </div>
+                        <div className="footer-socials">
+                            {socials.map((social) => (
+                                <a
+                                    key={social.name}
+                                    href={social.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={social.name}
+                                    title={social.name}
+                                    className="footer-social-btn"
+                                >
+                                    {getIcon(social.name)}
+                                </a>
+                            ))}
+                        </div>
                     </div>
 
-                    <div style={{
-                        display: 'flex',
-                        gap: '1.5rem',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center'
-                    }}>
-                        {socials.map((social) => (
-                            <motion.a
-                                key={social.name}
-                                href={social.url}
-                                style={{ 
-                                    color: '#ffffff',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '45px',
-                                    height: '45px',
-                                    borderRadius: '50%',
-                                    border: '1px solid transparent',
-                                    background: 'rgba(255, 255, 255, 0.03)' // subtle background
-                                }}
-                                whileHover={{ 
-                                    color: 'var(--brand-accent)',
-                                    borderColor: 'var(--brand-accent)',
-                                    background: 'rgba(189, 255, 0, 0.05)'
-                                }}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label={social.name}
-                                title={social.name}
-                            >
-                                {getIcon(social.name)}
-                            </motion.a>
-                        ))}
-                    </div>
+                    {/* Link columns */}
+                    {navColumns.map((col) => (
+                        <div key={col.title}>
+                            <div className="footer-col-title">{col.title}</div>
+                            <ul className="footer-links">
+                                {col.links.map((link) => (
+                                    <li key={link.label}>
+                                        {link.external ? (
+                                            <a
+                                                href={link.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="footer-link"
+                                            >
+                                                {link.label}
+                                            </a>
+                                        ) : (
+                                            <Link to={link.href} className="footer-link">
+                                                {link.label}
+                                            </Link>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
 
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
-                        <a href="/resources" style={{ color: 'var(--muted-color)', }}>Resources</a>
-                        <button 
-                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
-                            style={{ 
-                                color: 'var(--muted-color)', 
-                                background: 'none', 
-                                border: 'none', 
-                                cursor: 'pointer',
-                                fontSize: 'inherit',
-                                padding: 0
-                            }}
-                        >
-                            Back to top ↑
-                        </button>
-                    </div>
+                {/* Bottom bar */}
+                <div className="footer-bottom">
+                    <span className="footer-legal">
+                        © {new Date().getFullYear()} Johnson Saimon. All rights reserved. · Dar es Salaam, Tanzania
+                    </span>
+                    <button
+                        className="footer-back-top"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    >
+                        Back to top ↑
+                    </button>
                 </div>
             </div>
         </footer>
@@ -92,4 +125,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

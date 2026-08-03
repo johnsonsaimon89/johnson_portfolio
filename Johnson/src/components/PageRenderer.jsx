@@ -41,7 +41,7 @@ const PageRenderer = ({ blocks }) => {
                     <div className="rendered-form" style={style}>
                         <h3>{data.title}</h3>
                         {/* Placeholder for actual form rendering logic */}
-                        <form onSubmit={(e) => { e.preventDefault(); alert('Form submitted!'); }}>
+                        <form onSubmit={(e) => { e.preventDefault(); console.log('Form submitted!'); }}>
                             <input type="text" placeholder="Your Name" style={{ display: 'block', margin: '10px 0', padding: '8px', width: '100%', maxWidth: '300px' }} />
                             <input type="email" placeholder="Your Email" style={{ display: 'block', margin: '10px 0', padding: '8px', width: '100%', maxWidth: '300px' }} />
                             <textarea placeholder="Your Message" style={{ display: 'block', margin: '10px 0', padding: '8px', width: '100%', maxWidth: '300px', height: '100px' }}></textarea>

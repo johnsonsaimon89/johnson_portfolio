@@ -103,7 +103,7 @@ const FeaturedProjects = () => {
                                         ))}
                                     </div>
 
-                                    {/* Mobile Mockup - Repositioned before metrics */}
+                                    {/* Mobile Mockup Repositioned before metrics */}
                                     {isMobile && (
                                         <div className="web-visual-area" style={{ direction: 'ltr', marginBottom: '3rem' }}>
                                             <div className="mockup-container" style={{ position: 'relative' }}>
@@ -162,7 +162,7 @@ const FeaturedProjects = () => {
                                     </div>
                                 </div>
 
-                                {/* Visual Side - Only for Desktop */}
+                                {/* Visual Side Only for Desktop */}
                                 {!isMobile && (
                                     <div className="web-visual-area" style={{ direction: 'ltr' }}>
                                         <div className="mockup-container" style={{ position: 'relative' }}>

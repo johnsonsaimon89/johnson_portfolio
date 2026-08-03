@@ -2,7 +2,7 @@ import { toast } from '../../utils/toast';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { r2Service } from '../../utils/r2Service';
-import { Upload, Image as ImageIcon, Video, File, Trash2, Copy, Cloud, Maximize2, PlayCircle, Loader2 } from 'lucide-react';
+import { Upload, Image as ImageIcon, Video, File, Trash2, Copy, Cloud, Maximize2, PlayCircle, Loader2, FolderOpen } from 'lucide-react';
 import ImageUploader from './ImageUploader';
 
 const MediaLibrary = () => {
@@ -93,7 +93,7 @@ const MediaLibrary = () => {
                 </div>
             ) : files.length === 0 ? (
                 <div className="admin-empty-state">
-                    <div className="empty-icon">📂</div>
+                    <div className="empty-icon"><FolderOpen size={48} opacity={0.3} /></div>
                     <h4>Your library is clear</h4>
                     <p>Start by uploading your first project assets.</p>
                     {!showUploader && (

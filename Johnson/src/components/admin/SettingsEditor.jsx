@@ -28,7 +28,9 @@ const SettingsEditor = () => {
         bts_video_url: '',
         // Email/System Config (from app_config)
         edge_fn_base_url: '',
-        app_service_role_key: ''
+        app_service_role_key: '',
+        resend_api_key: '',
+        resend_audience_id: ''
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -77,7 +79,9 @@ const SettingsEditor = () => {
                 bts_button_text: data.bts_button_text || 'Watch BTS Video',
                 bts_video_url: data.bts_video_url || '',
                 edge_fn_base_url: configMap['edge_fn_base_url'] || '',
-                app_service_role_key: configMap['app_service_role_key'] || ''
+                app_service_role_key: configMap['app_service_role_key'] || '',
+                resend_api_key: configMap['resend_api_key'] || '',
+                resend_audience_id: configMap['resend_audience_id'] || ''
             });
         }
         setLoading(false);
@@ -127,15 +131,17 @@ const SettingsEditor = () => {
             .eq('id', 1);
 
         // Update app_config
-        if (settings.edge_fn_base_url) {
-            await supabase.from('app_config').upsert({ key: 'edge_fn_base_url', value: settings.edge_fn_base_url });
-        }
-        if (settings.app_service_role_key) {
-            await supabase.from('app_config').upsert({ key: 'app_service_role_key', value: settings.app_service_role_key });
-        }
+        const { error: configError } = await supabase
+            .from('app_config')
+            .upsert([
+                { key: 'edge_fn_base_url', value: settings.edge_fn_base_url },
+                { key: 'app_service_role_key', value: settings.app_service_role_key },
+                { key: 'resend_api_key', value: settings.resend_api_key },
+                { key: 'resend_audience_id', value: settings.resend_audience_id }
+            ], { onConflict: 'key' });
 
-        if (error) {
-            toast.error('Failed to save settings: ' + error.message);
+        if (error || configError) {
+            toast.error('Failed to save settings: ' + (error?.message || configError?.message));
         } else {
             toast.success('Site settings saved successfully!');
         }
@@ -389,6 +395,31 @@ const SettingsEditor = () => {
                         <p style={{ fontSize: 'var(--fs-p2)', color: '#64748b', marginTop: '0.4rem' }}>
                             Go to Supabase Dashboard → Project Settings → API and copy the <code>service_role</code> secret.
                         </p>
+                    </div>
+
+                    <h4 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem', marginTop: '2rem', color: '#BDFF00' }}>Resend Newsletter Integration</h4>
+                    <p style={{ fontSize: 'var(--fs-p2)', color: 'var(--muted-color)', marginBottom: '1rem' }}>
+                        Configure your Resend API credentials to automatically sync new subscribers to your Resend Audience.
+                    </p>
+                    <div className="form-group">
+                        <label>Resend API Key</label>
+                        <input
+                            type="password"
+                            name="resend_api_key"
+                            value={settings.resend_api_key}
+                            onChange={handleInputChange}
+                            placeholder="re_..."
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Resend Audience ID (Contact List ID)</label>
+                        <input
+                            type="text"
+                            name="resend_audience_id"
+                            value={settings.resend_audience_id}
+                            onChange={handleInputChange}
+                            placeholder="e.g. 1a2b3c4d-..."
+                        />
                     </div>
 
                     <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>

@@ -14,12 +14,15 @@ import NewsletterManager from '../components/admin/NewsletterManager';
 import FinancialAnalytics from '../components/admin/FinancialAnalytics';
 import BlogManager from '../components/admin/cms/BlogManager';
 import MediaLibrary from '../components/admin/MediaLibrary';
+import PageImagesManager from '../components/admin/PageImagesManager';
 import CaseStudiesManager from '../components/admin/CaseStudiesManager';
+import ProjectsManager from '../components/admin/ProjectsManager';
 import RoleManager from '../components/admin/RoleManager';
 import CommunityContentManager from '../components/admin/CommunityContentManager';
 import EmailBroadcastManager from '../components/admin/EmailBroadcastManager';
 import EmailTemplatesManager from '../components/admin/EmailTemplatesManager';
 import ShortFormManager from '../components/admin/ShortFormManager';
+import HeroManager from '../components/admin/HeroManager';
 import Toast from '../components/admin/Toast';
 import './AdminDashboard.css';
 
@@ -34,7 +37,9 @@ const AdminDashboard = () => {
 
     const tabThemes = {
         blog_manager: '#10b981',
+        hero_manager: '#ec4899',
         media: '#0ea5e9',
+        page_images: '#f59e0b',
         case_studies: '#6366f1',
         testimonials: '#f59e0b',
         community: '#8b5cf6',
@@ -150,8 +155,7 @@ const AdminDashboard = () => {
                         <span>Blog CMS</span>
                         {activeTab === 'blog_manager' && <motion.div layoutId="active-pill" className="active-pill" />}
                     </motion.button>
-                    
-                    {/* Media Library */}
+                                        {/* Media Library */}
                     <motion.button
                         initial={{ x: -10, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
@@ -165,7 +169,8 @@ const AdminDashboard = () => {
                         {activeTab === 'media' && <motion.div layoutId="active-pill" className="active-pill" />}
                     </motion.button>
 
-                    {/* Case Studies (Dropdown) */}
+
+                    {/* My Work (Dropdown) */}
                     <motion.div
                         initial={{ x: -10, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
@@ -173,19 +178,19 @@ const AdminDashboard = () => {
                         className="nav-dropdown-container"
                     >
                         <button
-                            className={`admin-nav-item ${activeTab.startsWith('case_studies') ? 'active' : ''}`}
+                            className={`admin-nav-item ${activeTab.startsWith('case_studies') || activeTab === 'projects' ? 'active' : ''}`}
                             onClick={() => {
                                 setExpandedNav(prev => ({ ...prev, case_studies: !prev.case_studies }));
-                                if (!activeTab.startsWith('case_studies')) {
+                                if (!activeTab.startsWith('case_studies') && activeTab !== 'projects') {
                                     setActiveTab('case_studies_all');
                                 }
                             }}
                             style={{ '--tab-accent': tabThemes['case_studies'] }}
                         >
-                            <LayoutList size={18} color={tabThemes['case_studies']} style={{ opacity: activeTab.startsWith('case_studies') ? 1 : 0.8 }} />
-                            <span>Case Studies</span>
+                            <LayoutList size={18} color={tabThemes['case_studies']} style={{ opacity: activeTab.startsWith('case_studies') || activeTab === 'projects' ? 1 : 0.8 }} />
+                            <span>My Work</span>
                             <ChevronRight size={14} style={{ marginLeft: 'auto', transform: expandedNav.case_studies ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', color: '#71717a' }} />
-                            {activeTab.startsWith('case_studies') && <motion.div layoutId="active-pill" className="active-pill" />}
+                            {(activeTab.startsWith('case_studies') || activeTab === 'projects') && <motion.div layoutId="active-pill" className="active-pill" />}
                         </button>
                         
                         <AnimatePresence>
@@ -197,9 +202,8 @@ const AdminDashboard = () => {
                                     style={{ overflow: 'hidden', marginLeft: '1.5rem', borderLeft: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.2rem', marginBottom: '0.5rem' }}
                                 >
                                     {[
-                                        { id: 'case_studies_web', label: 'Web Projects' },
-                                        { id: 'case_studies_social', label: 'Brand Strategies' },
-                                        { id: 'case_studies_platform', label: 'Platform Expertise' }
+                                        { id: 'case_studies_all', label: 'Case Studies' },
+                                        { id: 'projects', label: 'Slideshow Carousel' }
                                     ].map(sub => (
                                         <button 
                                             key={sub.id}
@@ -225,7 +229,6 @@ const AdminDashboard = () => {
                     {[
                         { id: 'testimonials', label: 'Testimonials', icon: <MessageSquareQuote size={18} /> },
                         { id: 'community', label: 'Community', icon: <Users size={18} /> },
-                        { id: 'short_form', label: 'Short-Form', icon: <Play size={18} /> },
                     ].map((item, index) => (
                         <motion.button
                             key={item.id}
@@ -290,7 +293,6 @@ const AdminDashboard = () => {
                     {[
                         { id: 'financials', label: 'Financials', icon: <LineChart size={18} /> },
                         { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
-                        { id: 'roles', label: 'Roles', icon: <Shield size={18} /> },
                     ].map((item, index) => (
                         <motion.button
                             key={item.id}
@@ -332,9 +334,8 @@ const AdminDashboard = () => {
                         <h1>
                             {activeTab === 'blog_manager' && 'Blog CMS Manager'}
                             {activeTab === 'media' && 'Media Library'}
-
-                            {activeTab.startsWith('case_studies') && 'Manage Case Studies'}
-
+                            {activeTab === 'case_studies' && 'Manage Case Studies'}
+                            {activeTab === 'projects' && 'Manage Carousel Projects'}
                             {activeTab === 'testimonials' && 'Client Testimonials'}
                             {activeTab === 'products' && 'Digital Products'}
                             {activeTab === 'orders' && 'Purchase Orders'}
@@ -342,11 +343,9 @@ const AdminDashboard = () => {
                             {activeTab === 'newsletter' && 'Newsletter Audience'}
                             {activeTab === 'financials' && 'Financial Analytics'}
                             {activeTab === 'settings' && 'Global Site Settings'}
-                            {activeTab === 'roles' && 'Team Access Roles'}
                             {activeTab === 'email_templates' && 'Email Templates'}
                             {activeTab === 'campaigns' && 'Email Campaign Broadcast'}
                             {activeTab === 'community' && 'Community Building Content'}
-                            {activeTab === 'short_form' && 'The Era of Short-Form'}
                         </h1>
                     </div>
                     <div className="header-actions">
@@ -373,14 +372,13 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="content-transition-wrapper"
+                            transition={{ duration: 0.2 }}
+                            style={{ height: '100%' }}
                         >
                             {activeTab === 'blog_manager' && <BlogManager />}
                             {activeTab === 'media' && <MediaLibrary />}
-
                             {activeTab.startsWith('case_studies') && <CaseStudiesManager initialFilter={activeTab.split('_')[2] || 'all'} />}
-
+                            {activeTab === 'projects' && <ProjectsManager />}
                             {activeTab === 'testimonials' && <TestimonialsManager />}
                             {activeTab === 'products' && <ProductsManager />}
                             {activeTab === 'orders' && <OrdersManager />}
@@ -388,11 +386,9 @@ const AdminDashboard = () => {
                             {activeTab === 'newsletter' && <NewsletterManager />}
                             {activeTab === 'financials' && <FinancialAnalytics />}
                             {activeTab === 'settings' && <SettingsEditor />}
-                            {activeTab === 'roles' && <RoleManager />}
                             {activeTab === 'email_templates' && <EmailTemplatesManager />}
                             {activeTab === 'campaigns' && <EmailBroadcastManager />}
                             {activeTab === 'community' && <CommunityContentManager />}
-                            {activeTab === 'short_form' && <ShortFormManager />}
                         </motion.div>
                     </AnimatePresence>
                 </div>

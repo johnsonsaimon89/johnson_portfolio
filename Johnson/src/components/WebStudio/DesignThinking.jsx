@@ -37,7 +37,7 @@ const DesignThinking = () => {
                             <div style={{ display: 'flex', gap: '1rem' }}>
                                 <MousePointerClick color="var(--accent-lime)" size={24} style={{ flexShrink: 0, marginTop: '4px' }} />
                                 <div>
-                                    <h4 >Action-Oriented Structure</h4>
+                                    <h4 >Action Oriented Structure</h4>
                                     <p style={{ color: 'var(--muted-color)', }}>Strategically placing elements to encourage user engagement.</p>
                                 </div>
                             </div>

@@ -118,7 +118,7 @@ function purchaseConfirmationEmail(name: string, productTitle: string, amountTzs
       <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Order Received 🙌</h2>
       ${saleText}
       <p style="font-size: 16px; color: rgba(255,255,255,0.7);">Hi ${name}, thank you for your purchase of <strong>${productTitle}</strong>.</p>
-      <p style="font-size: 14px; color: rgba(255,255,255,0.5);">⏳ Payment verification usually takes less than 24 hours. Your download link will be delivered once confirmed.</p>
+      <p style="font-size: 14px; color: rgba(255,255,255,0.5);">Payment verification usually takes less than 24 hours. Your download link will be delivered once confirmed.</p>
       <p style="font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 20px;">Order ID: ${orderId}</p>
     `),
   };
@@ -128,7 +128,7 @@ function fileDeliveryEmail(name: string, productTitle: string, fileUrl: string, 
   return {
     subject: `Download Ready: ${productTitle}`,
     html: EMAIL_LAYOUT(`
-      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Payment Confirmed ✅</h2>
+      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Payment Confirmed</h2>
       <p style="font-size: 16px; color: rgba(255,255,255,0.7);">Your files for <strong>${productTitle}</strong> are now available.</p>
       <div style="margin: 35px 0; text-align: center;">
         <a href="${fileUrl}" style="display: inline-block; background: #3b82f6; color: #fff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: 700;">Download Now</a>
@@ -143,7 +143,7 @@ function freeDownloadEmail(name: string, productTitle: string, fileUrl: string, 
   return {
     subject: `Your free resource: ${productTitle}`,
     html: EMAIL_LAYOUT(`
-      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Download Ready! 📦</h2>
+      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 15px;">Download Ready!</h2>
       ${saleText}
       <p style="font-size: 16px; color: rgba(255,255,255,0.7);">Your free copy of <strong>${productTitle}</strong> is ready for download.</p>
       <div style="margin: 35px 0; text-align: center;">
@@ -236,7 +236,7 @@ serve(async (req: Request) => {
           emailContent = {
             subject: `New Paid Order: ${product_title} from ${name}`,
             html: EMAIL_LAYOUT(`
-              <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 15px;">New Order Received! 💰</h2>
+              <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 15px;">New Order Received!</h2>
               <p style="font-size: 16px; color: rgba(255,255,255,0.7);">You have a new paid order for <strong>${product_title}</strong>.</p>
               <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin: 25px 0;">
                 <p style="margin: 0 0 10px; font-size: 14px;"><strong>Customer:</strong> ${name}</p>
@@ -257,7 +257,7 @@ serve(async (req: Request) => {
           emailContent = {
             subject: `New Message: ${subject} from ${name}`,
             html: EMAIL_LAYOUT(`
-              <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 15px;">New Contact Message 📥</h2>
+              <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 15px;">New Contact Message</h2>
               <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin: 25px 0;">
                 <p style="margin: 0 0 10px; font-size: 14px;"><strong>From:</strong> ${name} (${body.customer_email ?? email})</p>
                 <p style="margin: 0 0 10px; font-size: 14px;"><strong>Subject:</strong> ${subject}</p>

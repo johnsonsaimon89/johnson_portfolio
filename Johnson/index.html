@@ -2,21 +2,30 @@
 <html lang="en">
 
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2TLFX378XG"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    
+    // Check local storage for existing consent
+    if (localStorage.getItem('cookie_consent') === 'accepted') {
+      gtag('consent', 'default', { 'analytics_storage': 'granted' });
+    } else {
+      gtag('consent', 'default', { 'analytics_storage': 'denied' });
+    }
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2TLFX378XG"></script>
+  <script>
     gtag('js', new Date());
-
     gtag('config', 'G-2TLFX378XG');
   </script>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
-    content="Johnson's freelance portfolio showcasing diverse web development, design, and strategic digital solutions." />
-  <title>Johnson | Freelance Digital Creator</title>
+    content="Johnson Kilasi is a communications strategist and digital storyteller helping organizations communicate ideas, build communities, and create meaningful digital experiences." />
+  <meta name="keywords" content="Communications Strategist Tanzania, Digital Storytelling, Brand Communication, Content Strategy, Community Management" />
+  <title>Johnson Kilasi — Communications Strategist & Digital Storyteller</title>
 </head>
 
 <body>

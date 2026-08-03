@@ -1,25 +1,25 @@
 :root {
-    --admin-sidebar-bg: #09090b;
-    --admin-sidebar-hover: rgba(255, 255, 255, 0.03);
-    --admin-sidebar-active: rgba(255, 255, 255, 0.08);
-    --admin-sidebar-text: #71717a;
+    --admin-sidebar-bg: #0F0F0F;
+    --admin-sidebar-hover: rgba(255, 255, 255, 0.04);
+    --admin-sidebar-active: rgba(255, 255, 255, 0.09);
+    --admin-sidebar-text: #6B6B6B;
     --admin-sidebar-text-active: #ffffff;
-    --admin-main-bg: #ffffff;
-    --admin-header-bg: rgba(255, 255, 255, 0.85);
-    --admin-border: #f1f1f1;
-    --admin-accent: #000000;
-    --admin-accent-gradient: linear-gradient(135deg, #000 0%, #333 100%);
-    --admin-card-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
-    --admin-card-shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
-    --tab-accent: #000000; /* Default */
+    --admin-main-bg: #F7F6F3;
+    --admin-header-bg: rgba(247, 246, 243, 0.92);
+    --admin-border: #E8E8E5;
+    --admin-accent: #E05A3D;
+    --admin-accent-gradient: linear-gradient(135deg, #E05A3D 0%, #B8472F 100%);
+    --admin-card-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    --admin-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.06);
+    --tab-accent: #E05A3D;
 }
 
 .admin-dashboard {
     display: flex;
     min-height: 100vh;
     background-color: var(--admin-main-bg);
-    color: #09090b;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0F0F0F;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 /* Sidebar Styling */
@@ -128,26 +128,24 @@
     font-weight: 600;
 }
 
-/* Tab Highlight Pill */
+/* Tab Highlight Pill — flat, no glow */
 .active-pill {
     position: absolute;
     left: 0;
-    width: 4px;
-    height: 18px;
+    width: 3px;
+    height: 16px;
     background-color: var(--tab-accent);
-    border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 10px var(--tab-accent);
+    border-radius: 0 3px 3px 0;
 }
 
 .admin-nav-item svg {
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease;
     flex-shrink: 0;
 }
 
 .admin-nav-item:hover svg,
 .admin-nav-item.active svg {
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 5px currentColor);
+    transform: scale(1.05);
 }
 
 .nav-badge {
@@ -205,17 +203,16 @@
     justify-content: space-between;
 }
 
-/* Animated Border Top for Header based on tab */
+/* Header animated top border */
 .admin-header::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 2px;
     background: var(--tab-accent);
-    opacity: 0.6;
-    box-shadow: 0 0 15px var(--tab-accent);
+    opacity: 0.5;
     transition: background 0.3s ease;
 }
 
@@ -223,12 +220,8 @@
     font-size: var(--fs-p1);
     font-weight: 800;
     letter-spacing: -0.04em;
-    color: #09090b;
+    color: #0F0F0F;
     margin: 0;
-    background: linear-gradient(135deg, #09090b 0%, #52525b 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .breadcrumb-label {

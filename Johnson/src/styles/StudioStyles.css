@@ -1,20 +1,28 @@
-/* Shared Studio Styles — extracted from CreativeStudioPage.css */
+/* Shared Studio Styles — Light Mode Edition */
 
 .studio-section {
-    padding: 10rem 0;
+    padding: 7rem 0;
     position: relative;
 }
 
+/* Badge — light mode */
 .badge {
     display: inline-block;
-    padding: 0.5rem 1.2rem;
+    padding: 0.4rem 1rem;
     border-radius: 100px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: var(--fs-p2);
+    background: var(--surface-alt);
+    border: 1px solid var(--border-color);
+    font-size: var(--fs-small);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
+    color: var(--brand-accent);
+}
+
+/* Badge on dark band — keep legible */
+.section-dark .badge {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
     color: var(--brand-accent);
 }
 
@@ -22,37 +30,38 @@
 .process-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 4rem;
+    gap: 1.5rem;
+    margin-top: 3rem;
 }
 
 .process-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 3rem;
-    border-radius: 12px;
-    transition: all 0.4s ease;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem;
+    border-radius: 16px;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .process-card:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.07);
+    border-color: #D0D0CC;
 }
 
 .process-num {
     font-family: monospace;
-    font-size: var(--fs-p2);
+    font-size: var(--fs-small);
     color: var(--brand-accent);
-    margin-bottom: 1.5rem;
-    opacity: 0.6;
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
 }
 
 /* Project Cards */
 .project-card-grid {
     display: flex;
     flex-direction: column;
-    gap: 10rem;
+    gap: 8rem;
 }
 
 .web-project-card {
@@ -60,75 +69,67 @@
 }
 
 .project-tag {
-    font-size: var(--fs-p2);
+    font-size: var(--fs-small);
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
     color: var(--brand-accent);
 }
 
 .project-title {
     font-size: var(--fs-h3);
-    margin: 1rem 0 2rem;
+    margin: 1rem 0 1.5rem;
     line-height: 1.1;
+    color: var(--text-color);
 }
 
 .project-description p {
-    color: var(--muted-color);
+    color: var(--text-muted);
     font-size: var(--fs-p2);
-    line-height: 1.7;
+    line-height: 1.75;
 }
 
 /* Results / Stats */
 .project-results-wrapper {
-    margin: 3rem 0;
+    margin: 2.5rem 0;
 }
 
 .result-stat {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
     border-radius: 12px;
 }
 
 .result-val {
     font-size: var(--fs-p1);
     font-weight: 800;
-    color: #fff;
+    color: var(--text-color);
     line-height: 1;
 }
 
 .result-label {
-    font-size: var(--fs-p2);
+    font-size: var(--fs-small);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted-color);
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 /* Mockups */
 .mockup-container {
     position: relative;
     border-radius: 24px;
+    overflow: hidden;
 }
 
-/* Background Effects */
-.studio-noise {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.05;
-    pointer-events: none;
-    z-index: 2;
-}
+/* Noise texture removed per user request for clean flat backgrounds */
 
 .studio-light {
     position: fixed;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(var(--brand-accent-rgb), 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(var(--brand-accent-rgb), 0.06) 0%, transparent 70%);
     filter: blur(100px);
     pointer-events: none;
     z-index: 0;
@@ -136,23 +137,17 @@
 
 @media (max-width: 1024px) {
     .studio-section {
-        padding: 6rem 0;
+        padding: 5rem 0;
     }
-    
+
     .project-card-grid {
-        gap: 6rem;
+        gap: 5rem;
     }
 
     .web-project-card.mobile-order {
-        grid-template-areas: 
-            "content"
-            "visual"
-            "results"
-            "tools";
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        text-align: left !important;
     }
 
     .web-project-card.mobile-order .web-visual-area {
@@ -167,4 +162,3 @@
         max-width: 320px;
     }
 }
-

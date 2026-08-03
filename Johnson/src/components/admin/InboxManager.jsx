@@ -87,7 +87,7 @@ const InboxManager = () => {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '2rem', minHeight: '700px', alignItems: 'start' }}>
             {/* List Sidebar */}
-            <div className="admin-panel" style={{ padding: '1.5rem', height: 'calc(100vh - 250px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(10px)' }}>
+            <div className="admin-panel" style={{ padding: '1.5rem', height: 'calc(100vh 250px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(10px)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #f1f5f9' }}>
                     <h3 style={{ fontSize: 'var(--fs-p2)', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
                         Messages <span style={{ color: '#10b981', fontSize: 'var(--fs-p2)', fontWeight: 600, marginLeft: '4px' }}>({messages.filter(m => m.status === 'unread').length} new)</span>
@@ -170,7 +170,7 @@ const InboxManager = () => {
             </div>
 
             {/* Reading Pane */}
-            <div className="admin-panel" style={{ height: 'calc(100vh - 250px)', overflowY: 'auto', background: '#fff', border: '1px solid #f1f5f9' }}>
+            <div className="admin-panel" style={{ height: 'calc(100vh 250px)', overflowY: 'auto', background: '#fff', border: '1px solid #f1f5f9' }}>
                 {selectedMessage ? (
                     <div style={{ animation: 'fadeIn 0.4s cubic-bezier(0, 0, 0.2, 1)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1.5rem' }}>
@@ -236,7 +236,7 @@ const InboxManager = () => {
                         </div>
 
                         <div style={{ marginTop: '4rem', paddingTop: '2rem', borderTop: '1px solid #f1f5f9', fontSize: 'var(--fs-p2)', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Received — {new Date(selectedMessage.created_at).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
+                            Received, {new Date(selectedMessage.created_at).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}
                         </div>
                     </div>
                 ) : (

@@ -21,11 +21,11 @@ const StudioHero = () => {
                             </span>
 
                             <h1>
-                                The Studio is where ideas become <span className="text-gradient">digital platforms.</span>
+                                The Studio is where ideas become <span className="text-gradient">digital experiences.</span>
                             </h1>
 
                             <p className="lead" style={{ whiteSpace: 'pre-line' }}>
-                                I design modern websites using platforms like Squarespace and Webflow, creating clean and responsive sites that help brands present their work clearly online.{"\n\n"}
+                                I create digital experiences that combine storytelling, design, and technology. From websites to online platforms, I focus on making information easier to understand, navigate, and engage with.{"\n\n"}
                                 I also explore AI-assisted workflows to help speed up website creation and improve digital publishing.
                             </p>
 
@@ -79,7 +79,7 @@ const StudioHero = () => {
                                     </div>
                                 </div>
                                 
-                                {/* Browser Content - Clean & Minimal */}
+                                {/* Browser Content Clean & Minimal */}
                                 <div style={{ padding: '2rem', minHeight: '240px' }}>
                                     <div style={{ width: '40%', height: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', marginBottom: '1.5rem' }} />
                                     <div style={{ width: '100%', height: '80px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', marginBottom: '1.5rem' }} />

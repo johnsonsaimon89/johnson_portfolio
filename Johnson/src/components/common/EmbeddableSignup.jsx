@@ -20,19 +20,22 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
         setStatus('loading');
 
         try {
-            const { error } = await supabase
-                .from('newsletter_subscribers')
-                .insert([{
-                    email: email,
-                    name: name || null,
-                    source: source
-                }]);
+            // Call the edge function which handles both local DB insert and Resend API sync
+            const { data, error } = await supabase.functions.invoke('subscribe-newsletter', {
+                body: { email, name: name || null, source }
+            });
 
             if (error) {
-                if (error.code === '23505') {
+                console.error("Function Error:", error);
+                throw new Error("Failed to subscribe. Please try again.");
+            }
+            
+            if (data?.error) {
+                // If it's a unique constraint error passed back from the DB, treat as already subscribed
+                if (data.error.includes("duplicate key") || data.error.includes("23505")) {
                     throw new Error("You're already subscribed!");
                 }
-                throw error;
+                throw new Error(data.error);
             }
 
             // Welcome email is now handled automatically by database trigger notify_send_email()
@@ -104,14 +107,26 @@ const EmbeddableSignup = ({ source = "website_embed", showLabels = false, button
                 style={{
                     padding: '0.75rem 1.5rem',
                     borderRadius: '100px',
-                    border: 'none',
-                    background: 'var(--brand-accent, #BDFF00)',
-                    color: '#030303',
+                    border: '2px solid transparent',
+                    background: '#FFFFFF',
+                    color: 'var(--text-color)',
                     fontWeight: 600,
                     cursor: status === 'loading' ? 'not-allowed' : 'pointer',
                     opacity: status === 'loading' ? 0.7 : 1,
-                    transition: 'opacity 0.2s',
-                    marginTop: '0.5rem'
+                    transition: 'all 0.2s ease',
+                    marginTop: '0.5rem',
+                    boxShadow: 'inset 0 0 0 0 var(--text-color)'
+                }}
+                onMouseEnter={(e) => {
+                    if (status !== 'loading') {
+                        e.currentTarget.style.boxShadow = 'inset 0 0 0 2px var(--text-color)';
+                        e.currentTarget.style.background = '#FFFFFF';
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    if (status !== 'loading') {
+                        e.currentTarget.style.boxShadow = 'inset 0 0 0 0 var(--text-color)';
+                    }
                 }}
             >
                 {status === 'loading' ? 'Subscribing...' : buttonText}
