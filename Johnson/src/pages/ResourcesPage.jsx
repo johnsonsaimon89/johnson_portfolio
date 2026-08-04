@@ -729,17 +729,17 @@ const ResourcesPage = () => {
                                 gridColumn: '1 / -1',
                                 textAlign: 'center',
                                 padding: '5rem 2rem',
-                                background: 'rgba(255,255,255,0.02)',
+                                background: 'rgba(15,23,42,0.03)',
                                 borderRadius: '24px',
-                                border: '1px dashed rgba(255,255,255,0.1)',
+                                border: '1px dashed rgba(15,23,42,0.15)',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: '1rem'
                             }}>
-                                <ShoppingBag size={48} color="rgba(255,255,255,0.15)" />
-                                <h3 style={{ color: '#fff', fontSize: '1.5rem', margin: 0, fontFamily: 'var(--font-heading)' }}>Check Back Soon</h3>
-                                <p style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '400px', margin: 0, lineHeight: 1.6 }}>
+                                <ShoppingBag size={48} color="rgba(15,23,42,0.2)" />
+                                <h3 style={{ color: '#0f172a', fontSize: '1.5rem', margin: 0, fontFamily: 'var(--font-heading)' }}>Check Back Soon</h3>
+                                <p style={{ color: 'rgba(15,23,42,0.7)', maxWidth: '400px', margin: 0, lineHeight: 1.6 }}>
                                     There are no products at the moment. We are working on adding some amazing new resources soon!
                                 </p>
                             </div>
