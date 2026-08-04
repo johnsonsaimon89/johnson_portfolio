@@ -544,7 +544,7 @@ const ResourcesPage = () => {
                 let paid = [];
                 let free = [];
 
-                if (data && data.length > 0) {
+                if (data) {
                     data.forEach(p => {
                         const downloadsCount = p.downloads_count || 0;
                         const salesCount = p.sales_count || 0;
@@ -561,9 +561,6 @@ const ResourcesPage = () => {
                             free.push(formattedProduct);
                         }
                     });
-                } else {
-                    paid = productsData.paid;
-                    free = productsData.free;
                 }
 
                 // Interleave or just merge them into a single list
@@ -714,18 +711,39 @@ const ResourcesPage = () => {
                     </div>
                     
                     <div className="spacious-grid">
-                        {allProducts.map((product, index) => {
-                            const isFree = product.price_tzs === 0 || product.priceTZS === 0;
-                            
-                            return (
-                                <ProductCard 
-                                    key={product.id} 
-                                    product={product} 
-                                    isFree={isFree} 
-                                    onClick={handleClick} 
-                                />
-                            );
-                        })}
+                        {allProducts.length > 0 ? (
+                            allProducts.map((product, index) => {
+                                const isFree = product.price_tzs === 0 || product.priceTZS === 0;
+                                
+                                return (
+                                    <ProductCard 
+                                        key={product.id} 
+                                        product={product} 
+                                        isFree={isFree} 
+                                        onClick={handleClick} 
+                                    />
+                                );
+                            })
+                        ) : (
+                            <div style={{
+                                gridColumn: '1 / -1',
+                                textAlign: 'center',
+                                padding: '5rem 2rem',
+                                background: 'rgba(255,255,255,0.02)',
+                                borderRadius: '24px',
+                                border: '1px dashed rgba(255,255,255,0.1)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '1rem'
+                            }}>
+                                <ShoppingBag size={48} color="rgba(255,255,255,0.15)" />
+                                <h3 style={{ color: '#fff', fontSize: '1.5rem', margin: 0, fontFamily: 'var(--font-heading)' }}>Check Back Soon</h3>
+                                <p style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '400px', margin: 0, lineHeight: 1.6 }}>
+                                    There are no products at the moment. We are working on adding some amazing new resources soon!
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
