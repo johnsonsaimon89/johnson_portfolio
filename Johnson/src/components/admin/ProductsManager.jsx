@@ -12,6 +12,16 @@ const ProductsManager = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(null);
     const [uploadMode, setUploadMode] = useState('upload'); // 'upload' or 'link'
+
+    const getStockPhotoForProduct = (title) => {
+        const t = (title || '').toLowerCase();
+        if (t.includes('calendar') || t.includes('planner')) return 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80&w=800';
+        if (t.includes('masterclass') || t.includes('storytelling')) return 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=800';
+        if (t.includes('ux') || t.includes('website') || t.includes('design')) return 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&q=80&w=800';
+        if (t.includes('voice') || t.includes('brand')) return 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=800';
+        if (t.includes('idea') || t.includes('generator')) return 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=800';
+        return 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800';
+    };
     const [storageType, setStorageType] = useState('r2'); // 'r2', 'supabase' or 'mega'
     const [globalPayment, setGlobalPayment] = useState({
         bank_name: '',
@@ -172,12 +182,17 @@ const ProductsManager = () => {
         e.preventDefault();
         if (!supabase) return;
 
+        let finalImageUrl = formData.image_url;
+        if (!finalImageUrl || finalImageUrl.trim() === '') {
+            finalImageUrl = getStockPhotoForProduct(formData.title);
+        }
+
         const productData = {
             title: formData.title,
             type: formData.type || 'Digital',
             description: formData.description,
             price_tzs: parseInt(formData.price_tzs) || 0,
-            image_url: formData.image_url,
+            image_url: finalImageUrl,
             file_url: formData.file_url,
             is_active: formData.is_active,
             display_order: parseInt(formData.display_order) || 0,
@@ -480,9 +495,15 @@ const ProductsManager = () => {
                         <div className="admin-list">
                             {products.map((product) => (
                                 <div key={product.id} className="admin-list-item">
-                                    <div className="item-content">
-                                        <div className="item-title">{product.title}</div>
-                                        <div className="item-meta">
+                                    <div className="item-content" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                        {product.image_url && (
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
+                                                <img src={product.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            </div>
+                                        )}
+                                        <div>
+                                            <div className="item-title">{product.title}</div>
+                                            <div className="item-meta">
                                             {product.is_on_sale ? (
                                                 <>
                                                     <span style={{ fontWeight: '800', color: '#10b981' }}>{product.sale_price_tzs.toLocaleString()} TZS</span>
@@ -493,6 +514,7 @@ const ProductsManager = () => {
                                                 <>{product.price_tzs.toLocaleString()} TZS</>
                                             )}
                                             {!product.is_active && <span className="trend-badge ml-2" style={{ marginLeft: '0.5rem', background: '#fee2e2', color: '#b91c1c' }}>Inactive</span>}
+                                        </div>
                                         </div>
                                     </div>
                                     <div className="item-actions">
