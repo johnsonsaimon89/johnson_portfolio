@@ -221,8 +221,8 @@ export const portfolioData = {
             category: "Cultural Preservation",
             image: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=800&q=80",
             size: "small",
-            url: "https://hadzabemediacenter.com/",
-            upcoming: true
+            url: "https://hadzabemediacenter.org/",
+            upcoming: false
         }
     ],
     contact: {

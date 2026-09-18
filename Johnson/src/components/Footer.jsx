@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { portfolioData } from '../data/portfolioData';
 import { Instagram, Linkedin, Facebook, Podcast } from 'lucide-react';
+import { formatUrl } from '../utils/urlUtils';
 
 const Footer = () => {
     const { socials, contact } = portfolioData;
@@ -66,7 +67,7 @@ const Footer = () => {
                             {socials.map((social) => (
                                 <a
                                     key={social.name}
-                                    href={social.url}
+                                    href={formatUrl(social.url)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label={social.name}
@@ -88,7 +89,7 @@ const Footer = () => {
                                     <li key={link.label}>
                                         {link.external ? (
                                             <a
-                                                href={link.href}
+                                                href={formatUrl(link.href)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="footer-link"

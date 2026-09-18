@@ -6,6 +6,7 @@ import { portfolioData } from '../data/portfolioData';
 import { supabase } from '../lib/supabaseClient';
 import CTASection from '../components/common/CTASection';
 import affinityLogo from '../assets/affinity-logo-white.svg';
+import { formatUrl } from '../utils/urlUtils';
 
 const TOOL_LOGOS = [
     { name: "Figma", url: "https://cdn.simpleicons.org/figma/FFFFFF", link: "https://www.figma.com" },
@@ -55,13 +56,14 @@ const WorkPage = () => {
                 const carouselProjects = [];
                 
                 data.forEach(d => {
+                    const rawUrl = d.content?.url || '';
                     const mappedItem = {
                         id: d.id,
                         title: d.content?.title || '',
                         organization: d.organization_name || '',
                         category: d.organization_type || '',
                         image: d.content?.image || '',
-                        url: d.content?.url || '',
+                        url: formatUrl(rawUrl),
                         upcoming: d.content?.upcoming || false,
                         context: d.content?.context || '',
                         challenge: d.content?.challenge || '',
@@ -371,7 +373,7 @@ const WorkPage = () => {
                                     {/* Link */}
                                     {study.url && (
                                         <a
-                                            href={study.url}
+                                            href={formatUrl(study.url)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             style={{
@@ -447,7 +449,7 @@ const WorkPage = () => {
                         {projects.map((project, idx) => (
                             <motion.a
                                 key={project.title}
-                                href={project.url}
+                                href={formatUrl(project.url)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="project-carousel-item"

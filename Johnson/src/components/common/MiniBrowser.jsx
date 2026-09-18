@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Globe, AlertCircle, RefreshCcw } from 'lucide-react';
+import { formatUrl, getCleanHostname } from '../../utils/urlUtils';
 
 /**
  * MiniBrowser Component
@@ -21,18 +22,8 @@ const MiniBrowser = ({
     const [useScreenshot, setUseScreenshot] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     
-    // Safely parse hostname
-    const getHostName = (urlStr) => {
-        try {
-            if (!urlStr || urlStr === '#') return 'preview.local';
-            const url = new URL(urlStr);
-            return url.hostname;
-        } catch (e) {
-            return 'preview.local';
-        }
-    };
-
-    const displayUrl = getHostName(url);
+    const safeUrl = url && url !== '#' ? formatUrl(url) : '';
+    const displayUrl = getCleanHostname(safeUrl || url);
 
     // Known sites that block iframes or are slow to load in iframes
     const isKnownBlocked = (urlStr) => {
@@ -52,15 +43,15 @@ const MiniBrowser = ({
     };
 
     const handleOpenTab = (e) => {
-        if (url && url !== '#') {
-            window.open(url, '_blank', 'noopener,noreferrer');
+        if (safeUrl) {
+            window.open(safeUrl, '_blank', 'noopener,noreferrer');
         }
     };
 
     // WordPress MShots URL for dynamic screenshots
     // Using a medium width to ensure faster generation/loading
-    const screenshotUrl = (url && url !== '#' && url !== 'undefined')
-        ? `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=600` 
+    const screenshotUrl = (safeUrl && safeUrl !== 'undefined')
+        ? `https://s.wordpress.com/mshots/v1/${encodeURIComponent(safeUrl)}?w=600` 
         : null;
 
     useEffect(() => {
@@ -500,7 +491,7 @@ const MiniBrowser = ({
                     fontFamily: 'monospace'
                 }}>
                     <Globe size={14} strokeWidth={2.5} style={{ opacity: 0.6 }} />
-                    <span style={{ letterSpacing: '0.02em' }}>{url || 'https://www.interactive-preview.local'}</span>
+                    <span style={{ letterSpacing: '0.02em' }}>{safeUrl || 'https://www.interactive-preview.local'}</span>
                 </div>
 
                 <div style={{ display: 'flex', gap: '15px' }}>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Plus, Trash2, Eye } from 'lucide-react';
 import ImageUploader from './ImageUploader';
+import { formatUrl, sanitizeUrlInput } from '../../utils/urlUtils';
 
 const CaseStudyForm = ({ initialData, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -57,7 +58,11 @@ const CaseStudyForm = ({ initialData, onSave, onCancel }) => {
         e.preventDefault();
         onSave({ 
             ...formData, 
-            type: 'web' // Using 'web' to satisfy the existing DB constraint
+            type: 'web', // Using 'web' to satisfy the existing DB constraint
+            content: {
+                ...formData.content,
+                url: formData.content.url ? formatUrl(formData.content.url) : ''
+            }
         });
     };
 
@@ -115,7 +120,13 @@ const CaseStudyForm = ({ initialData, onSave, onCancel }) => {
             <div className="form-row">
                 <div className="form-group half">
                     <label>Project URL</label>
-                    <input type="url" value={formData.content.url || ''} onChange={(e) => handleContentChange('url', e.target.value)} placeholder="https://example.com" />
+                    <input 
+                        type="text" 
+                        value={formData.content.url || ''} 
+                        onChange={(e) => handleContentChange('url', e.target.value)} 
+                        onBlur={(e) => handleContentChange('url', sanitizeUrlInput(e.target.value))}
+                        placeholder="e.g. hadzabemediacenter.org or https://example.com" 
+                    />
                 </div>
                 <div className="form-group half">
                     <label>Cover Image URL</label>

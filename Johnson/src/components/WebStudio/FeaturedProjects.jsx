@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { webData } from '../../data/webData';
 import MiniBrowser from '../common/MiniBrowser';
+import { formatUrl } from '../../utils/urlUtils';
 
 const FeaturedProjects = () => {
     const [projects, setProjects] = useState([]);
@@ -36,12 +37,14 @@ const FeaturedProjects = () => {
                         ...customMetrics.map(m => m.label && m.value ? { label: m.label.toUpperCase(), value: m.value } : null)
                     ].filter(Boolean); // Only keep non-null metrics
 
+                    const rawUrl = content.website_url || content.url || '';
+
                     return {
                         id: study.id,
                         client: study.organization_name,
                         industry: study.organization_type,
-                        websiteUrl: content.website_url || '',
-                        previewImageUrl: content.preview_image_url || '',
+                        websiteUrl: rawUrl ? formatUrl(rawUrl) : '',
+                        previewImageUrl: content.preview_image_url || content.image || '',
                         paragraphs: content.paragraphs || [],
                         displayMetrics: allMetrics,
                         colors: content.colors || ['#6366f1', '#1e293b', '#f8fafc'],
