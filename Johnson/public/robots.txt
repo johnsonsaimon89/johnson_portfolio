@@ -1,0 +1,11 @@
+# robots.txt for https://johnsonsaimon.com/
+User-agent: *
+Allow: /
+
+# Disallow administrative, dashboard and private routes
+Disallow: /admin/
+Disallow: /admin
+Disallow: /admin/*
+
+# Sitemap
+Sitemap: https://johnsonsaimon.com/sitemap.xml
