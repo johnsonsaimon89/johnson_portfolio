@@ -22,7 +22,7 @@ describe('urlUtils', () => {
         });
 
         it('preserves mailto and tel schemes', () => {
-            expect(formatUrl('mailto:johnsonsaimon111@gmail.com')).toBe('mailto:johnsonsaimon111@gmail.com');
+            expect(formatUrl('mailto:hello@johnsonsaimon.com')).toBe('mailto:hello@johnsonsaimon.com');
             expect(formatUrl('tel:+255768662378')).toBe('tel:+255768662378');
         });
 

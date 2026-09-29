@@ -18,7 +18,7 @@ import { ArrowRight, Mail } from 'lucide-react';
  *   primaryLabel="Start a Project"
  *   primaryTo="/contact"
  *   secondaryLabel="Email Me"
- *   secondaryHref="mailto:johnsonsaimon111@gmail.com"
+ *   secondaryHref="mailto:hello@johnsonsaimon.com"
  * />
  */
 const CTASection = ({
@@ -27,7 +27,7 @@ const CTASection = ({
     primaryLabel = 'Start a Project',
     primaryTo = '/contact',
     secondaryLabel = 'Email Me',
-    secondaryHref = 'mailto:johnsonsaimon111@gmail.com',
+    secondaryHref = 'mailto:hello@johnsonsaimon.com',
 }) => {
     return (
         <section className="studio-section" style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', padding: 'var(--section-pad) 0' }}>

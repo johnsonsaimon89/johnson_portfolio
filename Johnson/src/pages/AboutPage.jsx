@@ -364,7 +364,7 @@ const AboutPage = () => {
                 primaryLabel="Let's Talk"
                 primaryTo="/contact"
                 secondaryLabel="Email Me"
-                secondaryHref="mailto:johnsonsaimon111@gmail.com"
+                secondaryHref="mailto:hello@johnsonsaimon.com"
             />
         </div>
     );

@@ -226,7 +226,7 @@ export const portfolioData = {
         }
     ],
     contact: {
-        email: "johnsonsaimon111@gmail.com",
+        email: "hello@johnsonsaimon.com",
         phone: "+255768662378",
         whatsapp: "https://wa.link/mmk64r",
         address: "Based in Dar es Salaam, working globally."

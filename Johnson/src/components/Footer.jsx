@@ -40,7 +40,7 @@ const Footer = () => {
         {
             title: 'Connect',
             links: [
-                { label: 'Email',     href: `mailto:${contact?.email || 'johnsonsaimon111@gmail.com'}` },
+                { label: 'Email',     href: `mailto:${contact?.email || 'hello@johnsonsaimon.com'}` },
                 { label: `Instagram`, href: socials.find(s => s.name === 'Instagram')?.url || '#', external: true },
                 { label: 'LinkedIn',  href: socials.find(s => s.name === 'LinkedIn')?.url  || '#', external: true },
                 { label: 'Podcast',   href: '/about#podcast', external: false },
